@@ -8,9 +8,8 @@ import { chesna, inter } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Precedent - Building blocks for your Next.js project",
-  description:
-    "Precedent is the all-in-one solution for your Next.js project. It includes a design system, authentication, analytics, and more.",
+  title: "mm-tafect-ui",
+  description: "mm-tafect-ui",
   twitter: {
     card: "summary_large_image",
     title: "Precedent - Building blocks for your Next.js project",
@@ -18,7 +17,7 @@ export const metadata: Metadata = {
       "Precedent is the all-in-one solution for your Next.js project. It includes a design system, authentication, analytics, and more.",
     creator: "@steventey",
   },
-  metadataBase: new URL("https://precedent.dev"),
+  metadataBase: new URL(""),
   themeColor: "#FFF",
 };
 

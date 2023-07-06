@@ -6,8 +6,8 @@ export const alt = "Precedent - Building blocks for your Next.js project";
 export const contentType = "image/png";
 
 export default async function OG() {
-  const sfPro = await fetch(
-    new URL("./fonts/SF-Pro-Display-Medium.otf", import.meta.url),
+  const chesna = await fetch(
+    new URL("./fonts/chesna-grotesk-300.woff2", import.meta.url),
   ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
@@ -52,7 +52,7 @@ export default async function OG() {
       fonts: [
         {
           name: "SF Pro",
-          data: sfPro,
+          data: chesna,
         },
       ],
     },

@@ -8,6 +8,10 @@ module.exports = {
   },
   theme: {
     extend: {
+      colors: {
+        "custom-bg-white": "#f6f7f8",
+        primary: "#0572EC",
+      },
       fontFamily: {
         display: ["var(--font-chesna)", "system-ui", "sans-serif"],
         default: ["var(--font-inter)", "system-ui", "sans-serif"],

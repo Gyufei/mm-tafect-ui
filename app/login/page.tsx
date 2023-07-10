@@ -21,12 +21,20 @@ export default async function Login() {
     setShowAccountList(false);
   }, []);
 
+  const handleShowAccountList = useCallback(() => {
+    console.log(12322);
+    // setShowAccountList(true);
+  }, []);
+
   return (
     <div className="mr-16 flex w-full max-w-md grow flex-col items-start p-0">
       {showAccountList ? (
         <AccountList selectAccountCb={handleSelectAccount} />
       ) : (
-        <LoginForm account={currentSelectedAccount} />
+        <LoginForm
+          account={currentSelectedAccount}
+          showAccountCb={handleShowAccountList}
+        />
       )}
     </div>
   );

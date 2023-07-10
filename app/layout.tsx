@@ -31,14 +31,9 @@ export default async function RootLayout({
   const isLogin = getCurrentUser();
 
   return (
-    <html lang="en">
+    <html lang="en" className={cx(chesna.variable, inter.variable)}>
       <body
-        className={cx(
-          chesna.variable,
-          inter.variable,
-          "w-full",
-          "min-h-screen",
-        )}
+        className="min-h-screen w-full"
       >
         {children}
         <Analytics />

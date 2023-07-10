@@ -11,6 +11,7 @@ module.exports = {
       colors: {
         "custom-bg-white": "#f6f7f8",
         primary: "#0572EC",
+        "title-color": "#333"
       },
       fontFamily: {
         display: ["var(--font-chesna)", "system-ui", "sans-serif"],

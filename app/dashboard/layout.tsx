@@ -1,4 +1,4 @@
-export default async function CoreLayout({
+export default function CoreLayout({
   children,
 }: {
   children: React.ReactNode;

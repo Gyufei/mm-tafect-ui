@@ -16,39 +16,60 @@ export default function LoginForm(props: LoginFormProps) {
   return (
     <div className="login-form flex w-full max-w-md grow flex-col items-stretch">
       <div className="relative flex w-full flex-col">
-        <FormHead {...props} />
-        <FormToLogin account={account} />
+        <FormBody {...props} />
+        <LoginFailTip show={false} />
       </div>
     </div>
   );
 }
 
-const FormHead = (props: LoginFormProps) => {
-  if (props.account?.name) {
+const FormBody = (props: LoginFormProps) => {
+  const { account } = props;
+
+  const SessionTip = (stProps: { show: boolean }) => {
+    return stProps.show ? (
+      <div className="mb-5 w-[420px] rounded border border-[#DFCA9C] bg-[#FEFAF4] px-4 py-3 text-title-color">
+        Your session ended after 10 minutes of inactivity.
+      </div>
+    ) : null;
+  };
+
+  const LinkOfAccount = (loaProps: { showAccountCb: () => void }) => {
+    return (
+      <div
+        className="link-account absolute flex select-none items-center hover:cursor-pointer"
+        onClick={() => loaProps.showAccountCb()}
+      >
+        <ChevronLeft className="mr-2 h-4 w-4" />
+        <span className="text-primary">Account List</span>
+      </div>
+    );
+  };
+
+  if (account?.name) {
     return (
       <>
-        <div className="mb-5 w-[420px] rounded border border-[#DFCA9C] bg-[#FEFAF4] px-4 py-3 text-title-color">
-          Your session ended after 10 minutes of inactivity.
-        </div>
-
+        <SessionTip show={false} />
         <div className="mb-5 flex justify-start">
           <div className="mr-4 h-16 w-16 rounded-lg border border-border-color bg-white"></div>
           <div className="flex flex-col items-start justify-around">
-            <div className="text-lg text-title-color">
-              Sign in to to William
+            <div className="text-lg font-bold text-title-color">
+              Sign in to {account.name}
             </div>
-            <div className="text-sm text-second-color">william.s@xxx.com</div>
+            <div className="text-sm text-second-color">{account.email}</div>
           </div>
         </div>
+        <FormToLogin account={account} />
       </>
     );
   } else {
     return (
       <>
         <LinkOfAccount showAccountCb={props.showAccountCb} />
-        <div className="text-lg font-semibold text-title-color">
+        <div className="text-lg font-bold text-title-color">
           Sign in to your Tafect account
         </div>
+        <FormToLogin account={account} />
       </>
     );
   }
@@ -86,21 +107,31 @@ const FormToLogin = (props: { account: IAccount }) => (
     </Form.Field>
 
     <Form.Submit asChild>
-      <button className="mt-5 flex h-10 w-36 items-center rounded-3xl bg-primary px-10 py-2.5 text-white hover:bg-primary/80">
-        sign in
-      </button>
+      <div className="mt-5 flex items-center justify-between ">
+        <button className="flex h-10 w-36 items-center rounded-3xl bg-primary px-10 py-2.5 text-white hover:bg-primary/80">
+          sign in
+        </button>
+        <div className="Link text-sm">Having trouble signing in?</div>
+      </div>
     </Form.Submit>
   </Form.Root>
 );
 
-const LinkOfAccount = (props: { showAccountCb: () => void }) => {
-  return (
-    <div
-      className="link-account absolute flex select-none items-center hover:cursor-pointer"
-      onClick={() => props.showAccountCb()}
-    >
-      <ChevronLeft className="mr-2 h-4 w-4" />
-      <span className="text-primary">Account List</span>
-    </div>
-  );
+const LoginFailTip = (lftProps: { show: boolean }) => {
+  if (lftProps.show) {
+    return (
+      <div className="mt-5 flex flex-col rounded border border-[#DEA69C] bg-[#F8DEDA] p-4 text-sm">
+        <div className="mb-4">
+          We weren't able to sign in to your account . Check your password and
+          try again.
+        </div>
+        <div>
+          If you were invited to 1password by someone else , they can
+          <div className="Link">recover your account</div>
+        </div>
+      </div>
+    );
+  } else {
+    return null;
+  }
 };

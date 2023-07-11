@@ -7,7 +7,7 @@ import { IAccount } from "@/lib/types";
 import LoginForm from "@/components/login/login-form";
 import AccountList from "@/components/login/account-list";
 
-export default async function Login() {
+export default function Login() {
   const [showAccountList, setShowAccountList] = useState(false);
 
   const [currentSelectedAccount, setCurrentSelectedAccount] =
@@ -22,8 +22,7 @@ export default async function Login() {
   }, []);
 
   const handleShowAccountList = useCallback(() => {
-    console.log(12322);
-    // setShowAccountList(true);
+    setShowAccountList(true);
   }, []);
 
   return (

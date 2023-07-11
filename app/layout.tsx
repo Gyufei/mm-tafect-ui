@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 import { getCurrentUser } from "@/lib/auth";
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;

@@ -63,4 +63,9 @@ html {
     resize: none;
     padding: 10px;
   }
+
+  .Link {
+    @apply text-primary;
+    @apply cursor-pointer;
+  }
 }

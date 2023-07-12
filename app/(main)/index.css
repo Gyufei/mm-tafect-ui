@@ -1,0 +1,11 @@
+.header-col {
+  box-shadow: inset 0px -1px 0px 0px #d6d6d6;
+}
+
+.sider-col {
+  box-shadow: inset 1px 0px 0px 0px #d6d6d6;
+}
+
+.user-name-con {
+  box-shadow: inset 1px 0px 0px 0px #d6d6d6, inset 0px -1px 0px 0px #d6d6d6;
+}

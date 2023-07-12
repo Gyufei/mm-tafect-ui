@@ -118,8 +118,8 @@ export default function LoginForm(props: LoginFormProps) {
       return (
         <div className="mt-5 flex flex-col rounded border border-[#DEA69C] bg-[#F8DEDA] p-4 text-sm">
           <div className="mb-4">
-            We weren't able to sign in to your account . Check your password and
-            try again.
+            We weren&apos;t able to sign in to your account . Check your
+            password and try again.
           </div>
           <div>
             If you were invited to 1password by someone else , they can

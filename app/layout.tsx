@@ -21,20 +21,14 @@ export const metadata: Metadata = {
   themeColor: "#FFF",
 };
 
-import { getCurrentUser } from "@/lib/auth";
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const isLogin = getCurrentUser();
-
   return (
     <html lang="en" className={cx(chesna.variable, inter.variable)}>
-      <body
-        className="min-h-screen w-full"
-      >
+      <body className="min-h-screen w-full">
         {children}
         <Analytics />
       </body>

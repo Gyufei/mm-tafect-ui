@@ -1,5 +1,5 @@
-export function getCurrentUser() {
-  return {
-    name: "John Doe",
-  };
+export function checkIsLogin() {
+  const isLogin = true;
+
+  return isLogin;
 }

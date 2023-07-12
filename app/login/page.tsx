@@ -6,8 +6,16 @@ import { IAccount } from "@/lib/types";
 
 import LoginForm from "@/components/login/login-form";
 import AccountList from "@/components/login/account-list";
+import { checkIsLogin } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default function Login() {
+  const isLogin = checkIsLogin();
+
+  if (isLogin) {
+    redirect("/dashboard");
+  }
+
   const [showAccountList, setShowAccountList] = useState(false);
 
   const [currentSelectedAccount, setCurrentSelectedAccount] =

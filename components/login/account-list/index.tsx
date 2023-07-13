@@ -1,14 +1,15 @@
+import { useState } from "react";
 import { Trash2 } from "lucide-react";
 
 import "./index.css";
-import { IAccount } from "@/lib/types";
-import { useState } from "react";
+import { IUser } from "@/lib/userContext";
+import UserAvatar from "@/components/shared/UserAvatar";
 
 interface AcProps {
-  selectAccountCb: (ac: IAccount) => void;
+  selectAccountCb: (ac: IUser) => void;
 }
 export default function AccountList(props: AcProps) {
-  const [accounts, updateAccounts] = useState<Array<IAccount>>([
+  const [accounts, updateAccounts] = useState<Array<IUser>>([
     {
       name: "abc",
       email: "123@qq.com",
@@ -23,19 +24,23 @@ export default function AccountList(props: AcProps) {
     },
   ]);
 
-  const handleDelete = (ac: IAccount) => {
+  const handleDelete = (ac: IUser) => {
     const newAccounts = accounts.filter((item) => item.email !== ac.email);
     updateAccounts(newAccounts);
   };
 
-  const AccountCard = (ac: IAccount) => {
+  const AccountCard = (ac: IUser) => {
     return (
       <div
         className="mr-4  flex w-[420px] cursor-pointer justify-start rounded border border-border-color bg-white p-4 hover:bg-slate-50"
         onClick={() => props.selectAccountCb(ac)}
         key={ac.email}
       >
-        <div className="mr-4 h-10 w-10 rounded-lg border border-border-color bg-white"></div>
+        <UserAvatar
+          className="mr-4 h-10 w-10 rounded-lg"
+          src="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80"
+          userName={ac.name}
+        />
         <div className="flex flex-col items-start justify-between">
           <div className="text-base font-bold leading-4 text-title-color">
             {ac.name}

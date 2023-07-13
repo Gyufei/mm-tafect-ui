@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
+import * as Avatar from "@radix-ui/react-avatar";
 
 import "./index.css";
 import Popover from "@/components/shared/popover";
 import { useState } from "react";
+import UserAvatar from "@/components/shared/UserAvatar";
 
 export default function MainLayout({
   children,
@@ -13,6 +15,11 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const [openPopover, setOpenPopover] = useState(false);
+
+  const currentUser = {
+    name: "NickName",
+    email: "",
+  };
 
   return (
     <div className="flex items-stretch">
@@ -28,12 +35,10 @@ export default function MainLayout({
 
       <div className="sider-col flex h-screen w-[240px] flex-col bg-[#f4f5fa]">
         <div className="user-name-con flex h-[70px] items-center justify-start pl-6">
-          <Image
-            className="mr-3 rounded"
-            src="/authjs.webp"
-            alt="Icon"
-            width={32}
-            height={32}
+          <UserAvatar
+            className="mr-3 h-8 w-8 rounded"
+            src="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80"
+            userName={currentUser.name}
           />
           <Popover
             content={

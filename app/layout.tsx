@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { Suspense } from "react";
+import { SessionProvider } from "next-auth/react";
 
 import { Analytics } from "@vercel/analytics/react";
 import cx from "classnames";

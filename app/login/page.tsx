@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 
-import { IAccount } from "@/lib/types";
+import { IUser } from "@/lib/userContext";
 
 import LoginForm from "@/components/login/login-form";
 import AccountList from "@/components/login/account-list";
@@ -19,12 +19,12 @@ export default function Login() {
   const [showAccountList, setShowAccountList] = useState(false);
 
   const [currentSelectedAccount, setCurrentSelectedAccount] =
-    useState<IAccount>({
+    useState<IUser>({
       name: "",
       email: "",
     });
 
-  const handleSelectAccount = useCallback((account: IAccount) => {
+  const handleSelectAccount = useCallback((account: IUser) => {
     setCurrentSelectedAccount(account);
     setShowAccountList(false);
   }, []);

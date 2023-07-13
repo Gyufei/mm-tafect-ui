@@ -8,34 +8,20 @@ html {
 
 @layer components {
   .FormField {
-    display: grid;
-    margin-bottom: 20px;
+    @apply mb-5 grid;
   }
 
   .FormLabel {
-    font-size: 1rem;
-    font-weight: normal;
-    line-height: 35px;
-    @apply text-second-color;
+    @apply text-base font-normal leading-9 text-second-color;
   }
 
   .FormMessage {
-    font-size: 13px;
-    color: red;
-    opacity: 0.8;
+    @apply text-xs text-red-500 opacity-80;
   }
 
   .Input,
   .Textarea {
-    width: 100%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-
-    font-size: 1rem;
-    color: #333;
-    background-color: #fff;
+    @apply inline-flex w-full items-center justify-center rounded-md bg-white text-base;
     box-shadow: 0 0 0 1px #fff;
   }
 
@@ -49,23 +35,31 @@ html {
   }
   .Input::selection,
   .Textarea::selection {
-    background-color: #333;
-    color: white;
+    @apply bg-title-color text-white;
   }
 
   .Input {
-    padding: 10px 12px;
-    height: 40px;
-    line-height: 1;
+    @apply h-10 px-3 py-[10px] leading-4;
   }
 
   .Textarea {
-    resize: none;
-    padding: 10px;
+    @apply resize-none p-[10px];
   }
 
   .Link {
-    @apply text-primary;
-    @apply cursor-pointer;
+    @apply cursor-pointer text-primary;
+  }
+
+  .AvatarRoot {
+    @apply flex select-none items-center justify-center overflow-hidden rounded-full bg-white align-middle;
+  }
+
+  .AvatarImage {
+    @apply h-full w-full object-cover;
+    border-radius: inherit;
+  }
+
+  .AvatarFallback {
+    @apply flex h-full w-full items-center justify-center bg-white text-base font-medium leading-4 text-primary;
   }
 }

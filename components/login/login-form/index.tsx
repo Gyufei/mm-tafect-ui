@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import * as Form from "@radix-ui/react-form";
+import * as Avatar from "@radix-ui/react-avatar";
 import { ChevronLeft } from "lucide-react";
 
-import { IAccount } from "@/lib/types";
+import { IUser } from "@/lib/userContext";
 
 import "./index.css";
+import UserAvatar from "@/components/shared/UserAvatar";
+import { signIn } from "next-auth/react";
 
 interface LoginFormProps {
-  account: IAccount;
+  account: IUser;
   showAccountCb: () => void;
 }
 
@@ -20,6 +23,10 @@ export default function LoginForm(props: LoginFormProps) {
     email: null,
     password: null,
   });
+
+  const login = useCallback(() => {
+    signIn("credentials", formModel);
+  }, [formModel]);
 
   const SessionTip = () => {
     return showSessionTip ? (
@@ -47,7 +54,11 @@ export default function LoginForm(props: LoginFormProps) {
         <>
           <SessionTip />
           <div className="mb-5 flex justify-start">
-            <div className="mr-4 h-16 w-16 rounded-lg border border-border-color bg-white"></div>
+            <UserAvatar
+              className="mr-4 h-16 w-16 rounded-lg"
+              src="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80"
+              userName={account.name}
+            />
             <div className="flex flex-col items-start justify-around">
               <div className="text-lg font-bold text-title-color">
                 Sign in to {account.name}
@@ -104,7 +115,10 @@ export default function LoginForm(props: LoginFormProps) {
 
       <Form.Submit asChild>
         <div className="mt-5 flex items-center justify-between ">
-          <button className="flex h-10 w-36 items-center rounded-3xl bg-primary px-10 py-2.5 text-white hover:bg-primary/80">
+          <button
+            onClick={() => login()}
+            className="flex h-10 w-36 items-center rounded-3xl bg-primary px-10 py-2.5 text-white hover:bg-primary/80"
+          >
             sign in
           </button>
           <div className="Link text-sm">Having trouble signing in?</div>

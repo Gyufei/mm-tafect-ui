@@ -20,9 +20,11 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
         console.log("authorize", credentials, req);
         return {
-          name: "111",
-          email: "222",
+          name: "TestUser",
+          email: "1123123@qq.com",
+          avatar: "https://avatars.githubusercontent.com/u/1396951?v=4",
         };
+
         const res = await fetch("/your/endpoint", {
           method: "POST",
           body: JSON.stringify(credentials),

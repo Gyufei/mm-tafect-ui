@@ -3,14 +3,14 @@ import * as Form from "@radix-ui/react-form";
 import * as Avatar from "@radix-ui/react-avatar";
 import { ChevronLeft } from "lucide-react";
 
-import { IUser } from "@/lib/userContext";
+import { IUser } from "@/lib/user";
 
 import "./index.css";
 import UserAvatar from "@/components/shared/UserAvatar";
 import { signIn } from "next-auth/react";
 
 interface LoginFormProps {
-  account: IUser;
+  account: IUser | null;
   showAccountCb: () => void;
 }
 
@@ -56,7 +56,7 @@ export default function LoginForm(props: LoginFormProps) {
           <div className="mb-5 flex justify-start">
             <UserAvatar
               className="mr-4 h-16 w-16 rounded-lg"
-              src="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80"
+              src={account.avatar}
               userName={account.name}
             />
             <div className="flex flex-col items-start justify-around">

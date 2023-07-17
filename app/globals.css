@@ -62,4 +62,13 @@ html {
   .AvatarFallback {
     @apply flex h-full w-full items-center justify-center bg-white text-base font-medium leading-4 text-primary;
   }
+
+  .SideLink {
+    @apply mb-2 box-border px-4 py-[6px] text-sm font-medium text-second-color;
+  }
+
+  .SideLink.active,
+  .SideLink:hover {
+    @apply rounded border border-primary bg-white text-primary;
+  }
 }

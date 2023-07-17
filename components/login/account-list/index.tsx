@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Trash2 } from "lucide-react";
 
 import "./index.css";
-import { IUser } from "@/lib/userContext";
+import { IUser } from "@/lib/user";
 import UserAvatar from "@/components/shared/UserAvatar";
 
 interface AcProps {
@@ -13,14 +13,20 @@ export default function AccountList(props: AcProps) {
     {
       name: "abc",
       email: "123@qq.com",
+      avatar:
+        "https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80",
     },
     {
       name: "abc1",
       email: "123a@qq.com",
+      avatar:
+        "https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80",
     },
     {
       name: "abc2",
       email: "125a@qq.com",
+      avatar:
+        "https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80",
     },
   ]);
 
@@ -38,7 +44,7 @@ export default function AccountList(props: AcProps) {
       >
         <UserAvatar
           className="mr-4 h-10 w-10 rounded-lg"
-          src="https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80"
+          src={ac.avatar}
           userName={ac.name}
         />
         <div className="flex flex-col items-start justify-between">

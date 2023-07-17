@@ -1,28 +1,22 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { redirect } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-import { IUser } from "@/lib/userContext";
+import { IUser } from "@/lib/user";
 
 import LoginForm from "@/components/login/login-form";
 import AccountList from "@/components/login/account-list";
-import { checkIsLogin } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { AuthRedirect } from "@/lib/auth";
 
 export default function Login() {
-  const isLogin = checkIsLogin();
-
-  if (isLogin) {
-    redirect("/dashboard");
-  }
+  AuthRedirect();
 
   const [showAccountList, setShowAccountList] = useState(false);
 
   const [currentSelectedAccount, setCurrentSelectedAccount] =
-    useState<IUser>({
-      name: "",
-      email: "",
-    });
+    useState<IUser | null>(null);
 
   const handleSelectAccount = useCallback((account: IUser) => {
     setCurrentSelectedAccount(account);

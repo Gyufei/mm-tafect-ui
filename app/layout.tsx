@@ -1,11 +1,12 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
-import { SessionProvider } from "next-auth/react";
-
 import { Analytics } from "@vercel/analytics/react";
 import cx from "classnames";
 
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { chesna, inter } from "./fonts";
 import "./globals.css";
+import SessionContext from "@/components/SessionContext";
 
 export const metadata: Metadata = {
   title: "mm-tafect-ui",
@@ -29,7 +30,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={cx(chesna.variable, inter.variable)}>
       <body className="min-h-screen w-full">
-        {children}
+        <Suspense fallback="...">
+          <SessionContext>{children}</SessionContext>
+        </Suspense>
         <Analytics />
       </body>
     </html>

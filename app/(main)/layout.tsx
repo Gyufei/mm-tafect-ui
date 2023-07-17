@@ -47,7 +47,7 @@ export default function MainLayout({
     <div className="flex items-stretch">
       <div className="flex grow flex-col">
         <TopBar pathname={pathname} />
-        <div>{children}</div>
+        {children}
       </div>
 
       <div className="sider-col flex h-screen w-[240px] flex-col bg-[#f4f5fa]">
@@ -62,7 +62,7 @@ function TopBar({ pathname }: { pathname: string }) {
   const title = Links.find((link) => link.href === pathname)?.name;
 
   return (
-    <div className="header-col flex h-[70px] items-center justify-start bg-white">
+    <div className="header-col flex h-[70px] min-h-[70px] items-center justify-start bg-white">
       <div className="ml-3 h-12 w-12 rounded-full bg-[#d8d8d8]"></div>
       <div className="flex flex-1 items-center justify-center">{title}</div>
     </div>
@@ -118,7 +118,7 @@ function LinkGroup({ pathname }: { pathname: string }) {
       {Links.map((link) => (
         <Link
           key={link.name}
-          className={cx("SideLink", pathname === link.href ? "active" : "")}
+          className={cx("SideLink", pathname === link.href && "active")}
           href={link.href}
         >
           {link.name}

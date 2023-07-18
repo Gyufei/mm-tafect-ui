@@ -6,6 +6,10 @@ html {
   font-family: var(--font-chesna);
 }
 
+button {
+  all: unset;
+}
+
 @layer components {
   .FormField {
     @apply mb-5 grid;
@@ -70,5 +74,22 @@ html {
   .SideLink.active,
   .SideLink:hover {
     @apply rounded border border-primary bg-white text-primary;
+  }
+
+  .CheckboxRoot {
+    @apply flex cursor-pointer items-center justify-center rounded;
+    border: 1.5px solid #8c8c8c;
+  }
+
+  .CheckboxRoot[data-state="checked"] {
+    @apply border-primary bg-primary;
+  }
+
+  .CheckboxIndicator {
+    @apply text-white;
+  }
+
+  .Label {
+    @apply pl-2 text-lg font-medium text-title-color;
   }
 }

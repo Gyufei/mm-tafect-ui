@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { IUser } from "@/lib/user";
+import { IUser } from "@/lib/types/user";
 
 import LoginForm from "@/components/login/login-form";
 import AccountList from "@/components/login/account-list";

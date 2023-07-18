@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Trash2 } from "lucide-react";
 
 import "./index.css";
-import { IUser } from "@/lib/user";
+import { IUser } from "@/lib/types/user";
 import UserAvatar from "@/components/shared/UserAvatar";
 
 interface AcProps {

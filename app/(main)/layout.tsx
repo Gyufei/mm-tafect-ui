@@ -11,7 +11,7 @@ import { useState } from "react";
 import UserAvatar from "@/components/shared/UserAvatar";
 import { AuthRedirect } from "@/lib/auth";
 import { signOut, useSession } from "next-auth/react";
-import { IUser } from "@/lib/user";
+import { IUser } from "@/lib/types/user";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -98,9 +98,11 @@ function UserBox() {
       >
         <button
           onClick={() => setOpenPopover(!openPopover)}
-          className="w-34 flex items-center justify-between px-4 py-2 transition-all duration-75 active:bg-gray-100"
+          className="flex cursor-pointer items-center justify-between px-4 py-2 transition-all duration-75 active:bg-gray-100"
         >
-          <p className="font-medium text-title-color">{currentUser?.name}</p>
+          <p className="mr-1 font-medium text-title-color">
+            {currentUser?.name}
+          </p>
           <ChevronDown
             className={`h-4 w-4 text-gray-600 transition-all ${
               openPopover ? "rotate-180" : ""

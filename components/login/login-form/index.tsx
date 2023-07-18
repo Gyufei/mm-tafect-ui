@@ -3,7 +3,7 @@ import * as Form from "@radix-ui/react-form";
 import * as Avatar from "@radix-ui/react-avatar";
 import { ChevronLeft } from "lucide-react";
 
-import { IUser } from "@/lib/user";
+import { IUser } from "@/lib/types/user";
 
 import "./index.css";
 import UserAvatar from "@/components/shared/UserAvatar";

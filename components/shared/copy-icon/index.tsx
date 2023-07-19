@@ -7,11 +7,15 @@ export default function CopyIcon({ text }: { text: string }) {
     navigator.clipboard.writeText(text);
   };
 
+  const [open, setOpen] = useState(false);
+
   return (
-    <Toast title="Copied!" content="Copied!">
+    <Toast title="Copied!" open={open} setOpen={setOpen}>
       <Copy
         onClick={() => {
           handleCopy();
+          setOpen(true);
+          console.log("copied");
         }}
         className="ml-1 h-4 w-4 cursor-pointer text-[#8c8c8c] hover:text-primary"
       />

@@ -8,6 +8,7 @@ import "./index.css";
 import { IKeyStore } from "@/lib/types/keyStore";
 import CopyIcon from "@/components/shared/copy-icon";
 import { displayText } from "@/lib/utils";
+import { DetailItem } from "@/components/shared/DetailItem";
 
 export default function KeyStoreItem() {
   const [keyStoreItem, setKeyStoreItem] = useState<IKeyStore | null>({
@@ -67,27 +68,6 @@ export default function KeyStoreItem() {
   };
 
   const handleDeleteKs = () => {};
-
-  function BaseDetail() {
-    return (
-      <>
-        <div className="detail-item">
-          <div className="detail-item-title">Address</div>
-          <div className="detail-item-text">
-            {keyStoreItem?.address?.length}
-          </div>
-        </div>
-        <div className="detail-item">
-          <div className="detail-item-title">Gas Available</div>
-          <div className="detail-item-text">{keyStoreItem?.gasAvailable}</div>
-        </div>
-        <div className="detail-item">
-          <div className="detail-item-title">Tx</div>
-          <div className="detail-item-text">{keyStoreItem?.tx}</div>
-        </div>
-      </>
-    );
-  }
 
   function NetworkSelect() {
     const currentNetworkName = networks.find(
@@ -167,15 +147,19 @@ export default function KeyStoreItem() {
         }}
       >
         <div className="flex flex-col justify-stretch">
-          <BaseDetail />
-          <div className="detail-item">
-            <div className="detail-item-title">Default Network</div>
+          <DetailItem title="Address">
+            {keyStoreItem?.address?.length}
+          </DetailItem>
+          <DetailItem title="Gas Available">
+            {keyStoreItem?.gasAvailable}
+          </DetailItem>
+          <DetailItem title="Tx">{keyStoreItem?.tx}</DetailItem>
+          <DetailItem title="Default Network">
             <NetworkSelect />
-          </div>
-          <div className="detail-item">
-            <div className="detail-item-title">Works for</div>
+          </DetailItem>
+          <DetailItem title="Works for">
             <WorksForSelect />
-          </div>
+          </DetailItem>
         </div>
         <div className="flex w-full justify-end pr-2">
           <Trash2

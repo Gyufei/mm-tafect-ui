@@ -1,0 +1,25 @@
+.detail-item {
+  display: flex;
+  flex-direction: column;
+
+  box-sizing: border-box;
+  border-radius: 6px;
+  background: #f6f7f8;
+  border: 1px solid #bfbfbf;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.detail-item-title {
+  font-size: 14px;
+  font-weight: normal;
+  letter-spacing: 0em;
+  color: #707070;
+}
+
+.detail-item-text {
+  font-size: 18px;
+  font-weight: normal;
+  letter-spacing: 0em;
+  color: #333333;
+}

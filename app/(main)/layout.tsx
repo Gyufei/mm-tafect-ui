@@ -5,7 +5,6 @@ import { ChevronDown } from "lucide-react";
 import cx from "classnames";
 import * as Avatar from "@radix-ui/react-avatar";
 
-import "./index.css";
 import Popover from "@/components/shared/popover";
 import { useState } from "react";
 import UserAvatar from "@/components/shared/UserAvatar";
@@ -50,7 +49,12 @@ export default function MainLayout({
         {children}
       </div>
 
-      <div className="sider-col flex h-screen w-[240px] flex-col bg-[#f4f5fa]">
+      <div
+        className="flex h-screen w-[240px] flex-col bg-[#f4f5fa]"
+        style={{
+          boxShadow: "inset 1px 0px 0px 0px #d6d6d6",
+        }}
+      >
         <UserBox />
         <LinkGroup pathname={pathname} />
       </div>
@@ -59,10 +63,17 @@ export default function MainLayout({
 }
 
 function TopBar({ pathname }: { pathname: string }) {
-  const title = Links.find((link) => link.href === pathname)?.name;
+  const title = Links.find(
+    (link) => link.href === pathname || pathname.includes(link.href),
+  )?.name;
 
   return (
-    <div className="header-col flex h-[70px] min-h-[70px] items-center justify-start bg-white">
+    <div
+      className="flex h-[70px] min-h-[70px] items-center justify-start bg-white"
+      style={{
+        boxShadow: "inset 0px -1px 0px 0px #d6d6d6",
+      }}
+    >
       <div className="ml-3 h-12 w-12 rounded-full bg-[#d8d8d8]"></div>
       <div className="flex flex-1 items-center justify-center">{title}</div>
     </div>
@@ -76,7 +87,13 @@ function UserBox() {
   const [openPopover, setOpenPopover] = useState(false);
 
   return (
-    <div className="user-name-con flex h-[70px] items-center justify-start pl-6">
+    <div
+      className="flex h-[70px] items-center justify-start pl-6"
+      style={{
+        boxShadow:
+          "inset 1px 0px 0px 0px #d6d6d6, inset 0px -1px 0px 0px #d6d6d6",
+      }}
+    >
       <UserAvatar
         className="mr-3 h-8 w-8 rounded"
         src={currentUser?.avatar}
@@ -98,7 +115,7 @@ function UserBox() {
       >
         <button
           onClick={() => setOpenPopover(!openPopover)}
-          className="flex cursor-pointer items-center justify-between px-4 py-2 transition-all duration-75 active:bg-gray-100"
+          className="flex cursor-pointer items-center justify-between py-2 pr-4 transition-all duration-75 active:bg-gray-100"
         >
           <p className="mr-1 font-medium text-title-color">
             {currentUser?.name}
@@ -120,7 +137,11 @@ function LinkGroup({ pathname }: { pathname: string }) {
       {Links.map((link) => (
         <Link
           key={link.name}
-          className={cx("SideLink", pathname === link.href && "active")}
+          className={cx(
+            "SideLink",
+            (pathname === link.href || pathname.includes(link.href)) &&
+              "active",
+          )}
           href={link.href}
         >
           {link.name}

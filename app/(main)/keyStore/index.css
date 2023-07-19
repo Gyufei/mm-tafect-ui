@@ -1,7 +1,3 @@
-.key-store-side {
-  box-shadow: inset -1px 0px 0px 0px #d6d6d6;
-}
-
 .key-store-link.active {
   border: 1px solid #d7d9df;
   background-color: #e9eaee;

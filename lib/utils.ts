@@ -61,3 +61,15 @@ export const truncate = (str: string, length: number) => {
   if (!str || str.length <= length) return str;
   return `${str.slice(0, length)}...`;
 };
+
+export const displayText = (
+  text: string,
+  start: number = 8,
+  end: number = 6,
+) => {
+  if (text.length <= start + end) {
+    return text;
+  } else {
+    return text.slice(0, start) + "..." + text.slice(-end);
+  }
+};

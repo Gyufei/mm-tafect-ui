@@ -6,10 +6,6 @@ html {
   font-family: var(--font-chesna);
 }
 
-button {
-  all: unset;
-}
-
 @layer components {
   .FormField {
     @apply mb-5 grid;
@@ -33,10 +29,7 @@ button {
   .Textarea:hover {
     box-shadow: inset 0 0 0 1px rgba(5, 114, 236, 0.4);
   }
-  .Input:focus,
-  .Textarea:focus {
-    box-shadow: inset 0 0 0 2px rgba(5, 114, 236, 0.4);
-  }
+
   .Input::selection,
   .Textarea::selection {
     @apply bg-title-color text-white;

@@ -2,16 +2,18 @@
 import { useState } from "react";
 import Popover from "@/components/shared/popover";
 import * as Checkbox from "@radix-ui/react-checkbox";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Trash2 } from "lucide-react";
 
 import "./index.css";
 import { IKeyStore } from "@/lib/types/keyStore";
+import CopyIcon from "@/components/shared/copy-icon";
+import { displayText } from "@/lib/utils";
 
 export default function KeyStoreItem() {
   const [keyStoreItem, setKeyStoreItem] = useState<IKeyStore | null>({
     address: [
-      { address: "0x123123", gas: 0.333 },
-      { address: "0x231312", gas: 0.55 },
+      { address: "0x2170ed0880ac9a755fd29b2688956bd959f933f8", gas: 0.333 },
+      { address: "0x3170ed0880ac9a755fd29b2688956bd959f933f8", gas: 0.55 },
     ],
     gasAvailable: 0.01,
     tx: 123,
@@ -63,6 +65,8 @@ export default function KeyStoreItem() {
   const handleCheckWorksFor = (worksForOption: any) => {
     setCurrentWorksFor(worksForOption.value);
   };
+
+  const handleDeleteKs = () => {};
 
   function BaseDetail() {
     return (
@@ -154,9 +158,14 @@ export default function KeyStoreItem() {
     );
   }
 
-  return (
-    <div className="flex flex-1 items-stretch bg-[#fafafa]">
-      <div className="ks-detail flex w-[400px] flex-col justify-between px-3 pb-4 pt-3">
+  function DetailCol() {
+    return (
+      <div
+        className="ks-detail flex w-[400px] flex-col justify-between px-3 pb-4 pt-3"
+        style={{
+          boxShadow: "inset -1px 0px 0px 0px #d6d6d6",
+        }}
+      >
         <div className="flex flex-col justify-stretch">
           <BaseDetail />
           <div className="detail-item">
@@ -168,7 +177,64 @@ export default function KeyStoreItem() {
             <WorksForSelect />
           </div>
         </div>
+        <div className="flex w-full justify-end pr-2">
+          <Trash2
+            onClick={() => handleDeleteKs()}
+            className="h-5 w-5 cursor-pointer hover:text-[#ec5b55]"
+          />
+        </div>
       </div>
+    );
+  }
+
+  function AddressCol() {
+    return (
+      <div className="flex flex-1 flex-col justify-stretch">
+        <div
+          style={{
+            boxShadow: "inset 0px -1px 0px 0px #D6D6D6",
+          }}
+          className="bg-custom-bg-white px-3 py-2 "
+        >
+          <input
+            className="Input rounded-3xl bg-custom-bg-white"
+            type="text"
+            placeholder="Search"
+          />
+        </div>
+        <table>
+          <thead className="h-10 bg-white text-second-color">
+            <tr className="border-b border-[#d6d6d6]">
+              <th className="font-normal">#</th>
+              <th className="text-left  font-normal">Address</th>
+              <th className="text-left  font-normal">Gas</th>
+            </tr>
+          </thead>
+          <tbody>
+            {keyStoreItem?.address?.map((address, index) => (
+              <tr key={index} className="h-[56px] border-b border-[#d6d6d6]">
+                <td className="min-w-[40px] max-w-[40px] text-center">
+                  {index}
+                </td>
+                <td>
+                  <div className="flex items-center">
+                    {displayText(address.address)}
+                    <CopyIcon text={address.address} />
+                  </div>
+                </td>
+                <td>{address.gas}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-1 items-stretch bg-[#fafafa]">
+      <DetailCol />
+      <AddressCol />
     </div>
   );
 }

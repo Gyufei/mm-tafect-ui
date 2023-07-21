@@ -2,13 +2,14 @@
 import { useState } from "react";
 import Popover from "@/components/shared/popover";
 import * as Checkbox from "@radix-ui/react-checkbox";
-import { Check, ChevronDown, Trash2 } from "lucide-react";
+import { Check, Trash2 } from "lucide-react";
 
 import "./index.css";
 import { IKeyStore } from "@/lib/types/keyStore";
 import CopyIcon from "@/components/shared/copy-icon";
 import { displayText } from "@/lib/utils";
-import { DetailItem } from "@/components/shared/DetailItem";
+import { DetailItem } from "@/components/common/DetailItem";
+import NetworkSelect from "@/components/common/NetworkSelect/network-select";
 
 export default function KeyStoreItem() {
   const [keyStoreItem, setKeyStoreItem] = useState<IKeyStore | null>({
@@ -22,21 +23,6 @@ export default function KeyStoreItem() {
     worksFor: 1,
   });
 
-  const networks = [
-    {
-      id: 1,
-      name: "Ethereum",
-    },
-    {
-      id: 56,
-      name: "Binance",
-    },
-    {
-      id: 11155111,
-      name: "Sepolia",
-    },
-  ];
-
   const worksForOptions = [
     {
       value: 1,
@@ -48,10 +34,8 @@ export default function KeyStoreItem() {
     },
   ];
 
-  const [openPopover, setOpenPopover] = useState(false);
-
   const [currentNetwork, setCurrentNetwork] = useState(
-    keyStoreItem?.defaultNetwork,
+    keyStoreItem?.defaultNetwork || null,
   );
 
   const [currentWorksFor, setCurrentWorksFor] = useState(
@@ -60,7 +44,6 @@ export default function KeyStoreItem() {
 
   const handleSelectNetwork = (networkOption: any) => {
     setCurrentNetwork(networkOption.id);
-    setOpenPopover(false);
   };
 
   const handleCheckWorksFor = (worksForOption: any) => {
@@ -68,45 +51,6 @@ export default function KeyStoreItem() {
   };
 
   const handleDeleteKs = () => {};
-
-  function NetworkSelect() {
-    const currentNetworkName = networks.find(
-      (network) => network.id === currentNetwork,
-    )?.name;
-    return (
-      <Popover
-        content={
-          <div className="w-full rounded-md bg-white p-2 sm:w-40">
-            {networks.map((network) => (
-              <button
-                key={network.id}
-                onClick={() => handleSelectNetwork(network)}
-                className="flex w-full items-center justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100 active:bg-gray-200"
-              >
-                {network.name}
-              </button>
-            ))}
-          </div>
-        }
-        openPopover={openPopover}
-        setOpenPopover={setOpenPopover}
-      >
-        <button
-          onClick={() => setOpenPopover(!openPopover)}
-          className="flex w-[160px] cursor-pointer items-center transition-all duration-75 active:bg-gray-100"
-        >
-          <p className="mr-1 font-medium text-title-color">
-            {currentNetworkName}
-          </p>
-          <ChevronDown
-            className={`h-4 w-4 text-gray-600 transition-all ${
-              openPopover ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-      </Popover>
-    );
-  }
 
   function WorksForSelect() {
     return (
@@ -155,7 +99,10 @@ export default function KeyStoreItem() {
           </DetailItem>
           <DetailItem title="Tx">{keyStoreItem?.tx}</DetailItem>
           <DetailItem title="Default Network">
-            <NetworkSelect />
+            <NetworkSelect
+              value={currentNetwork}
+              onSelect={(e) => handleSelectNetwork(e)}
+            />
           </DetailItem>
           <DetailItem title="Works for">
             <WorksForSelect />

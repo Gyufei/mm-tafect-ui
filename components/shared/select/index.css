@@ -1,0 +1,24 @@
+.SelectTrigger {
+}
+.SelectTrigger:hover {
+}
+.SelectTrigger:focus {
+}
+.SelectTrigger[data-placeholder] {
+}
+.SelectIcon {
+}
+.SelectContent {
+}
+.SelectViewport {
+}
+.SelectItem {
+}
+.SelectItem[data-disabled] {
+}
+.SelectItem[data-highlighted] {
+}
+.SelectItemIndicator {
+}
+.SelectScrollButton {
+}

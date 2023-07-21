@@ -85,4 +85,8 @@ html {
   .Label {
     @apply pl-2 text-lg font-medium text-title-color;
   }
+
+  .Tag {
+    @apply rounded-md border px-1 text-sm;
+  }
 }

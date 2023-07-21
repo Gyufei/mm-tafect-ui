@@ -8,6 +8,7 @@ import { IUser } from "@/lib/types/user";
 import "./index.css";
 import UserAvatar from "@/components/shared/UserAvatar";
 import { signIn } from "next-auth/react";
+import { Input } from "@chakra-ui/react";
 
 interface LoginFormProps {
   account: IUser | null;
@@ -96,7 +97,7 @@ export default function LoginForm(props: LoginFormProps) {
             </Form.Message>
           </div>
           <Form.Control asChild>
-            <input className="Input" type="email" required />
+            <Input className="rounded" type="email" required />
           </Form.Control>
         </Form.Field>
       ) : null}
@@ -109,7 +110,7 @@ export default function LoginForm(props: LoginFormProps) {
           </Form.Message>
         </div>
         <Form.Control asChild>
-          <input className="Input" type="password" required />
+          <Input className="rounded" type="password" required />
         </Form.Control>
       </Form.Field>
 

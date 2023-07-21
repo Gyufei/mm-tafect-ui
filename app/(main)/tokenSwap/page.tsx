@@ -7,6 +7,7 @@ import { Check, ChevronDown, Key } from "lucide-react";
 import Popover from "@/components/shared/popover";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import Select, { SelectItem } from "@/components/shared/select";
+import { Input } from "@chakra-ui/react";
 
 export default function TokenSwap() {
   const [currentNetwork, setCurrentNetwork] = useState(null);
@@ -126,20 +127,22 @@ export default function TokenSwap() {
   function TokenByAccount() {
     return (
       <div className="flex flex-col justify-stretch">
-        <div className="text-sm text-second-color ">Token</div>
-        <div>
-          <Select placeholder="">
-            {tokens.map((token) => (
-              <SelectItem key={token.name} value={token.name}>
-                {token.name}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
-        <div>
-          <input type="text" />
-          -
-          <input type="text" />
+        <div className="flex flex-col px-4">
+          <div className="text-sm text-second-color ">Token</div>
+          <div className="my-1">
+            <Select placeholder="Select">
+              {tokens.map((token) => (
+                <SelectItem key={token.name} value={token.name}>
+                  {token.name}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+          <div className="flex items-center">
+            <Input className="rounded" placeholder="Min" type="text" />
+            <div className="mx-2">-</div>
+            <Input className="rounded" placeholder="Max" type="text" />
+          </div>
         </div>
         <div>
           <button>Filter Account</button>
@@ -162,7 +165,7 @@ export default function TokenSwap() {
 
   function FirstCol() {
     return (
-      <div className="flex-1 border-r border-r-[#dadada]">
+      <div className="h-full flex-1 border-r border-r-[#dadada]">
         <div className="flex flex-col p-4">
           <DetailItem title="Network">
             <NetworkSelect

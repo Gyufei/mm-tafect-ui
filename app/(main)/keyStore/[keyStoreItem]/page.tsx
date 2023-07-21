@@ -10,6 +10,7 @@ import CopyIcon from "@/components/shared/copy-icon";
 import { displayText } from "@/lib/utils";
 import { DetailItem } from "@/components/common/DetailItem";
 import NetworkSelect from "@/components/common/NetworkSelect/network-select";
+import { Input } from "@chakra-ui/react";
 
 export default function KeyStoreItem() {
   const [keyStoreItem, setKeyStoreItem] = useState<IKeyStore | null>({
@@ -127,8 +128,8 @@ export default function KeyStoreItem() {
           }}
           className="bg-custom-bg-white px-3 py-2 "
         >
-          <input
-            className="Input rounded-3xl bg-custom-bg-white"
+          <Input
+            className="rounded-3xl bg-custom-bg-white"
             type="text"
             placeholder="Search"
           />

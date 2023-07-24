@@ -64,7 +64,7 @@ export default function LoginForm(props: LoginFormProps) {
               <div className="text-lg font-bold text-title-color">
                 Sign in to {account.name}
               </div>
-              <div className="text-sm text-second-color">{account.email}</div>
+              <div className="LabelText">{account.email}</div>
             </div>
           </div>
           <FormToLogin />

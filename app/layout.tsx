@@ -7,7 +7,6 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { chesna, inter } from "./fonts";
 import "./globals.css";
 import SessionContext from "@/lib/providers/SessionContext";
-import ChakraContext from "@/lib/providers/ChakraContext";
 
 export const metadata: Metadata = {
   title: "mm-tafect-ui",
@@ -30,11 +29,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={cx(chesna.variable, inter.variable)}>
-      <body className="min-h-screen w-full">
+      <body className="h-screen w-full overflow-y-hidden">
         <Suspense fallback="...">
-          <SessionContext>
-            <ChakraContext>{children}</ChakraContext>
-          </SessionContext>
+          <SessionContext>{children}</SessionContext>
         </Suspense>
         <Analytics />
       </body>

@@ -43,7 +43,7 @@ export default function Select({
 }) {
   return (
     <SelectPrimitive.Root>
-      <SelectPrimitive.Trigger className="SelectTrigger flex w-full items-center justify-between rounded-md border border-border-color bg-white px-3 py-[9px]">
+      <SelectPrimitive.Trigger className="SelectTrigger flex w-full items-center justify-between rounded-md border border-border-color bg-white px-3 py-[7px]">
         <SelectPrimitive.Value placeholder={placeholder} />
         <SelectPrimitive.Icon className="text-[#7d8998]">
           <ChevronDown />

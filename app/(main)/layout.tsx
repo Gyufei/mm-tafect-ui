@@ -43,14 +43,14 @@ export default function MainLayout({
   const pathname = usePathname();
 
   return (
-    <div className="flex items-stretch">
-      <div className="flex grow flex-col">
+    <div className="flex h-full items-stretch">
+      <div className="flex h-full grow flex-col">
         <TopBar pathname={pathname} />
         {children}
       </div>
 
       <div
-        className="flex h-screen w-[240px] flex-col bg-[#f4f5fa]"
+        className="flex h-full w-[240px] flex-col bg-[#f4f5fa]"
         style={{
           boxShadow: "inset 1px 0px 0px 0px #d6d6d6",
         }}

@@ -8,7 +8,7 @@ import "./index.css";
 import { IKeyStore } from "@/lib/types/keyStore";
 import CopyIcon from "@/components/shared/copy-icon";
 import { displayText } from "@/lib/utils";
-import { DetailItem } from "@/components/common/DetailItem";
+import DetailItem from "@/components/common/DetailItem";
 import NetworkSelect from "@/components/common/NetworkSelect/network-select";
 import { Input } from "@chakra-ui/react";
 
@@ -136,15 +136,15 @@ export default function KeyStoreItem() {
         </div>
         <table>
           <thead className="h-10 bg-white text-second-color">
-            <tr className="border-b border-[#d6d6d6]">
+            <tr className="border-b border-shadow-color">
               <th className="font-normal">#</th>
-              <th className="text-left  font-normal">Address</th>
-              <th className="text-left  font-normal">Gas</th>
+              <th className="text-left font-normal">Address</th>
+              <th className="text-left font-normal">Gas</th>
             </tr>
           </thead>
           <tbody>
             {keyStoreItem?.address?.map((address, index) => (
-              <tr key={index} className="h-[56px] border-b border-[#d6d6d6]">
+              <tr key={index} className="h-[56px] border-b border-shadow-color">
                 <td className="min-w-[40px] max-w-[40px] text-center">
                   {index}
                 </td>

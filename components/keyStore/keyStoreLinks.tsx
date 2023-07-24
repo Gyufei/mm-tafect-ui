@@ -18,7 +18,7 @@ export default function KeyStoreLinks({ keyStores }: { keyStores: any[] }) {
         <Link key={ks.id} href={`/keyStore/${ks.id}`}>
           <div
             className={cx(
-              "mb-3 flex w-full cursor-pointer justify-between rounded-s px-3 py-[10px] text-second-color",
+              "mb-3 flex w-full cursor-pointer justify-between rounded-s border border-transparent px-3 py-[10px] text-second-color",
               currentId === String(ks.id) && "ks-link-active",
             )}
           >

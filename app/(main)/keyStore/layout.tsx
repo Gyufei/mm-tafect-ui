@@ -35,8 +35,8 @@ export default async function DashboardLayout({
       >
         <KeyStoreLinks keyStores={keyStores}></KeyStoreLinks>
         <div className="mb-3 w-full pr-3">
-          <button className="flex w-full items-center justify-center rounded border border-primary bg-white py-2 text-base text-primary">
-            <PlusCircle className="mb-[3px] mr-2 h-4 w-4" />
+          <button className="flex w-full items-center justify-center rounded border border-primary bg-white py-2 text-base text-primary hover:bg-custom-bg-white">
+            <PlusCircle className="mr-2 h-4 w-4" />
             Load KeyStore
           </button>
         </div>

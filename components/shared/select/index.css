@@ -1,6 +1,3 @@
-.SelectTrigger:hover {
-  background-color: var(--mauve-3);
-}
 .SelectTrigger[data-placeholder] {
   color: #707070;
 }

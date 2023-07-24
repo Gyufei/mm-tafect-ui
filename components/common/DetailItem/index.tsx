@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import "./index.css";
 
-export function DetailItem({
+export default function DetailItem({
   children,
   title,
 }: {

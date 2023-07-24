@@ -1,5 +1,6 @@
 .ks-link-active {
-  border: 1px solid #d7d9df;
+  border-color: #d7d9df;
+  border-style: solid;
   background-color: #e9eaee;
   color: #000;
 }

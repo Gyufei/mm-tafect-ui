@@ -8,7 +8,7 @@ import { IUser } from "@/lib/types/user";
 import "./index.css";
 import UserAvatar from "@/components/shared/UserAvatar";
 import { signIn } from "next-auth/react";
-import { Input } from "@chakra-ui/react";
+import { Input } from "@/components/ui/input";
 
 interface LoginFormProps {
   account: IUser | null;

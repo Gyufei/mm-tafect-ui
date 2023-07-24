@@ -10,7 +10,7 @@ import CopyIcon from "@/components/shared/copy-icon";
 import { displayText } from "@/lib/utils";
 import DetailItem from "@/components/common/DetailItem";
 import NetworkSelect from "@/components/common/NetworkSelect/network-select";
-import { Input } from "@chakra-ui/react";
+import { Input } from "@/components/ui/input";
 
 export default function KeyStoreItem() {
   const [keyStoreItem, setKeyStoreItem] = useState<IKeyStore | null>({

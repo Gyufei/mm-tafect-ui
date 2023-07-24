@@ -14,8 +14,15 @@ import {
 import Popover from "@/components/shared/popover";
 import DetailItem from "@/components/common/DetailItem";
 import NetworkSelect from "@/components/common/NetworkSelect/network-select";
-import Select, { SelectItem } from "@/components/shared/select";
-import { Button, Input, NumberInput, NumberInputField } from "@chakra-ui/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { displayText } from "@/lib/utils";
 
 import UnlockIcon from "@/components/icons/unlock";
@@ -226,12 +233,17 @@ export default function TokenSwap() {
         <div className="flex flex-col px-4">
           <div className="LabelText mb-1">Token</div>
           <div className="mb-3">
-            <Select placeholder="Select">
-              {tokens.map((token) => (
-                <SelectItem key={token.name} value={token.name}>
-                  {token.name}
-                </SelectItem>
-              ))}
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent>
+                {tokens.map((token) => (
+                  <SelectItem key={token.name} value={token.name}>
+                    {token.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
           <div className="flex items-center">
@@ -323,20 +335,20 @@ export default function TokenSwap() {
     return (
       <div className="flex flex-col">
         <div className="LabelText mb-1">{name}</div>
-        <Select placeholder="Select">
-          {tokens.map((token) => (
-            <SelectItem key={token.name} value={token.name}>
-              {token.name}
-            </SelectItem>
-          ))}
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Theme" />
+          </SelectTrigger>
+          <SelectContent>
+            {tokens.map((token) => (
+              <SelectItem key={token.name} value={token.name}>
+                {token.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
         <div className="ml-2 h-3 border-l border-border-color" />
-        <NumberInput>
-          <NumberInputField
-            className="rounded-md border-border-color"
-            placeholder="0"
-          />
-        </NumberInput>
+        <Input className="rounded-md border-border-color" placeholder="0" />
       </div>
     );
   }
@@ -379,22 +391,15 @@ export default function TokenSwap() {
         <div className="flex justify-between gap-x-3">
           <div className="flex max-w-[150px] flex-col">
             <div className="LabelText mb-1">Timeout(s)</div>
-            <NumberInput>
-              <NumberInputField
-                className="rounded-md border-border-color"
-                placeholder="0"
-              />
-            </NumberInput>
+            <Input className="rounded-md border-border-color" placeholder="0" />
           </div>
           <div className="flex flex-1 flex-col">
             <div className="LabelText mb-1">Slippage</div>
             <div className="relative">
-              <NumberInput>
-                <NumberInputField
-                  className="rounded-md border-border-color"
-                  placeholder="0"
-                />
-              </NumberInput>
+              <Input
+                className="rounded-md border-border-color"
+                placeholder="0"
+              />
               <div className="absolute right-2 top-[7px] select-none text-title-color">
                 %
               </div>
@@ -405,21 +410,11 @@ export default function TokenSwap() {
         <div className="flex items-end justify-between gap-x-3">
           <div>
             <div className="LabelText mb-1">Nonce</div>
-            <NumberInput>
-              <NumberInputField
-                className="rounded-md border-border-color"
-                placeholder="0"
-              />
-            </NumberInput>
+            <Input className="rounded-md border-border-color" placeholder="0" />
           </div>
           <div>
             <div className="LabelText mb-1">Gas(gwei)</div>
-            <NumberInput>
-              <NumberInputField
-                className="rounded-md border-border-color"
-                placeholder="0"
-              />
-            </NumberInput>
+            <Input className="rounded-md border-border-color" placeholder="0" />
           </div>
           <button className="flex h-10 cursor-pointer items-center justify-center rounded-md border px-[11px] hover:bg-custom-bg-white">
             {Math.random() > 0.5 ? (
@@ -457,12 +452,17 @@ export default function TokenSwap() {
         <div className="flex flex-col">
           <div className="p-3">
             <div className="LabelText mb-1">OP</div>
-            <Select placeholder="Select">
-              {tokens.map((token) => (
-                <SelectItem key={token.name} value={token.name}>
-                  {token.name}
-                </SelectItem>
-              ))}
+            <Select>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent>
+                {tokens.map((token) => (
+                  <SelectItem key={token.name} value={token.name}>
+                    {token.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
 

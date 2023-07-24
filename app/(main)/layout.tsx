@@ -106,7 +106,7 @@ function UserBox() {
         onOpenChange={(isOpen) => setOpenPopover(isOpen)}
       >
         <PopoverTrigger>
-          <button
+          <div
             onClick={() => setOpenPopover(!openPopover)}
             className="flex cursor-pointer items-center justify-between py-2 pr-4 transition-all duration-75 active:bg-gray-100"
           >
@@ -118,7 +118,7 @@ function UserBox() {
                 openPopover ? "rotate-180" : ""
               }`}
             />
-          </button>
+          </div>
         </PopoverTrigger>
         <PopoverContent className="w-[160px] p-1" align="start">
           <div className="rounded-md bg-white">

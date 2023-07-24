@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import {
   Popover,
@@ -50,7 +52,7 @@ export default function NetworkSelect({
       onOpenChange={(isOpen) => setOpenPopover(isOpen)}
     >
       <PopoverTrigger>
-        <button
+        <div
           onClick={() => setOpenPopover(!openPopover)}
           className="flex cursor-pointer items-center transition-all duration-75 active:bg-gray-100"
         >
@@ -64,7 +66,7 @@ export default function NetworkSelect({
               openPopover ? "rotate-180" : ""
             }`}
           />
-        </button>
+        </div>
       </PopoverTrigger>
       <PopoverContent className="w-36 p-1" align="start">
         <div className="rounded-md bg-white">

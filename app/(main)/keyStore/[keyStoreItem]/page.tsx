@@ -67,7 +67,7 @@ export default function KeyStoreItem() {
                 id={option.label}
               />
               <label
-                className="LabelText cursor-pointer"
+                className="LabelText ml-2 cursor-pointer"
                 htmlFor={option.label}
               >
                 {option.label}

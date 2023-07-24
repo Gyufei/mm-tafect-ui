@@ -3,7 +3,7 @@ import { Trash2 } from "lucide-react";
 
 import "./index.css";
 import { IUser } from "@/lib/types/user";
-import UserAvatar from "@/components/shared/UserAvatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface AcProps {
   selectAccountCb: (ac: IUser) => void;
@@ -42,11 +42,10 @@ export default function AccountList(props: AcProps) {
         onClick={() => props.selectAccountCb(ac)}
         key={ac.email}
       >
-        <UserAvatar
-          className="mr-4 h-10 w-10 rounded-lg"
-          src={ac.avatar}
-          userName={ac.name}
-        />
+        <Avatar className="mr-4 h-10 w-10 rounded-lg">
+          <AvatarImage src={ac.avatar} />
+          <AvatarFallback>{ac?.name?.[0] || ""}</AvatarFallback>
+        </Avatar>
         <div className="flex flex-col items-start justify-between">
           <div className="text-base font-bold leading-4 text-title-color">
             {ac.name}

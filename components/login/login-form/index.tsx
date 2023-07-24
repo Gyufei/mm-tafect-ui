@@ -1,13 +1,12 @@
 import { useCallback, useState } from "react";
 import * as Form from "@radix-ui/react-form";
-import * as Avatar from "@radix-ui/react-avatar";
 import { ChevronLeft } from "lucide-react";
-
-import { IUser } from "@/lib/types/user";
+import { signIn } from "next-auth/react";
 
 import "./index.css";
-import UserAvatar from "@/components/shared/UserAvatar";
-import { signIn } from "next-auth/react";
+import { IUser } from "@/lib/types/user";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 
 interface LoginFormProps {
@@ -55,11 +54,10 @@ export default function LoginForm(props: LoginFormProps) {
         <>
           <SessionTip />
           <div className="mb-5 flex justify-start">
-            <UserAvatar
-              className="mr-4 h-16 w-16 rounded-lg"
-              src={account.avatar}
-              userName={account.name}
-            />
+            <Avatar className="mr-4 h-16 w-16 rounded-lg">
+              <AvatarImage src={account.avatar} />
+              <AvatarFallback>{account?.name?.[0] || ""}</AvatarFallback>
+            </Avatar>
             <div className="flex flex-col items-start justify-around">
               <div className="text-lg font-bold text-title-color">
                 Sign in to {account.name}
@@ -118,7 +116,7 @@ export default function LoginForm(props: LoginFormProps) {
         <div className="mt-5 flex items-center justify-between ">
           <button
             onClick={() => login()}
-            className="flex h-10 w-36 items-center rounded-3xl bg-primary px-10 py-2.5 text-white hover:bg-primary/80"
+            className="flex h-10 w-36 items-center rounded-3xl bg-primary px-10 py-2.5 text-white"
           >
             sign in
           </button>

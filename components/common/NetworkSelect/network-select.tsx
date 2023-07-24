@@ -52,7 +52,7 @@ export default function NetworkSelect({
       <PopoverTrigger>
         <button
           onClick={() => setOpenPopover(!openPopover)}
-          className="flex w-[160px] cursor-pointer items-center transition-all duration-75 active:bg-gray-100"
+          className="flex cursor-pointer items-center transition-all duration-75 active:bg-gray-100"
         >
           <p className="mr-1 font-medium text-title-color">
             {currentNetworkName || (
@@ -66,7 +66,7 @@ export default function NetworkSelect({
           />
         </button>
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent className="w-36 p-1" align="start">
         <div className="rounded-md bg-white">
           {networks.map((network) => (
             <button

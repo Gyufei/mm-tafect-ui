@@ -22,12 +22,13 @@ specifiers:
   '@vercel/og': ^0.0.26
   autoprefixer: ^10.4.13
   class-variance-authority: ^0.7.0
-  classnames: ^2.3.2
   clsx: ^2.0.0
   concurrently: ^7.6.0
+  date-fns: ^2.30.0
   eslint: 8.31.0
   eslint-config-next: 13.1.1
   focus-trap-react: ^10.0.2
+  lodash: ^4.17.21
   lucide-react: 0.259.0
   ms: ^2.1.3
   next: 13.4.2
@@ -37,6 +38,8 @@ specifiers:
   prettier-plugin-tailwindcss: ^0.2.1
   prisma: ^4.13.0
   react: 18.2.0
+  react-datetime-range-super-picker: ^1.14.1
+  react-day-picker: ^8.8.0
   react-dom: 18.2.0
   react-markdown: ^8.0.4
   react-wrap-balancer: ^0.3.0
@@ -63,16 +66,19 @@ dependencies:
   '@vercel/analytics': 0.1.11_react@18.2.0
   '@vercel/og': 0.0.26
   class-variance-authority: 0.7.0
-  classnames: 2.3.2
   clsx: 2.0.0
+  date-fns: 2.30.0
   eslint: 8.31.0
   eslint-config-next: 13.1.1_iukboom6ndih5an6iafl45j2fe
   focus-trap-react: 10.2.1_biqbaboplfbrettd7655fr4n2y
+  lodash: 4.17.21
   lucide-react: 0.259.0_react@18.2.0
   ms: 2.1.3
   next: 13.4.2_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.22.1_cmp7sjki5xcmfyvhcokzzink7a
   react: 18.2.0
+  react-datetime-range-super-picker: 1.14.1_4ve7atc6y5ykpk4tcq2htszhwq
+  react-day-picker: 8.8.0_kzhlcyde2l6xjiirkbg7jzhosa
   react-dom: 18.2.0_react@18.2.0
   react-markdown: 8.0.7_kzbn2opkn2327fwg5yzwzya5o4
   react-wrap-balancer: 0.3.0_react@18.2.0
@@ -1482,10 +1488,6 @@ packages:
       clsx: 2.0.0
     dev: false
 
-  /classnames/2.3.2:
-    resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
-    dev: false
-
   /client-only/0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
     dev: false
@@ -1593,7 +1595,6 @@ packages:
     engines: {node: '>=0.11'}
     dependencies:
       '@babel/runtime': 7.22.6
-    dev: true
 
   /debug/3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}
@@ -2746,7 +2747,6 @@ packages:
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-    dev: true
 
   /loose-envify/1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
@@ -3531,6 +3531,29 @@ packages:
 
   /queue-microtask/1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+
+  /react-datetime-range-super-picker/1.14.1_4ve7atc6y5ykpk4tcq2htszhwq:
+    resolution: {integrity: sha512-6AZ6q/Rp6JPbZEjVF3820JCroI4152AAz0zZ/ClRxZkkqfldqLfXnD1KDDFO4TnofFZdhmIKqvJAXl6vyi22Uw==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      date-fns: ^2.14.0
+      lodash: ^4.17.19
+      react: ^16.0.0
+    dependencies:
+      date-fns: 2.30.0
+      lodash: 4.17.21
+      react: 18.2.0
+    dev: false
+
+  /react-day-picker/8.8.0_kzhlcyde2l6xjiirkbg7jzhosa:
+    resolution: {integrity: sha512-QIC3uOuyGGbtypbd5QEggsCSqVaPNu8kzUWquZ7JjW9fuWB9yv7WyixKmnaFelTLXFdq7h7zU6n/aBleBqe/dA==}
+    peerDependencies:
+      date-fns: ^2.28.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      date-fns: 2.30.0
+      react: 18.2.0
+    dev: false
 
   /react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}

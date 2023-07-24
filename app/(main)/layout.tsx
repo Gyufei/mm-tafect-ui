@@ -3,15 +3,14 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
-import cx from "classnames";
-import * as Avatar from "@radix-ui/react-avatar";
+import { cn } from "@/lib/utils";
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import UserAvatar from "@/components/shared/UserAvatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AuthRedirect } from "@/lib/auth";
 import { signOut, useSession } from "next-auth/react";
 import { IUser } from "@/lib/types/user";
@@ -98,11 +97,10 @@ function UserBox() {
           "inset 1px 0px 0px 0px #d6d6d6, inset 0px -1px 0px 0px #d6d6d6",
       }}
     >
-      <UserAvatar
-        className="mr-3 h-8 w-8 rounded"
-        src={currentUser?.avatar}
-        userName={currentUser?.name || ""}
-      />
+      <Avatar className="mr-3 h-8 w-8 rounded">
+        <AvatarImage src={currentUser?.avatar} />
+        <AvatarFallback>{currentUser?.name?.[0] || ""}</AvatarFallback>
+      </Avatar>
       <Popover
         open={openPopover}
         onOpenChange={(isOpen) => setOpenPopover(isOpen)}
@@ -122,8 +120,8 @@ function UserBox() {
             />
           </button>
         </PopoverTrigger>
-        <PopoverContent>
-          <div className="w-full rounded-md bg-white p-2 sm:w-40">
+        <PopoverContent className="w-[160px] p-1" align="start">
+          <div className="rounded-md bg-white">
             <button
               onClick={() => signOut()}
               className="flex w-full items-center justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100 active:bg-gray-200"
@@ -143,7 +141,7 @@ function LinkGroup({ pathname }: { pathname: string }) {
       {Links.map((link) => (
         <Link
           key={link.name}
-          className={cx(
+          className={cn(
             "SideLink",
             (pathname === link.href || pathname.includes(link.href)) &&
               "active",

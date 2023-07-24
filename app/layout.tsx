@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
-import cx from "classnames";
 
+import { cn } from "@/lib/utils";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { chesna, inter } from "./fonts";
 import "./globals.css";
@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cx(chesna.variable, inter.variable)}>
+    <html lang="en" className={cn(chesna.variable, inter.variable)}>
       <body className="h-screen w-full overflow-y-hidden">
         <Suspense fallback="...">
           <SessionContext>{children}</SessionContext>

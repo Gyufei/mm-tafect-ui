@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
-import cx from "classnames";
-import * as Checkbox from "@radix-ui/react-checkbox";
-import * as Collapsible from "@radix-ui/react-collapsible";
+import { format } from "date-fns";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   ArrowBigRight,
   ChevronDownCircle,
@@ -11,11 +10,21 @@ import {
   Unlock,
 } from "lucide-react";
 
+import { DateTimePickerInput } from "react-datetime-range-super-picker";
+import "react-datetime-range-super-picker/dist/index.css";
+import "./index.css";
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Calendar } from "@/components/ui/calendar";
 import DetailItem from "@/components/common/DetailItem";
 import NetworkSelect from "@/components/common/NetworkSelect/network-select";
 import {
@@ -27,7 +36,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { displayText } from "@/lib/utils";
+import { cn, displayText } from "@/lib/utils";
 
 import UnlockIcon from "@/components/icons/unlock";
 import LockIcon from "@/components/icons/lock";
@@ -52,6 +61,13 @@ export default function TokenSwap() {
 
   const [openPopover, setOpenPopover] = useState(false);
 
+  const [date, setDate] = useState<Date>();
+
+  const [scheduledDateTime, setScheduledDateTime] = useState(new Date());
+  const handleDateUpdate = ({ date }) => {
+    setScheduledDateTime(date.date);
+  };
+
   const keyStores = [
     { name: "KeyStore 1", tag: 1 },
     { name: "KeyStore 2", tag: 2 },
@@ -65,9 +81,9 @@ export default function TokenSwap() {
         open={openPopover}
         onOpenChange={(isOpen) => setOpenPopover(isOpen)}
       >
-        <PopoverTrigger>
+        <PopoverTrigger className="w-[350px]">
           <button
-            className="flex w-[160px] items-center transition-all duration-75 active:bg-gray-100"
+            className="flex items-center transition-all duration-75 active:bg-gray-100"
             onClick={() => setOpenPopover(!openPopover)}
           >
             <div className="mr-2 text-title-color">{currentKeyStore.name}</div>
@@ -79,7 +95,7 @@ export default function TokenSwap() {
             />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-[360px]">
+        <PopoverContent className="w-[360px]" align="start">
           <div className="w-[340px] rounded-md bg-white">
             <div className="flex flex-col">
               <div className="LabelText flex items-center">
@@ -91,20 +107,14 @@ export default function TokenSwap() {
                     key={option.name}
                     className="flex w-[160px] cursor-pointer items-center"
                   >
-                    <Checkbox.Root
-                      className="CheckboxRoot h-4 w-4"
-                      defaultChecked
+                    <Checkbox
                       id={option.name}
                       checked={currentKeyStore.name === option.name}
                       onCheckedChange={() => handleSelectKeyStore(option)}
-                    >
-                      <Checkbox.Indicator className="CheckboxIndicator">
-                        <Check className="h-3 w-3" strokeWidth={4} />
-                      </Checkbox.Indicator>
-                    </Checkbox.Root>
+                    />
                     <label
-                      className="Label flex items-center"
-                      htmlFor="Auto-Flow"
+                      className="Label flex cursor-pointer items-center"
+                      htmlFor={option.name}
                     >
                       {option.name}
                       <div className="Tag ml-2 bg-[#e9eaee]">{option.tag}</div>
@@ -327,7 +337,7 @@ export default function TokenSwap() {
   }) {
     return (
       <div
-        className={cx(
+        className={cn(
           "flex flex-col rounded-md border bg-custom-bg-white px-4 py-2",
           className,
         )}
@@ -340,10 +350,10 @@ export default function TokenSwap() {
 
   function TokenSelectAndInput({ name }: { name: string }) {
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-1 flex-col">
         <div className="LabelText mb-1">{name}</div>
         <Select>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger>
             <SelectValue placeholder="Theme" />
           </SelectTrigger>
           <SelectContent>
@@ -364,31 +374,27 @@ export default function TokenSwap() {
     const [open, setOpen] = useState(true);
 
     return (
-      <Collapsible.Root
-        className="mt-6 w-full"
-        open={open}
-        onOpenChange={setOpen}
-      >
+      <Collapsible className="mt-6 w-full" open={open} onOpenChange={setOpen}>
         <div className="mb-4 flex items-center pl-3">
           <div className="mr-3 text-xs font-medium text-title-color">
             Advance
           </div>
           <div className="h-[1px] flex-1 bg-shadow-color" />
-          <Collapsible.Trigger asChild>
+          <CollapsibleTrigger asChild>
             <ChevronDownCircle
               className="mx-3 h-4 w-4 cursor-pointer text-second-color"
               style={{
                 transform: open ? "rotate(180deg)" : "rotate(0deg)",
               }}
             />
-          </Collapsible.Trigger>
+          </CollapsibleTrigger>
           <div className="h-[1px] w-[10px] bg-shadow-color" />
         </div>
 
-        <Collapsible.Content>
+        <CollapsibleContent>
           <AdvanceContent />
-        </Collapsible.Content>
-      </Collapsible.Root>
+        </CollapsibleContent>
+      </Collapsible>
     );
   }
 
@@ -443,7 +449,20 @@ export default function TokenSwap() {
         <div className="flex flex-col">
           <div className="LabelText mb-1">Schedule Time</div>
           <div className="flex justify-between gap-x-3">
-            <Input className="bg-white"></Input>
+            <DateTimePickerInput
+              date={scheduledDateTime}
+              onDateTimeUpdate={(e) => handleDateUpdate(e)}
+              colors={
+                {
+                  primary_highlight_color: "#707070",
+                  secondary_highlight_color: "#333",
+                } as any
+              }
+              format="YYY-MM-dd HH:mm"
+              timeFormat="HH:mm"
+              dateFormat="YYY-MM-dd"
+              weekStartsOn={0}
+            />
             <button className="flex h-10 w-[92px] cursor-pointer items-center justify-center rounded-md border hover:bg-custom-bg-white">
               Now
             </button>
@@ -460,7 +479,7 @@ export default function TokenSwap() {
           <div className="p-3">
             <div className="LabelText mb-1">OP</div>
             <Select>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger>
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
               <SelectContent>
@@ -610,9 +629,49 @@ export default function TokenSwap() {
           />
         </div>
         <div className="flex items-center justify-between gap-x-1 px-3 pb-8 pt-3">
-          <Input className="bg-white"></Input>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-[280px] justify-start text-left font-normal",
+                  !date && "text-muted-foreground",
+                )}
+              >
+                {date ? format(date, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
           <div>-</div>
-          <Input className="bg-white"></Input>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-[280px] justify-start text-left font-normal",
+                  !date && "text-muted-foreground",
+                )}
+              >
+                {date ? format(date, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
         <div className="relative border-t pt-8">
           <button className="absolute top-[-20px] mx-3 flex w-[95%] items-center justify-center rounded border bg-white py-2 hover:bg-custom-bg-white">

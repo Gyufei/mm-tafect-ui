@@ -1,11 +1,11 @@
 "use client";
 
-import cx from "classnames";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
 import "./index.css";
+import { cn } from "@/lib/utils";
 
 export default function KeyStoreLinks({ keyStores }: { keyStores: any[] }) {
   const pathname = usePathname();
@@ -17,7 +17,7 @@ export default function KeyStoreLinks({ keyStores }: { keyStores: any[] }) {
       {keyStores.map((ks) => (
         <Link key={ks.id} href={`/keyStore/${ks.id}`}>
           <div
-            className={cx(
+            className={cn(
               "mb-3 flex w-full cursor-pointer justify-between rounded-s border border-transparent px-3 py-[10px] text-second-color",
               currentId === String(ks.id) && "ks-link-active",
             )}

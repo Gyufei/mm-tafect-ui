@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import * as Checkbox from "@radix-ui/react-checkbox";
 import { Check, Trash2 } from "lucide-react";
 
 import "./index.css";
 import { IKeyStore } from "@/lib/types/keyStore";
+import { Checkbox } from "@/components/ui/checkbox";
 import CopyIcon from "@/components/shared/copy-icon";
 import { displayText } from "@/lib/utils";
 import DetailItem from "@/components/common/DetailItem";
@@ -61,18 +61,15 @@ export default function KeyStoreItem() {
               key={option.value}
               className="mr-10 flex cursor-pointer items-center"
             >
-              <Checkbox.Root
-                className="CheckboxRoot h-4 w-4"
-                defaultChecked
-                id={option.label}
+              <Checkbox
                 checked={currentWorksFor === option.value}
                 onCheckedChange={() => handleCheckWorksFor(option)}
+                id={option.label}
+              />
+              <label
+                className="LabelText cursor-pointer"
+                htmlFor={option.label}
               >
-                <Checkbox.Indicator className="CheckboxIndicator">
-                  <Check className="h-3 w-3" strokeWidth={4} />
-                </Checkbox.Indicator>
-              </Checkbox.Root>
-              <label className="Label" htmlFor="Auto-Flow">
                 {option.label}
               </label>
             </div>

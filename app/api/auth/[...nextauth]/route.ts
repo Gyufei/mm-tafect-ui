@@ -11,23 +11,27 @@ export const authOptions: NextAuthOptions = {
       name: "",
       credentials: {},
       async authorize(credentials, req) {
-        return {
-          name: "Xiaoming",
-          email: "1123123@qq.com",
-          avatar: "https://avatars.githubusercontent.com/u/1396951?v=4",
-        };
+        // return {
+        //   name: "Xiaoming",
+        //   email: "1123123@qq.com",
+        //   avatar: "https://avatars.githubusercontent.com/u/1396951?v=4",
+        // };
 
-        const res = await fetch("/your/endpoint", {
-          method: "POST",
-          body: JSON.stringify(credentials),
-          headers: { "Content-Type": "application/json" },
-        });
-        const user = await res.json();
-
-        if (res.ok && user) {
-          return user;
+        try {
+          const res = await fetch(Path.login, {
+            method: "POST",
+            body: JSON.stringify(credentials),
+            headers: { "Content-Type": "application/json" },
+          });
+          console.log(res);
+          const user = await res.json();
+          if (res.ok && user) {
+            return user;
+          }
+          return null;
+        } catch (error) {
+          console.log(error);
         }
-        return null;
       },
     }),
   ],

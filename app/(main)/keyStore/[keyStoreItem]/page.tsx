@@ -131,7 +131,7 @@ export default function KeyStoreItem() {
           />
         </div>
         <table>
-          <thead className="h-10 bg-white text-second-color">
+          <thead className="h-10 bg-white text-content-color">
             <tr className="border-b border-shadow-color">
               <th className="font-normal">#</th>
               <th className="text-left font-normal">Address</th>

@@ -56,7 +56,7 @@ export default function NetworkSelect({
         >
           <p className="mr-1 font-medium text-title-color">
             {currentNetworkName || (
-              <div className="text-second-color">Select Network</div>
+              <div className="text-content-color">Select Network</div>
             )}
           </p>
           <ChevronDown

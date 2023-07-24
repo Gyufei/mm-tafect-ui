@@ -64,7 +64,7 @@ export default function TokenSwap() {
   const [date, setDate] = useState<Date>();
 
   const [scheduledDateTime, setScheduledDateTime] = useState(new Date());
-  const handleDateUpdate = ({ date }) => {
+  const handleDateUpdate = ({ date }: any) => {
     setScheduledDateTime(date.date);
   };
 
@@ -284,7 +284,7 @@ export default function TokenSwap() {
                 key={acc.address}
                 className="flex h-[73px] items-center justify-between border-b p-4"
               >
-                <div className="self-start pl-2 pr-5 text-lg leading-none text-second-color">
+                <div className="self-start pl-2 pr-5 text-lg leading-none text-content-color">
                   {index + 1}
                 </div>
                 <div className="flex flex-1 flex-col">
@@ -382,7 +382,7 @@ export default function TokenSwap() {
           <div className="h-[1px] flex-1 bg-shadow-color" />
           <CollapsibleTrigger asChild>
             <ChevronDownCircle
-              className="mx-3 h-4 w-4 cursor-pointer text-second-color"
+              className="mx-3 h-4 w-4 cursor-pointer text-content-color"
               style={{
                 transform: open ? "rotate(180deg)" : "rotate(0deg)",
               }}
@@ -549,7 +549,7 @@ export default function TokenSwap() {
   function TaskItemDetail({ task }: { task: Record<string, any> }) {
     return (
       <div className="flex flex-col gap-y-2 rounded-md border border-border-color bg-custom-bg-white p-3">
-        <div className="flex justify-between text-second-color">
+        <div className="flex justify-between text-content-color">
           <div>{task.date}</div>
           <div>[{task.title}]</div>
         </div>
@@ -559,7 +559,7 @@ export default function TokenSwap() {
           </div>
           <div>Gas: {task.gas}</div>
         </div>
-        <div className="flex justify-between text-second-color">
+        <div className="flex justify-between text-content-color">
           <div>Recipient: {displayText(task.recipient)}</div>
           <div>Value: {task.value}</div>
         </div>

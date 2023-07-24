@@ -51,16 +51,8 @@ html {
 }
 
 @layer components {
-  .FormField {
-    @apply mb-5 grid;
-  }
-
-  .FormLabel {
-    @apply text-base font-normal leading-9 text-second-color;
-  }
-
   .LabelText {
-    @apply text-sm font-medium text-second-color;
+    @apply text-sm font-medium text-content-color;
   }
 
   .FormMessage {
@@ -71,39 +63,13 @@ html {
     @apply cursor-pointer text-primary;
   }
 
-  .AvatarRoot {
-    @apply flex select-none items-center justify-center overflow-hidden rounded-full bg-white align-middle;
-  }
-
-  .AvatarImage {
-    @apply h-full w-full object-cover;
-    border-radius: inherit;
-  }
-
-  .AvatarFallback {
-    @apply flex h-full w-full items-center justify-center bg-white text-base font-medium leading-4 text-primary;
-  }
-
   .SideLink {
-    @apply mb-2 border border-transparent px-4 py-[6px] text-sm font-medium text-second-color;
+    @apply mb-2 border border-transparent px-4 py-[6px] text-sm font-medium text-content-color;
   }
 
   .SideLink.active,
   .SideLink:hover {
     @apply rounded border-primary bg-white text-primary;
-  }
-
-  .CheckboxRoot {
-    @apply flex cursor-pointer items-center justify-center rounded;
-    border: 1.5px solid #8c8c8c;
-  }
-
-  .CheckboxRoot[data-state="checked"] {
-    @apply border-primary bg-primary;
-  }
-
-  .CheckboxIndicator {
-    @apply text-white;
   }
 
   .Label {

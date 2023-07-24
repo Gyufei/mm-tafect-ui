@@ -20,7 +20,7 @@ module.exports = {
         primary: "#0572EC",
         "custom-bg-white": "#f6f7f8",
         "title-color": "#333",
-        "second-color": "#707070",
+        "content-color": "#707070",
         "border-color": "#bfbfbf",
         "shadow-color": "#d6d6d6",
         border: "hsl(var(--border))",

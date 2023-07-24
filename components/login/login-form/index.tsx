@@ -1,32 +1,54 @@
+"use client";
+
 import { useCallback, useState } from "react";
-import * as Form from "@radix-ui/react-form";
 import { ChevronLeft } from "lucide-react";
 import { signIn } from "next-auth/react";
 
-import "./index.css";
 import { IUser } from "@/lib/types/user";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 
 interface LoginFormProps {
   account: IUser | null;
   showAccountCb: () => void;
 }
 
+const formSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(2).max(50),
+});
+
 export default function LoginForm(props: LoginFormProps) {
   const { account } = props;
 
   const [showSessionTip, setShowSessionTip] = useState(false);
   const [showLoginFailTip, setShowLoginFailTip] = useState(false);
-  const [formModel, setFormModel] = useState({
-    email: null,
-    password: null,
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
-  const login = useCallback(() => {
-    signIn("credentials", formModel);
-  }, [formModel]);
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    signIn("credentials");
+  }
 
   const SessionTip = () => {
     return showSessionTip ? (
@@ -39,7 +61,10 @@ export default function LoginForm(props: LoginFormProps) {
   const LinkOfAccount = () => {
     return (
       <div
-        className="link-account absolute flex select-none items-center hover:cursor-pointer"
+        className="absolute flex select-none items-center hover:cursor-pointer"
+        style={{
+          top: "-3.8em",
+        }}
         onClick={() => props.showAccountCb()}
       >
         <ChevronLeft className="mr-2 h-4 w-4" />
@@ -72,7 +97,7 @@ export default function LoginForm(props: LoginFormProps) {
       return (
         <>
           <LinkOfAccount />
-          <div className="text-lg font-bold text-title-color">
+          <div className="mb-4 text-lg font-bold text-title-color">
             Sign in to your Tafect account
           </div>
           <FormToLogin />
@@ -82,48 +107,49 @@ export default function LoginForm(props: LoginFormProps) {
   };
 
   const FormToLogin = () => (
-    <Form.Root className="w-[420px]">
-      {!props?.account?.name ? (
-        <Form.Field className="FormField" name="email">
-          <div className="flex items-baseline justify-between">
-            <Form.Label className="FormLabel">Email</Form.Label>
-            <Form.Message className="FormMessage" match="valueMissing">
-              Please enter your email
-            </Form.Message>
-            <Form.Message className="FormMessage" match="typeMismatch">
-              Please provide a valid email
-            </Form.Message>
-          </div>
-          <Form.Control asChild>
-            <Input className="rounded" type="email" required />
-          </Form.Control>
-        </Form.Field>
-      ) : null}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-[420px]">
+        {!props?.account?.name ? (
+          <FormField
+            name="email"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input className="rounded" type="string" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ) : null}
 
-      <Form.Field className="FormField" name="Password">
-        <div className="flex items-baseline justify-between">
-          <Form.Label className="FormLabel">Password</Form.Label>
-          <Form.Message className="FormMessage" match="valueMissing">
-            Please enter your password
-          </Form.Message>
-        </div>
-        <Form.Control asChild>
-          <Input className="rounded" type="password" required />
-        </Form.Control>
-      </Form.Field>
+        <FormField
+          name="password"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input className="rounded" type="password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <Form.Submit asChild>
         <div className="mt-5 flex items-center justify-between ">
           <button
-            onClick={() => login()}
             className="flex h-10 w-36 items-center rounded-3xl bg-primary px-10 py-2.5 text-white"
+            type="submit"
           >
             sign in
           </button>
           <div className="Link text-sm">Having trouble signing in?</div>
         </div>
-      </Form.Submit>
-    </Form.Root>
+      </form>
+    </Form>
   );
 
   const LoginFailTip = () => {
@@ -146,7 +172,12 @@ export default function LoginForm(props: LoginFormProps) {
   };
 
   return (
-    <div className="login-form flex w-full max-w-md grow flex-col items-stretch">
+    <div
+      style={{
+        paddingTop: "24vh",
+      }}
+      className="login-form flex w-full max-w-md grow flex-col items-stretch"
+    >
       <div className="relative flex w-full flex-col">
         <FormBody />
         <LoginFailTip />

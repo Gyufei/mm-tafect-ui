@@ -50,7 +50,7 @@ export default function AccountList(props: AcProps) {
           <div className="text-base font-bold leading-4 text-title-color">
             {ac.name}
           </div>
-          <div className="text-base leading-4 text-second-color">
+          <div className="text-base leading-4 text-content-color">
             {ac.email}
           </div>
         </div>

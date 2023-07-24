@@ -1,11 +1,13 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@hookform/resolvers': ^3.1.1
   '@prisma/client': ^4.8.1
   '@radix-ui/react-avatar': ^1.0.3
   '@radix-ui/react-checkbox': ^1.0.4
   '@radix-ui/react-collapsible': ^1.0.3
   '@radix-ui/react-form': ^0.0.3
+  '@radix-ui/react-label': ^2.0.2
   '@radix-ui/react-popover': ^1.0.2
   '@radix-ui/react-select': ^1.2.2
   '@radix-ui/react-slot': ^1.0.2
@@ -41,6 +43,7 @@ specifiers:
   react-datetime-range-super-picker: ^1.14.1
   react-day-picker: ^8.8.0
   react-dom: 18.2.0
+  react-hook-form: ^7.45.2
   react-markdown: ^8.0.4
   react-wrap-balancer: ^0.3.0
   tailwind-merge: ^1.14.0
@@ -48,13 +51,16 @@ specifiers:
   tailwindcss-animate: ^1.0.6
   typescript: 4.9.4
   use-debounce: ^9.0.3
+  zod: ^3.21.4
 
 dependencies:
+  '@hookform/resolvers': 3.1.1_react-hook-form@7.45.2
   '@prisma/client': 4.16.2_prisma@4.16.2
   '@radix-ui/react-avatar': 1.0.3_ie75ejlwqy5zh3tldgt7pftwcu
   '@radix-ui/react-checkbox': 1.0.4_ie75ejlwqy5zh3tldgt7pftwcu
   '@radix-ui/react-collapsible': 1.0.3_ie75ejlwqy5zh3tldgt7pftwcu
   '@radix-ui/react-form': 0.0.3_ie75ejlwqy5zh3tldgt7pftwcu
+  '@radix-ui/react-label': 2.0.2_ie75ejlwqy5zh3tldgt7pftwcu
   '@radix-ui/react-popover': 1.0.6_ie75ejlwqy5zh3tldgt7pftwcu
   '@radix-ui/react-select': 1.2.2_ie75ejlwqy5zh3tldgt7pftwcu
   '@radix-ui/react-slot': 1.0.2_kzbn2opkn2327fwg5yzwzya5o4
@@ -80,12 +86,14 @@ dependencies:
   react-datetime-range-super-picker: 1.14.1_4ve7atc6y5ykpk4tcq2htszhwq
   react-day-picker: 8.8.0_kzhlcyde2l6xjiirkbg7jzhosa
   react-dom: 18.2.0_react@18.2.0
+  react-hook-form: 7.45.2_react@18.2.0
   react-markdown: 8.0.7_kzbn2opkn2327fwg5yzwzya5o4
   react-wrap-balancer: 0.3.0_react@18.2.0
   tailwind-merge: 1.14.0
   tailwindcss-animate: 1.0.6_tailwindcss@3.3.2
   typescript: 4.9.4
   use-debounce: 9.0.4_react@18.2.0
+  zod: 3.21.4
 
 devDependencies:
   '@tailwindcss/forms': 0.5.3_tailwindcss@3.3.2
@@ -153,6 +161,14 @@ packages:
       '@floating-ui/dom': 1.4.4
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /@hookform/resolvers/3.1.1_react-hook-form@7.45.2:
+    resolution: {integrity: sha512-tS16bAUkqjITNSvbJuO1x7MXbn7Oe8ZziDTJdA9mMvsoYthnOOiznOTGBYwbdlYBgU+tgpI/BtTU3paRbCuSlg==}
+    peerDependencies:
+      react-hook-form: ^7.0.0
+    dependencies:
+      react-hook-form: 7.45.2_react@18.2.0
     dev: false
 
   /@humanwhocodes/config-array/0.11.10:
@@ -3563,6 +3579,15 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-hook-form/7.45.2_react@18.2.0:
+    resolution: {integrity: sha512-9s45OdTaKN+4NSTbXVqeDITd/nwIg++nxJGL8+OD5uf1DxvhsXQ641kaYHk5K28cpIOTYm71O/fYk7rFaygb3A==}
+    engines: {node: '>=12.22.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-is/16.13.1:

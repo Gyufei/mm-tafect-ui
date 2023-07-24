@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Popover from "@/components/shared/popover";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import { Check, Trash2 } from "lucide-react";
 

@@ -1,12 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import cx from "classnames";
 import * as Avatar from "@radix-ui/react-avatar";
 
-import Popover from "@/components/shared/popover";
-import { useState } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import UserAvatar from "@/components/shared/UserAvatar";
 import { AuthRedirect } from "@/lib/auth";
 import { signOut, useSession } from "next-auth/react";
@@ -100,7 +104,25 @@ function UserBox() {
         userName={currentUser?.name || ""}
       />
       <Popover
-        content={
+        open={openPopover}
+        onOpenChange={(isOpen) => setOpenPopover(isOpen)}
+      >
+        <PopoverTrigger>
+          <button
+            onClick={() => setOpenPopover(!openPopover)}
+            className="flex cursor-pointer items-center justify-between py-2 pr-4 transition-all duration-75 active:bg-gray-100"
+          >
+            <p className="mr-1 font-medium text-title-color">
+              {currentUser?.name}
+            </p>
+            <ChevronDown
+              className={`h-4 w-4 text-gray-600 transition-all ${
+                openPopover ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent>
           <div className="w-full rounded-md bg-white p-2 sm:w-40">
             <button
               onClick={() => signOut()}
@@ -109,23 +131,7 @@ function UserBox() {
               Sign Out
             </button>
           </div>
-        }
-        openPopover={openPopover}
-        setOpenPopover={setOpenPopover}
-      >
-        <button
-          onClick={() => setOpenPopover(!openPopover)}
-          className="flex cursor-pointer items-center justify-between py-2 pr-4 transition-all duration-75 active:bg-gray-100"
-        >
-          <p className="mr-1 font-medium text-title-color">
-            {currentUser?.name}
-          </p>
-          <ChevronDown
-            className={`h-4 w-4 text-gray-600 transition-all ${
-              openPopover ? "rotate-180" : ""
-            }`}
-          />
-        </button>
+        </PopoverContent>
       </Popover>
     </div>
   );

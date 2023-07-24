@@ -7,6 +7,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { chesna, inter } from "./fonts";
 import "./globals.css";
 import SessionContext from "@/lib/providers/SessionContext";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "mm-tafect-ui",
@@ -34,6 +35,7 @@ export default function RootLayout({
           <SessionContext>{children}</SessionContext>
         </Suspense>
         <Analytics />
+        <Toaster />
       </body>
     </html>
   );

@@ -1,5 +1,9 @@
-import Popover from "@/components/shared/popover";
 import { useState } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ChevronDown } from "lucide-react";
 
 export interface INetwork {
@@ -42,8 +46,28 @@ export default function NetworkSelect({
 
   return (
     <Popover
-      content={
-        <div className="w-full rounded-md bg-white p-2 sm:w-40">
+      open={openPopover}
+      onOpenChange={(isOpen) => setOpenPopover(isOpen)}
+    >
+      <PopoverTrigger>
+        <button
+          onClick={() => setOpenPopover(!openPopover)}
+          className="flex w-[160px] cursor-pointer items-center transition-all duration-75 active:bg-gray-100"
+        >
+          <p className="mr-1 font-medium text-title-color">
+            {currentNetworkName || (
+              <div className="text-second-color">Select Network</div>
+            )}
+          </p>
+          <ChevronDown
+            className={`h-4 w-4 text-gray-600 transition-all ${
+              openPopover ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <div className="rounded-md bg-white">
           {networks.map((network) => (
             <button
               key={network.id}
@@ -57,23 +81,7 @@ export default function NetworkSelect({
             </button>
           ))}
         </div>
-      }
-      openPopover={openPopover}
-      setOpenPopover={setOpenPopover}
-    >
-      <button
-        onClick={() => setOpenPopover(!openPopover)}
-        className="flex w-[160px] cursor-pointer items-center transition-all duration-75 active:bg-gray-100"
-      >
-        <p className="mr-1 font-medium text-title-color">
-          {currentNetworkName}
-        </p>
-        <ChevronDown
-          className={`h-4 w-4 text-gray-600 transition-all ${
-            openPopover ? "rotate-180" : ""
-          }`}
-        />
-      </button>
+      </PopoverContent>
     </Popover>
   );
 }

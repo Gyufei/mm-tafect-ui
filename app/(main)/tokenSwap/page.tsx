@@ -11,7 +11,11 @@ import {
   Unlock,
 } from "lucide-react";
 
-import Popover from "@/components/shared/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import DetailItem from "@/components/common/DetailItem";
 import NetworkSelect from "@/components/common/NetworkSelect/network-select";
 import {
@@ -43,6 +47,7 @@ export default function TokenSwap() {
 
   const handleSelectKeyStore = (keyStore: any) => {
     setCurrentKeyStore(keyStore);
+    setOpenPopover(false);
   };
 
   const [openPopover, setOpenPopover] = useState(false);
@@ -57,8 +62,25 @@ export default function TokenSwap() {
   function KeyStoreSelect() {
     return (
       <Popover
-        content={
-          <div className="max-w-[340px] rounded-md bg-white p-2">
+        open={openPopover}
+        onOpenChange={(isOpen) => setOpenPopover(isOpen)}
+      >
+        <PopoverTrigger>
+          <button
+            className="flex w-[160px] items-center transition-all duration-75 active:bg-gray-100"
+            onClick={() => setOpenPopover(!openPopover)}
+          >
+            <div className="mr-2 text-title-color">{currentKeyStore.name}</div>
+            <div className="Tag mr-2 bg-[#e9eaee]">{currentKeyStore.tag}</div>
+            <ChevronDown
+              className={`h-4 w-4 text-gray-600 transition-all ${
+                openPopover ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[360px]">
+          <div className="w-[340px] rounded-md bg-white">
             <div className="flex flex-col">
               <div className="LabelText flex items-center">
                 Available KeyStores
@@ -92,22 +114,7 @@ export default function TokenSwap() {
               </div>
             </div>
           </div>
-        }
-        openPopover={openPopover}
-        setOpenPopover={setOpenPopover}
-      >
-        <button
-          className="flex w-[160px] items-center transition-all duration-75 active:bg-gray-100"
-          onClick={() => setOpenPopover(!openPopover)}
-        >
-          <div className="mr-2 text-title-color">{currentKeyStore.name}</div>
-          <div className="Tag mr-2 bg-[#e9eaee]">{currentKeyStore.tag}</div>
-          <ChevronDown
-            className={`h-4 w-4 text-gray-600 transition-all ${
-              openPopover ? "rotate-180" : ""
-            }`}
-          />
-        </button>
+        </PopoverContent>
       </Popover>
     );
   }
@@ -503,10 +510,16 @@ export default function TokenSwap() {
               "inset -1px 0px 0px 0px #D6D6D6,inset 0px 1px 0px 0px #D6D6D6",
           }}
         >
-          <Button className="h-[40px] w-[120px] rounded-md border border-primary text-primary">
+          <Button
+            variant="outline"
+            className="h-[40px] w-[120px] rounded-md border border-primary text-primary"
+          >
             Test Tx
           </Button>
-          <Button className="h-[40px] w-[120px] rounded-md border border-primary text-primary">
+          <Button
+            variant="outline"
+            className="h-[40px] w-[120px] rounded-md border border-primary text-primary"
+          >
             Schedule
           </Button>
         </div>

@@ -1,5 +1,3 @@
-import { PlusCircle } from "lucide-react";
-
 import "./index.css";
 
 import KeyStoreLinks from "@/components/keyStore/keyStoreLinks";
@@ -18,12 +16,6 @@ export default async function KeyStoreLayout({
         }}
       >
         <KeyStoreLinks></KeyStoreLinks>
-        <div className="mb-3 w-full pr-3">
-          <button className="flex w-full items-center justify-center rounded border border-primary bg-white py-2 text-base text-primary hover:bg-custom-bg-white">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Load KeyStore
-          </button>
-        </div>
       </div>
       {children}
     </div>

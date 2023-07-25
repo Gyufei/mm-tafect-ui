@@ -10,8 +10,19 @@ import { displayText } from "@/lib/utils";
 import DetailItem from "@/components/common/DetailItem";
 import NetworkSelect from "@/components/common/NetworkSelect/network-select";
 import { Input } from "@/components/ui/input";
+import { useFetch } from "@/lib/hooks/use-fetch";
+import { PathMap } from "@/lib/path";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export default function KeyStoreItem() {
+  const pathname = usePathname();
+  const keyStoreItemName = pathname.split("/")[2];
+
+  const { data: keyStoreItemData } = useFetch(
+    `${PathMap.keyStoreAccounts}?keystore=${keyStoreItemName}`,
+  );
+  console.log("---", keyStoreItemData);
+
   const [keyStoreItem, setKeyStoreItem] = useState<IKeyStore | null>({
     address: [
       { address: "0x2170ed0880ac9a755fd29b2688956bd959f933f8", gas: 0.333 },

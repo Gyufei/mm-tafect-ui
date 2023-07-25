@@ -3,5 +3,9 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <div className="flex h-full items-stretch overflow-y-hidden bg-[#fafafa]">
+      {children};
+    </div>
+  );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -42,13 +42,30 @@ import UnlockIcon from "@/components/icons/unlock";
 import LockIcon from "@/components/icons/lock";
 import NoCheckIcon from "@/components/icons/noCheck";
 import { ITask, TaskType } from "@/lib/types/task";
+import { useFetch } from "@/lib/hooks/use-fetch";
+import { PathMap } from "@/lib/path";
+import {
+  KeyStoreAccount,
+  useKeyStoreAccounts,
+} from "@/lib/hooks/use-key-store-accounts";
 
 export default function TokenSwap() {
-  const [currentNetwork, setCurrentNetwork] = useState(null);
-  const [currentKeyStore, setCurrentKeyStore] = useState({
-    name: "KeyStore 1",
-    tag: 2,
+  const [currentNetwork, setCurrentNetwork] = useState(1);
+  const [currentKeyStore, setCurrentKeyStore] = useState<KeyStoreAccount>({
+    name: "",
+    accounts: [],
   });
+
+  const { data: keyStoreData, mutate, isLoading } = useFetch(PathMap.keyStores);
+  const keyStores = useMemo<Array<string>>(
+    () => keyStoreData?.keystore_name_list || [],
+    [keyStoreData],
+  );
+  const keyStoreAccounts = useKeyStoreAccounts(keyStores);
+
+  useEffect(() => {
+    setCurrentKeyStore(keyStoreAccounts[0]);
+  }, [keyStoreAccounts]);
 
   const handleSelectNetwork = (networkOption: any) => {
     setCurrentNetwork(networkOption.id);
@@ -68,13 +85,6 @@ export default function TokenSwap() {
     setScheduledDateTime(date.date);
   };
 
-  const keyStores = [
-    { name: "KeyStore 1", tag: 1 },
-    { name: "KeyStore 2", tag: 2 },
-    { name: "KeyStore 3", tag: 3 },
-    { name: "KeyStore 4", tag: 4 },
-  ];
-
   function KeyStoreSelect() {
     return (
       <Popover
@@ -87,7 +97,9 @@ export default function TokenSwap() {
             onClick={() => setOpenPopover(!openPopover)}
           >
             <div className="mr-2 text-title-color">{currentKeyStore.name}</div>
-            <div className="Tag mr-2 bg-[#e9eaee]">{currentKeyStore.tag}</div>
+            <div className="Tag mr-2 bg-[#e9eaee]">
+              {currentKeyStore.accounts.length}
+            </div>
             <ChevronDown
               className={`h-4 w-4 text-gray-600 transition-all ${
                 openPopover ? "rotate-180" : ""
@@ -102,7 +114,7 @@ export default function TokenSwap() {
                 Available KeyStores
               </div>
               <div className="flex flex-wrap">
-                {keyStores.map((option) => (
+                {keyStoreAccounts.map((option) => (
                   <div
                     key={option.name}
                     className="flex w-[160px] cursor-pointer items-center"
@@ -117,7 +129,9 @@ export default function TokenSwap() {
                       htmlFor={option.name}
                     >
                       {option.name}
-                      <div className="Tag ml-2 bg-[#e9eaee]">{option.tag}</div>
+                      <div className="Tag ml-2 bg-[#e9eaee]">
+                        {option.accounts.length}
+                      </div>
                     </label>
                   </div>
                 ))}
@@ -693,10 +707,10 @@ export default function TokenSwap() {
   }
 
   return (
-    <div className="flex h-full items-stretch overflow-y-hidden bg-[#fafafa]">
+    <>
       <FirstCol />
       <SecondCol />
       <ThirdCol />
-    </div>
+    </>
   );
 }

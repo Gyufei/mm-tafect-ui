@@ -86,6 +86,11 @@ function UserBox() {
 
   const [openPopover, setOpenPopover] = useState(false);
 
+  function handleSignOut() {
+    signOut();
+    window.localStorage.clear();
+  }
+
   return (
     <div
       className="flex h-[70px] items-center justify-start pl-6"
@@ -120,7 +125,7 @@ function UserBox() {
         <PopoverContent className="w-[160px] p-1" align="start">
           <div className="rounded-md bg-white">
             <button
-              onClick={() => signOut()}
+              onClick={() => handleSignOut()}
               className="flex w-full items-center justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100 active:bg-gray-200"
             >
               Sign Out

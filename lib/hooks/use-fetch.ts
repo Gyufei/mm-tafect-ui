@@ -1,40 +1,45 @@
 "use client";
 
+import useSWR from "swr";
 import { signOut, useSession } from "next-auth/react";
-import { useToast } from "@/components/ui/use-toast";
 import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { useToast } from "@/components/ui/use-toast";
 import useLocalStorage from "./use-local-storage";
+import { fetchClient } from "../fetchClient";
 
 export function useFetch(url: string, params?: any | undefined) {
   const { toast } = useToast();
   const { data: session } = useSession();
-  const [response, setResponse] = useState<any>();
   const [token, setToken] = useLocalStorage("token", session?.user?.image);
 
   const fetcher = async () => {
-    const headers = {
-      Authorization: `${token || ""}`,
-    };
-
-    const options = {
-      ...params,
-      headers,
-    };
-
-    const res = await fetch(url, options);
     if (!token) {
       return null;
     }
 
-    if (token && res.status === 401) {
-      // signOut();
-      console.log("123", token);
+    const res = await fetchClient(url, params);
+
+    if (!res?.ok) {
+      toast({
+        variant: "destructive",
+        title: "Api Error",
+        description: `${res?.status}: Something went wrong`,
+      });
+    }
+
+    if (token && res?.status === 401) {
+      signOut();
+      window.localStorage.clear();
       return null;
     }
-    const json = await res.json();
 
-    setResponse(json);
+    const json = await res?.json();
+
+    return json?.data || json;
   };
+
+  const result = useSWR(url, fetcher);
 
   useEffect(() => {
     if (!session?.user?.image) {
@@ -46,11 +51,9 @@ export function useFetch(url: string, params?: any | undefined) {
     }
 
     if (token) {
-      fetcher();
+      result.mutate();
     }
   }, [session?.user?.image]);
 
-  return {
-    data: response,
-  };
+  return result;
 }

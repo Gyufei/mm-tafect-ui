@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { signIn } from "next-auth/react";
 
@@ -33,7 +33,7 @@ const formSchema = z.object({
 });
 
 export default function LoginForm(props: LoginFormProps) {
-  const { account } = props;
+  const account = useMemo(() => props.account, [props.account]);
 
   const [showSessionTip, setShowSessionTip] = useState(false);
   const [showLoginFailTip, setShowLoginFailTip] = useState(false);
@@ -47,7 +47,18 @@ export default function LoginForm(props: LoginFormProps) {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    signIn("credentials");
+    const { email: username } = values;
+
+    signIn(
+      "credentials",
+      {
+        ...values,
+        username,
+      },
+      {
+        callbackUrl: "/dashboard",
+      },
+    );
   }
 
   const SessionTip = () => {
@@ -73,84 +84,36 @@ export default function LoginForm(props: LoginFormProps) {
     );
   };
 
-  const FormBody = () => {
-    if (account?.name) {
-      return (
-        <>
-          <SessionTip />
-          <div className="mb-5 flex justify-start">
-            <Avatar className="mr-4 h-16 w-16 rounded-lg">
-              <AvatarImage src={account.avatar} />
-              <AvatarFallback>{account?.name?.[0] || ""}</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col items-start justify-around">
-              <div className="text-lg font-bold text-title-color">
-                Sign in to {account.name}
+  const FormHead = () => {
+    return (
+      <>
+        {account?.name ? (
+          <>
+            <SessionTip />
+            <div className="mb-5 flex justify-start">
+              <Avatar className="mr-4 h-16 w-16 rounded-lg">
+                <AvatarImage src={account.avatar} />
+                <AvatarFallback>{account?.name?.[0] || ""}</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col items-start justify-around">
+                <div className="text-lg font-bold text-title-color">
+                  Sign in to {account.name}
+                </div>
+                <div className="LabelText">{account.email}</div>
               </div>
-              <div className="LabelText">{account.email}</div>
             </div>
-          </div>
-          <FormToLogin />
-        </>
-      );
-    } else {
-      return (
-        <>
-          <LinkOfAccount />
-          <div className="mb-4 text-lg font-bold text-title-color">
-            Sign in to your Tafect account
-          </div>
-          <FormToLogin />
-        </>
-      );
-    }
+          </>
+        ) : (
+          <>
+            <LinkOfAccount />
+            <div className="mb-4 text-lg font-bold text-title-color">
+              Sign in to your Tafect account
+            </div>
+          </>
+        )}
+      </>
+    );
   };
-
-  const FormToLogin = () => (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-[420px]">
-        {!props?.account?.name ? (
-          <FormField
-            name="email"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input className="rounded" type="string" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ) : null}
-
-        <FormField
-          name="password"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input className="rounded" type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="mt-5 flex items-center justify-between ">
-          <button
-            className="flex h-10 w-36 items-center rounded-3xl bg-primary px-10 py-2.5 text-white"
-            type="submit"
-          >
-            sign in
-          </button>
-          <div className="Link text-sm">Having trouble signing in?</div>
-        </div>
-      </form>
-    </Form>
-  );
 
   const LoginFailTip = () => {
     if (showLoginFailTip) {
@@ -179,7 +142,50 @@ export default function LoginForm(props: LoginFormProps) {
       className="login-form flex w-full max-w-md grow flex-col items-stretch"
     >
       <div className="relative flex w-full flex-col">
-        <FormBody />
+        <FormHead />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-[420px]">
+            {!account?.name ? (
+              <FormField
+                name="email"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input className="rounded" type="string" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : null}
+
+            <FormField
+              name="password"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input className="rounded" type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="mt-5 flex items-center justify-between ">
+              <button
+                className="flex h-10 w-36 items-center rounded-3xl bg-primary px-10 py-2.5 text-white"
+                type="submit"
+              >
+                sign in
+              </button>
+              <div className="Link text-sm">Having trouble signing in?</div>
+            </div>
+          </form>
+        </Form>
         <LoginFailTip />
       </div>
     </div>

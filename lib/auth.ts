@@ -1,31 +1,26 @@
 "use client";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { redirect, usePathname } from "next/navigation";
+import { redirect, usePathname, useSearchParams } from "next/navigation";
 
 export function AuthRedirect() {
   const { status } = useSession();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const loginPath = "/login";
 
   useEffect(() => {
     if (status === "loading") return;
 
-    if (status === "unauthenticated") {
-      if (pathname !== loginPath) {
-        redirect(loginPath);
-      }
-      return;
-    }
-
     if (status === "authenticated") {
       if (pathname === loginPath || pathname === "/") {
-        redirect("/dashboard");
+        redirect(callbackUrl);
       }
 
       return;
     }
-  }, [status, pathname]);
+  }, [status, pathname, callbackUrl]);
 
   return null;
 }

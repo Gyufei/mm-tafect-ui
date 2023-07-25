@@ -11,7 +11,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AuthRedirect } from "@/lib/auth";
 import { signOut, useSession } from "next-auth/react";
 import { IUser } from "@/lib/types/user";
 import { usePathname } from "next/navigation";
@@ -41,8 +40,6 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  AuthRedirect();
-
   const pathname = usePathname();
 
   return (

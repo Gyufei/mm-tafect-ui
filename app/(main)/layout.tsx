@@ -95,7 +95,7 @@ function UserBox() {
       }}
     >
       <Avatar className="mr-3 h-8 w-8 rounded">
-        <AvatarImage src={currentUser?.avatar} />
+        <AvatarImage src={currentUser?.image} />
         <AvatarFallback>{currentUser?.name?.[0] || ""}</AvatarFallback>
       </Avatar>
       <Popover

@@ -92,7 +92,7 @@ export default function LoginForm(props: LoginFormProps) {
             <SessionTip />
             <div className="mb-5 flex justify-start">
               <Avatar className="mr-4 h-16 w-16 rounded-lg">
-                <AvatarImage src={account.avatar} />
+                <AvatarImage src={account.image} />
                 <AvatarFallback>{account?.name?.[0] || ""}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col items-start justify-around">

@@ -10,14 +10,16 @@ const useLocalStorage = <T>(
     // Retrieve from localStorage
     const item = window.localStorage.getItem(key);
     if (item) {
-      setStoredValue(JSON.parse(item));
+      try {
+        setStoredValue(JSON.parse(item));
+      } catch (e) {
+        setStoredValue(item as T);
+      }
     }
   }, [key]);
 
   const setValue = (value: T) => {
-    // Save state
     setStoredValue(value);
-    // Save to localStorage
     window.localStorage.setItem(key, JSON.stringify(value));
   };
   return [storedValue, setValue];

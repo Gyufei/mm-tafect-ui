@@ -19,11 +19,13 @@ export const authOptions: NextAuthOptions = {
         const json = await res.json();
         if (json && json.status) {
           const name = req?.body?.email.split("@")[0];
+          console.log(json.data);
 
           return {
-            id: `${Math.floor(Math.random() * 1000)}`,
+            id: String(Math.floor(Math.random() * 10000)),
             name: name,
             email: req?.body?.email,
+            image: json?.data?.access_token,
           };
         } else {
           return null;

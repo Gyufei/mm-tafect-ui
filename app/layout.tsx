@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn(chesna.variable, inter.variable)}>
       <body className="h-screen w-full overflow-y-hidden">
-        <Suspense fallback="...">
+        <Suspense fallback="Loading">
           <SessionContext>{children}</SessionContext>
         </Suspense>
         <Analytics />

@@ -13,19 +13,19 @@ export default function AccountList(props: AcProps) {
     {
       name: "abc",
       email: "123@qq.com",
-      avatar:
+      image:
         "https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80",
     },
     {
       name: "abc1",
       email: "123a@qq.com",
-      avatar:
+      image:
         "https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80",
     },
     {
       name: "abc2",
       email: "125a@qq.com",
-      avatar:
+      image:
         "https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80",
     },
   ]);
@@ -43,7 +43,7 @@ export default function AccountList(props: AcProps) {
         key={ac.email}
       >
         <Avatar className="mr-4 h-10 w-10 rounded-lg">
-          <AvatarImage src={ac.avatar} />
+          <AvatarImage src={ac.image} />
           <AvatarFallback>{ac?.name?.[0] || ""}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col items-start justify-between">

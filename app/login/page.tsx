@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react";
 import { redirect } from "next/navigation";
-import { useSession } from "next-auth/react";
 
 import { IUser } from "@/lib/types/user";
 

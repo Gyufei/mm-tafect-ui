@@ -8,7 +8,9 @@ import {
   Check,
   ChevronDown,
   Unlock,
+  Loader2,
 } from "lucide-react";
+import { uniqBy } from "lodash";
 
 import { DateTimePickerInput } from "react-datetime-range-super-picker";
 import "react-datetime-range-super-picker/dist/index.css";
@@ -42,41 +44,95 @@ import UnlockIcon from "@/components/icons/unlock";
 import LockIcon from "@/components/icons/lock";
 import NoCheckIcon from "@/components/icons/noCheck";
 import { ITask, TaskType } from "@/lib/types/task";
-import { useFetch } from "@/lib/hooks/use-fetch";
+import { useFetcher } from "@/lib/hooks/use-fetcher";
 import { PathMap } from "@/lib/path";
 import {
   KeyStoreAccount,
   useKeyStoreAccounts,
 } from "@/lib/hooks/use-key-store-accounts";
+import { useStrNum } from "@/lib/hooks/use-str-num";
+import useSWR from "swr";
 
 export default function TokenSwap() {
-  const [currentNetwork, setCurrentNetwork] = useState(1);
-  const [currentKeyStore, setCurrentKeyStore] = useState<KeyStoreAccount>({
-    name: "",
-    accounts: [],
-  });
-
-  const { data: keyStoreData, mutate, isLoading } = useFetch(PathMap.keyStores);
-  const keyStores = useMemo<Array<string>>(
-    () => keyStoreData?.keystore_name_list || [],
-    [keyStoreData],
-  );
-  const keyStoreAccounts = useKeyStoreAccounts(keyStores);
-
-  useEffect(() => {
-    setCurrentKeyStore(keyStoreAccounts[0]);
-  }, [keyStoreAccounts]);
+  const fetcher = useFetcher();
+  const [currentNetwork, setCurrentNetwork] = useState(11155111);
 
   const handleSelectNetwork = (networkOption: any) => {
     setCurrentNetwork(networkOption.id);
   };
+
+  const [openPopover, setOpenPopover] = useState(false);
+
+  const [currentKeyStore, setCurrentKeyStore] =
+    useState<KeyStoreAccount | null>(null);
+
+  const keyStoreOptions = useKeyStoreAccounts();
+
+  useEffect(() => {
+    setCurrentKeyStore(keyStoreOptions[0]);
+  }, [keyStoreOptions]);
 
   const handleSelectKeyStore = (keyStore: any) => {
     setCurrentKeyStore(keyStore);
     setOpenPopover(false);
   };
 
-  const [openPopover, setOpenPopover] = useState(false);
+  const [tokenAddress, setTokenAddress] = useState<string>("");
+
+  const { data: tokens } = useSWR(
+    `${PathMap.tokenList}?chain_id=${currentNetwork}`,
+    fetcher,
+  );
+  const uniqueTokens = useMemo(() => {
+    return uniqBy(tokens, "address") as any;
+  }, [tokens]);
+
+  const [tokenMin, setTokenMin] = useStrNum();
+  const [tokenMax, setTokenMax] = useStrNum();
+
+  const [filterAccountParams, setFilterAccountParams] = useState<string>();
+
+  function parseFilterAccountParams() {
+    const queryParams = new URLSearchParams();
+
+    if (currentNetwork) {
+      queryParams.set("chain_id", currentNetwork.toString());
+    }
+
+    if (currentKeyStore) {
+      queryParams.set("keystore", currentKeyStore.name);
+    }
+
+    if (tokenMin) {
+      queryParams.set("token_amount_minimum", tokenMin.toString());
+    }
+
+    if (tokenMax) {
+      queryParams.set("token_amount_maximum", tokenMax.toString());
+    }
+
+    if (tokenAddress) {
+      queryParams.set("token_address", tokenAddress);
+    }
+
+    return queryParams.toString();
+  }
+
+  const { data: filterAccounts, isLoading: filtering } = useSWR(
+    `${PathMap.filterAccount}?${filterAccountParams}`,
+    fetcher,
+    {
+      revalidateOnMount: false,
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
+  );
+
+  function handleFilterAccount() {
+    const params = parseFilterAccountParams();
+    setFilterAccountParams(params);
+  }
 
   const [date, setDate] = useState<Date>();
 
@@ -85,115 +141,12 @@ export default function TokenSwap() {
     setScheduledDateTime(date.date);
   };
 
-  function KeyStoreSelect() {
-    return (
-      <Popover
-        open={openPopover}
-        onOpenChange={(isOpen) => setOpenPopover(isOpen)}
-      >
-        <PopoverTrigger className="w-[350px]">
-          <button
-            className="flex items-center transition-all duration-75 active:bg-gray-100"
-            onClick={() => setOpenPopover(!openPopover)}
-          >
-            <div className="mr-2 text-title-color">{currentKeyStore.name}</div>
-            <div className="Tag mr-2 bg-[#e9eaee]">
-              {currentKeyStore.accounts.length}
-            </div>
-            <ChevronDown
-              className={`h-4 w-4 text-gray-600 transition-all ${
-                openPopover ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[360px]" align="start">
-          <div className="w-[340px] rounded-md bg-white">
-            <div className="flex flex-col">
-              <div className="LabelText flex items-center">
-                Available KeyStores
-              </div>
-              <div className="flex flex-wrap">
-                {keyStoreAccounts.map((option) => (
-                  <div
-                    key={option.name}
-                    className="flex w-[160px] cursor-pointer items-center"
-                  >
-                    <Checkbox
-                      id={option.name}
-                      checked={currentKeyStore.name === option.name}
-                      onCheckedChange={() => handleSelectKeyStore(option)}
-                    />
-                    <label
-                      className="Label flex cursor-pointer items-center"
-                      htmlFor={option.name}
-                    >
-                      {option.name}
-                      <div className="Tag ml-2 bg-[#e9eaee]">
-                        {option.accounts.length}
-                      </div>
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
-    );
-  }
-
-  const filterAccounts = [
-    {
-      address: "0x13131411231311131313131312321124241452334542342",
-      eth: "0.0012",
-      token: "0.0032",
-      tag: 33,
-    },
-    {
-      address: "0x13131412313113131313131312311241241452334542342",
-      eth: "0.0012",
-      token: "0.0032",
-      tag: 33,
-    },
-    {
-      address: "0x131314112313113131313113123211241241452334542342",
-      eth: "0.0012",
-      token: "0.0032",
-      tag: 33,
-    },
-    {
-      address: "0x13131411231313131311313123211241241452334542342",
-      eth: "0.0012",
-      token: "0.0032",
-      tag: 33,
-    },
-    {
-      address: "0x131341123131131313131313123211241241452334542342",
-      eth: "0.0012",
-      token: "0.0032",
-      tag: 33,
-    },
-    {
-      address: "0x131314112331131313131313123211241241452334542342",
-      eth: "0.0012",
-      token: "0.0032",
-      tag: 33,
-    },
-    {
-      address: "0x11314112313113131313131312321124124145233542342",
-      eth: "0.0012",
-      token: "0.0032",
-      tag: 33,
-    },
-  ];
-
   const tasks: Array<ITask> = [
     {
       date: "2021-09-09 12:00:00",
       title: "TransferSEP",
       type: "Queued",
-      address: "0x13131411231311131313131312321124241452334542342",
+      address: "0x131314112131113131311312321124241452334542342",
       gas: "0.0012",
       recipient: "0x13131411231311131313131312321124241452334542342",
       value: "0.0032",
@@ -204,7 +157,7 @@ export default function TokenSwap() {
       date: "2021-09-09 12:00:00",
       title: "TransferSEP",
       type: "Pending",
-      address: "0x13131411231311131313131312321124241452334542342",
+      address: "0x1313141123131113131311312321124241452334542342",
       gas: "0.0012",
       recipient: "0x13131411231311131313131312321124241452334542342",
       value: "0.0032",
@@ -215,7 +168,7 @@ export default function TokenSwap() {
       date: "2021-09-09 12:00:00",
       title: "TransferSEP",
       type: "Finished",
-      address: "0x13131411231311131313131312321124241452334542342",
+      address: "0x13131411231311131313313232112424152334542342",
       gas: "0.0012",
       recipient: "0x13131411231311131313131312321124241452334542342",
       value: "0.0032",
@@ -226,7 +179,7 @@ export default function TokenSwap() {
       date: "2021-09-09 12:00:00",
       title: "TransferSEP",
       type: "Failed",
-      address: "0x13131411231311131313131312321124241452334542342",
+      address: "0x1313141131311131313131312321124241452334542342",
       gas: "0.0012",
       recipient: "0x13131411231311131313131312321124241452334542342",
       value: "0.0032",
@@ -237,7 +190,7 @@ export default function TokenSwap() {
       date: "2021-09-09 12:00:00",
       title: "TransferSEP",
       type: "Canceled",
-      address: "0x13131411231311131313131312321124241452334542342",
+      address: "0x1313141123131113313131312321124241452334542342",
       gas: "0.0012",
       recipient: "0x13131411231311131313131312321124241452334542342",
       value: "0.0032",
@@ -245,100 +198,6 @@ export default function TokenSwap() {
       direction: "USDT->IPI",
     },
   ];
-
-  const tokens = [
-    {
-      name: "ETH",
-    },
-    {
-      name: "BNB",
-    },
-    {
-      name: "USDT",
-    },
-  ];
-
-  function TokenByAccount() {
-    return (
-      <div className="flex flex-col justify-stretch">
-        <div className="flex flex-col px-4">
-          <div className="LabelText mb-1">Token</div>
-          <div className="mb-3">
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Theme" />
-              </SelectTrigger>
-              <SelectContent>
-                {tokens.map((token) => (
-                  <SelectItem key={token.name} value={token.name}>
-                    {token.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center">
-            <Input className="border-border-color bg-white" placeholder="Min" />
-            <div className="mx-2">-</div>
-            <Input className="border-border-color bg-white" placeholder="Max" />
-          </div>
-        </div>
-        <div className="relative mt-8 flex flex-col border-t border-shadow-color pt-5">
-          <button className="absolute top-[-20px] mx-3 flex w-[95%] items-center justify-center rounded border bg-white py-2 hover:bg-custom-bg-white">
-            Filter Account
-          </button>
-          <div
-            className="overflow-y-auto pb-2"
-            style={{
-              height: "calc(100vh - 413px)",
-            }}
-          >
-            {filterAccounts.map((acc, index) => (
-              <div
-                key={acc.address}
-                className="flex h-[73px] items-center justify-between border-b p-4"
-              >
-                <div className="self-start pl-2 pr-5 text-lg leading-none text-content-color">
-                  {index + 1}
-                </div>
-                <div className="flex flex-1 flex-col">
-                  <div className="text-lg font-medium text-title-color">
-                    {displayText(acc.address)}
-                  </div>
-                  <div className="LabelText flex">
-                    <div className="mr-6">ETH {acc.eth}</div>
-                    <div>USDT {acc.token}</div>
-                  </div>
-                </div>
-                <div className="rounded-full bg-[#e9eaee] px-3 text-sm">
-                  {acc.tag}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  function FirstCol() {
-    return (
-      <div className="h-full flex-1 border-r border-r-[#dadada]">
-        <div className="flex flex-col p-4">
-          <DetailItem title="Network">
-            <NetworkSelect
-              value={currentNetwork}
-              onSelect={(e) => handleSelectNetwork(e)}
-            />
-          </DetailItem>
-          <DetailItem title="KeyStore">
-            <KeyStoreSelect />
-          </DetailItem>
-        </div>
-        <TokenByAccount />
-      </div>
-    );
-  }
 
   function SmallTokenCard({
     name,
@@ -371,8 +230,8 @@ export default function TokenSwap() {
             <SelectValue placeholder="Theme" />
           </SelectTrigger>
           <SelectContent>
-            {tokens.map((token) => (
-              <SelectItem key={token.name} value={token.name}>
+            {(uniqueTokens || []).map((token: Record<string, string>) => (
+              <SelectItem key={token.name} value={token.address}>
                 {token.name}
               </SelectItem>
             ))}
@@ -454,7 +313,7 @@ export default function TokenSwap() {
             <NoCheckIcon
               className="text-primary"
               style={{
-                color: Math.random() > 0.5 ? "#999" : "",
+                color: "#999",
               }}
             />
           </button>
@@ -497,8 +356,8 @@ export default function TokenSwap() {
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
               <SelectContent>
-                {tokens.map((token) => (
-                  <SelectItem key={token.name} value={token.name}>
+                {(uniqueTokens || []).map((token: Record<string, string>) => (
+                  <SelectItem key={token.name} value={token.address}>
                     {token.name}
                   </SelectItem>
                 ))}
@@ -590,7 +449,7 @@ export default function TokenSwap() {
       Queued: {
         color: "#0572ec",
         bg: "rgba(5, 114, 236, 0.1)",
-        border: " rgba(5, 114, 236, 0.4);",
+        border: " rgba(5, 114, 236, 0.4)",
       },
       Pending: {
         color: "#EF814F",
@@ -708,7 +567,159 @@ export default function TokenSwap() {
 
   return (
     <>
-      <FirstCol />
+      <div className="h-full flex-1 border-r border-r-[#dadada]">
+        <div className="flex flex-col p-4">
+          <DetailItem title="Network">
+            <NetworkSelect
+              value={currentNetwork}
+              onSelect={(e) => handleSelectNetwork(e)}
+            />
+          </DetailItem>
+          <DetailItem title="KeyStore">
+            <Popover
+              open={openPopover}
+              onOpenChange={(isOpen) => setOpenPopover(isOpen)}
+            >
+              <PopoverTrigger className="w-[350px]">
+                <div
+                  className="flex items-center transition-all duration-75 active:bg-gray-100"
+                  onClick={() => setOpenPopover(!openPopover)}
+                >
+                  {currentKeyStore ? (
+                    <>
+                      <div className="mr-2 text-title-color">
+                        {currentKeyStore.name}
+                      </div>
+                      <div className="Tag mr-2 bg-[#e9eaee]">
+                        {currentKeyStore.accounts.length}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-sm text-content-color">
+                      Select KeyStore
+                    </div>
+                  )}
+                  <ChevronDown
+                    className={`h-4 w-4 text-gray-600 transition-all ${
+                      openPopover ? "rotate-180" : ""
+                    }`}
+                  />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[360px]" align="start">
+                <div className="w-[340px] rounded-md bg-white">
+                  <div className="flex flex-col">
+                    <div className="LabelText flex items-center">
+                      Available KeyStores
+                    </div>
+                    <div className="flex flex-wrap">
+                      {keyStoreOptions.map((option) => (
+                        <div
+                          key={option.name}
+                          className="flex w-[160px] cursor-pointer items-center"
+                        >
+                          <Checkbox
+                            id={option.name}
+                            checked={currentKeyStore?.name === option.name}
+                            onCheckedChange={() => handleSelectKeyStore(option)}
+                          />
+                          <label
+                            className="Label flex cursor-pointer items-center"
+                            htmlFor={option.name}
+                          >
+                            {option.name}
+                            <div className="Tag ml-2 bg-[#e9eaee]">
+                              {option.accounts.length}
+                            </div>
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </DetailItem>
+        </div>
+
+        <div className="flex flex-col justify-stretch">
+          <div className="flex flex-col px-4">
+            <div className="LabelText mb-1">Token</div>
+            <div className="mb-3">
+              <Select
+                value={tokenAddress}
+                onValueChange={(e) => setTokenAddress(e)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Token" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(uniqueTokens || []).map((token: Record<string, string>) => (
+                    <SelectItem key={token.name} value={token.address}>
+                      {token.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center">
+              <Input
+                value={tokenMin}
+                onChange={(e) => setTokenMin(e.target.value)}
+                className="border-border-color bg-white"
+                placeholder="Min"
+              />
+              <div className="mx-2">-</div>
+              <Input
+                value={tokenMax}
+                onChange={(e) => setTokenMax(e.target.value)}
+                className="border-border-color bg-white"
+                placeholder="Max"
+              />
+            </div>
+          </div>
+          <div className="relative mt-8 flex flex-col border-t border-shadow-color pt-5">
+            <Button
+              disabled={filtering}
+              onClick={() => handleFilterAccount()}
+              className="disabled:opacity-1 absolute top-[-20px] mx-3 flex w-[95%] items-center justify-center rounded border bg-white py-2 hover:bg-custom-bg-white"
+            >
+              {filtering && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
+              )}
+              <span className="text-title-color">Filter Account</span>
+            </Button>
+            <div
+              className="overflow-y-auto pb-2"
+              style={{
+                height: "calc(100vh - 413px)",
+              }}
+            >
+              {Array.isArray(filterAccounts) &&
+                filterAccounts.map((acc, index) => (
+                  <div
+                    key={acc.account}
+                    className="flex h-[73px] items-center justify-between border-b p-4"
+                  >
+                    <div className="self-start pl-2 pr-5 text-lg leading-none text-content-color">
+                      {index + 1}
+                    </div>
+                    <div className="flex flex-1 flex-col">
+                      <div className="text-lg font-medium text-title-color">
+                        {displayText(acc.account)}
+                      </div>
+                      <div className="LabelText flex">
+                        <div className="mr-6">ETH {acc.gas_token_amount}</div>
+                        <div>USDT {acc.quote_token_amount}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <SecondCol />
       <ThirdCol />
     </>

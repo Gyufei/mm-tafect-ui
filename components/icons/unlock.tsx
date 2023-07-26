@@ -1,3 +1,5 @@
+"use client";
+
 export default function UnlockIcon(props: any) {
   return (
     <svg

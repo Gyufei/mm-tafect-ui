@@ -1,3 +1,5 @@
+"use client";
+
 export default function LockIcon(props: any) {
   return (
     <svg

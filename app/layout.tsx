@@ -1,13 +1,14 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
+import { getServerSession } from "next-auth/next";
+
+import "./globals.css";
+import { chesna, inter } from "./fonts";
 
 import { cn } from "@/lib/utils";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { chesna, inter } from "./fonts";
-import "./globals.css";
-import SessionContext from "@/lib/providers/SessionContext";
 import { Toaster } from "@/components/ui/toaster";
+import SessionContext from "@/lib/providers/SessionContext";
 
 export const metadata: Metadata = {
   title: "mm-tafect-ui",
@@ -23,16 +24,18 @@ export const metadata: Metadata = {
   themeColor: "#FFF",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession();
+
   return (
     <html lang="en" className={cn(chesna.variable, inter.variable)}>
       <body className="h-screen w-full overflow-y-hidden">
         <Suspense fallback="Loading">
-          <SessionContext>{children}</SessionContext>
+          <SessionContext session={session}>{children}</SessionContext>
         </Suspense>
         <Analytics />
         <Toaster />

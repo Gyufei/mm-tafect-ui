@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { Check, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Check, PackageOpen, Trash2 } from "lucide-react";
 
 import "./index.css";
 import { IKeyStore } from "@/lib/types/keyStore";
@@ -10,48 +10,58 @@ import { displayText } from "@/lib/utils";
 import DetailItem from "@/components/common/DetailItem";
 import NetworkSelect from "@/components/common/NetworkSelect/network-select";
 import { Input } from "@/components/ui/input";
-import { useFetch } from "@/lib/hooks/use-fetch";
 import { PathMap } from "@/lib/path";
 import { usePathname, useSearchParams } from "next/navigation";
+import { IAccountGas, useAccountGas } from "@/lib/hooks/use-account-gas";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useDebounce } from "use-debounce";
 
-export default function KeyStoreItem() {
-  const pathname = usePathname();
-  const keyStoreItemName = pathname.split("/")[2];
+export default function KeyStoreItem({
+  params,
+}: {
+  params: { keyStoreItem: string };
+}) {
+  const keyStoreName = useMemo(() => params.keyStoreItem, [params]);
 
-  const { data: keyStoreItemData } = useFetch(
-    `${PathMap.keyStoreAccounts}?keystore=${keyStoreItemName}`,
+  const [currentNetwork, setCurrentNetwork] = useState(1);
+  const [currentWorksFor, setCurrentWorksFor] = useState(null);
+
+  const { accounts, count: accountCount } = useAccountGas(
+    keyStoreName,
+    currentNetwork,
   );
-  console.log("---", keyStoreItemData);
+  const [tx, setTx] = useState(0);
+  const [gasAvailable, setGasAvailable] = useState(0);
 
-  const [keyStoreItem, setKeyStoreItem] = useState<IKeyStore | null>({
-    address: [
-      { address: "0x2170ed0880ac9a755fd29b2688956bd959f933f8", gas: 0.333 },
-      { address: "0x3170ed0880ac9a755fd29b2688956bd959f933f8", gas: 0.55 },
-    ],
-    gasAvailable: 0.01,
-    tx: 123,
-    defaultNetwork: 1,
-    worksFor: 1,
-  });
+  const [filterText, setFilterText] = useState<string>("");
+  const [filterTextDebounce] = useDebounce(filterText, 500);
+  const [filterAccounts, setFilterAccounts] = useState<Array<IAccountGas>>([]);
 
-  const worksForOptions = [
-    {
-      value: 1,
-      label: "Auto-Flow",
-    },
-    {
-      value: 2,
-      label: "Token-swap",
-    },
-  ];
+  useEffect(() => {
+    if (!filterTextDebounce) {
+      setFilterAccounts(accounts);
+    }
 
-  const [currentNetwork, setCurrentNetwork] = useState(
-    keyStoreItem?.defaultNetwork || null,
-  );
+    const filterAccounts = accounts.filter((aG) =>
+      aG.account.toLowerCase().includes(filterTextDebounce.toLowerCase()),
+    );
 
-  const [currentWorksFor, setCurrentWorksFor] = useState(
-    keyStoreItem?.worksFor,
-  );
+    setFilterAccounts(filterAccounts);
+  }, [filterTextDebounce, accounts]);
 
   const handleSelectNetwork = (networkOption: any) => {
     setCurrentNetwork(networkOption.id);
@@ -64,6 +74,17 @@ export default function KeyStoreItem() {
   const handleDeleteKs = () => {};
 
   function WorksForSelect() {
+    const worksForOptions = [
+      {
+        value: 1,
+        label: "Auto-Flow",
+      },
+      {
+        value: 2,
+        label: "Token-swap",
+      },
+    ];
+
     return (
       <div className="flex w-full items-center">
         <div className="flex items-center">
@@ -99,13 +120,9 @@ export default function KeyStoreItem() {
         }}
       >
         <div className="flex flex-col justify-stretch">
-          <DetailItem title="Address">
-            {keyStoreItem?.address?.length}
-          </DetailItem>
-          <DetailItem title="Gas Available">
-            {keyStoreItem?.gasAvailable}
-          </DetailItem>
-          <DetailItem title="Tx">{keyStoreItem?.tx}</DetailItem>
+          <DetailItem title="Address">{accountCount}</DetailItem>
+          <DetailItem title="Gas Available">{gasAvailable}</DetailItem>
+          <DetailItem title="Tx">{tx}</DetailItem>
           <DetailItem title="Default Network">
             <NetworkSelect
               value={currentNetwork}
@@ -126,8 +143,67 @@ export default function KeyStoreItem() {
     );
   }
 
-  function AddressCol() {
+  function AccountsTable() {
     return (
+      <Table>
+        <TableHeader className="h-10 bg-white text-content-color">
+          <TableRow className="border-b border-shadow-color">
+            <TableHead className="w-[100px] text-center font-normal">
+              #
+            </TableHead>
+            <TableHead className="font-normal">Address</TableHead>
+            <TableHead className="font-normal">Gas</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="text-lg">
+          {filterAccounts.length ? (
+            filterAccounts?.map((aG, index) => (
+              <TableRow
+                key={aG.account}
+                className="h-[56px] border-b border-shadow-color"
+              >
+                <TableCell className="min-w-[40px] max-w-[40px] text-center">
+                  {index}
+                </TableCell>
+                <TableCell>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex items-center">
+                          {displayText(aG.account)}
+                          <CopyIcon text={aG.account} />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{aG.account}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </TableCell>
+                <TableCell>{aG.gas}</TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={3}>
+                <div className="flex flex-col items-center justify-center pt-10 text-content-color">
+                  <PackageOpen className="mb-5 h-[40px] w-[40px]" />
+                  <p className="text-lg">Data Not Found</p>
+                </div>
+              </td>
+            </tr>
+          )}
+        </TableBody>
+      </Table>
+    );
+  }
+
+  return (
+    <div
+      style={{ height: "calc(100vh - 70px)" }}
+      className="flex min-h-[400px] flex-1 items-stretch bg-[#fafafa]"
+    >
+      <DetailCol />
       <div className="flex flex-1 flex-col justify-stretch">
         <div
           style={{
@@ -139,41 +215,12 @@ export default function KeyStoreItem() {
             className="rounded-3xl bg-custom-bg-white"
             type="text"
             placeholder="Search"
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
           />
         </div>
-        <table>
-          <thead className="h-10 bg-white text-content-color">
-            <tr className="border-b border-shadow-color">
-              <th className="font-normal">#</th>
-              <th className="text-left font-normal">Address</th>
-              <th className="text-left font-normal">Gas</th>
-            </tr>
-          </thead>
-          <tbody>
-            {keyStoreItem?.address?.map((address, index) => (
-              <tr key={index} className="h-[56px] border-b border-shadow-color">
-                <td className="min-w-[40px] max-w-[40px] text-center">
-                  {index}
-                </td>
-                <td>
-                  <div className="flex items-center">
-                    {displayText(address.address)}
-                    <CopyIcon text={address.address} />
-                  </div>
-                </td>
-                <td>{address.gas}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <AccountsTable />
       </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-1 items-stretch bg-[#fafafa]">
-      <DetailCol />
-      <AddressCol />
     </div>
   );
 }

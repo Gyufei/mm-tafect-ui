@@ -1,3 +1,5 @@
+"use client";
+
 export default function NoCheckIcon(props: any) {
   return (
     <svg
@@ -33,7 +35,7 @@ export default function NoCheckIcon(props: any) {
                 fillOpacity="0"
                 strokeOpacity="1"
                 stroke="currentColor"
-                stroke-width="2"
+                strokeWidth="2"
               />
             </g>
           </g>

@@ -2,21 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, PlusCircle } from "lucide-react";
+import { ChevronRight, Loader, PlusCircle } from "lucide-react";
 
 import "./index.css";
 import { cn } from "@/lib/utils";
 import { PathMap } from "@/lib/path";
 
-import { useFetch } from "@/lib/hooks/use-fetch";
+import { useFetcher } from "@/lib/hooks/use-fetcher";
 import { useEffect, useMemo } from "react";
 import { redirect } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
+import useSWR from "swr";
 
 export default function KeyStoreLinks() {
+  const fetcher = useFetcher();
   const pathname = usePathname();
 
-  const { data, mutate, isLoading } = useFetch(PathMap.keyStores);
+  const { data, mutate, isLoading } = useSWR(PathMap.keyStores, fetcher);
   const currentId = useMemo<string>(() => pathname.split("/")[2], [pathname]);
   const keyStores = useMemo<Array<string>>(
     () => data?.keystore_name_list || [],
@@ -55,7 +57,7 @@ export default function KeyStoreLinks() {
           onClick={() => mutate()}
           className="flex w-full items-center justify-center rounded border border-primary bg-white py-2 text-base text-primary hover:bg-custom-bg-white"
         >
-          <PlusCircle className="mr-2 h-4 w-4" />
+          <PlusCircle className="mb-[2px] mr-2 h-4 w-4" />
           Load KeyStore
         </button>
       </div>

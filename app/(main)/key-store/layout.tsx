@@ -1,6 +1,4 @@
-import "./index.css";
-
-import KeyStoreLinks from "@/components/keyStore/keyStoreLinks";
+import KeyStoreLinks from "@/components/key-store/key-store-links";
 
 export default async function KeyStoreLayout({
   children,

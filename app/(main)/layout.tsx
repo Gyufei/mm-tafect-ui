@@ -23,11 +23,11 @@ const Links = [
   },
   {
     name: "KeyStore",
-    href: "/keyStore",
+    href: "/key-store",
   },
   {
     name: "TokenSwap",
-    href: "/tokenSwap",
+    href: "/token-swap",
   },
   {
     name: "Setting",
@@ -144,9 +144,9 @@ function LinkGroup({ pathname }: { pathname: string }) {
         <Link
           key={link.name}
           className={cn(
-            "SideLink",
-            (pathname === link.href || pathname.includes(link.href)) &&
-              "active",
+            "mb-2 border border-transparent px-4 py-[6px] text-sm font-medium text-content-color hover:rounded hover:border-primary hover:bg-white hover:text-primary",
+            pathname.includes(link.href) &&
+              "rounded border-primary bg-white text-primary",
           )}
           href={link.href}
         >

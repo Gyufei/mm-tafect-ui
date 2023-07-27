@@ -1,8 +1,6 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { redirect } from "next/navigation";
-
 import { IUser } from "@/lib/types/user";
 
 import LoginForm from "@/components/login/login-form";

@@ -1,18 +1,11 @@
 "use client";
+import useSWR from "swr";
+import { sortBy } from "lodash";
+import { useDebounce } from "use-debounce";
 import { useEffect, useMemo, useState } from "react";
 import { Check, PackageOpen, Trash2 } from "lucide-react";
 
-import "./index.css";
-import { IKeyStore } from "@/lib/types/keyStore";
-import { Checkbox } from "@/components/ui/checkbox";
-import CopyIcon from "@/components/shared/copy-icon";
-import { displayText } from "@/lib/utils";
-import DetailItem from "@/components/common/DetailItem";
-import NetworkSelect from "@/components/common/NetworkSelect/network-select";
 import { Input } from "@/components/ui/input";
-import { PathMap } from "@/lib/path";
-import { usePathname, useSearchParams } from "next/navigation";
-import { IAccountGas, useAccountGas } from "@/lib/hooks/use-account-gas";
 import {
   Table,
   TableBody,
@@ -28,87 +21,70 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useDebounce } from "use-debounce";
 
-export default function KeyStoreItem({
-  params,
-}: {
-  params: { keyStoreItem: string };
-}) {
-  const keyStoreName = useMemo(() => params.keyStoreItem, [params]);
+import { displayText } from "@/lib/utils";
+import { PathMap } from "@/lib/path-map";
+import fetcher from "@/lib/fetcher";
 
-  const [currentNetwork, setCurrentNetwork] = useState(1);
-  const [currentWorksFor, setCurrentWorksFor] = useState(null);
+import { KeyStorePageSelect } from "@/components/key-store/key-store-page-select";
+import CopyIcon from "@/components/shared/copy-icon";
+import DetailItem from "@/components/shared/detail-item";
+import NetworkSelect from "@/components/shared/network-select/network-select";
 
-  const { accounts, count: accountCount } = useAccountGas(
-    keyStoreName,
-    currentNetwork,
+interface IAccountGas {
+  account: string;
+  gas: string;
+  tx: number;
+}
+
+export default function KeyStoreItem({ params }: { params: { item: string } }) {
+  const keyStoreName = params.item;
+
+  const [currentNetwork, setCurrentNetwork] = useState(11155111);
+
+  const { data: keyStoreAccountsData } = useSWR(
+    `${PathMap.keyStoreAccounts}?keystore=${keyStoreName}&chain_id=${currentNetwork}`,
+    fetcher,
   );
-  const [tx, setTx] = useState(0);
-  const [gasAvailable, setGasAvailable] = useState(0);
+
+  const accounts: Array<IAccountGas> = useMemo(() => {
+    if (keyStoreAccountsData?.[0].accounts) {
+      const acc = sortBy(keyStoreAccountsData?.[0].accounts, "gas");
+      return acc.reverse();
+    }
+    return [];
+  }, [keyStoreAccountsData]);
+  const accountCount: number = keyStoreAccountsData?.[0].count || 0;
+  const tx = accounts.reduce(
+    (acc: number, aG: Record<string, any>) => acc + aG.tx,
+    0,
+  );
+  const gasAvailable = accounts.filter(
+    (aG: Record<string, any>) => aG.gas > 0,
+  ).length;
 
   const [filterText, setFilterText] = useState<string>("");
   const [filterTextDebounce] = useDebounce(filterText, 500);
-  const [filterAccounts, setFilterAccounts] = useState<Array<IAccountGas>>([]);
-
-  useEffect(() => {
+  const filterAccounts = useMemo(() => {
     if (!filterTextDebounce) {
-      setFilterAccounts(accounts);
+      return accounts;
     }
 
-    const filterAccounts = accounts.filter((aG) =>
+    const filtered = accounts.filter((aG) =>
       aG.account.toLowerCase().includes(filterTextDebounce.toLowerCase()),
     );
 
-    setFilterAccounts(filterAccounts);
+    return filtered;
   }, [filterTextDebounce, accounts]);
 
   const handleSelectNetwork = (networkOption: any) => {
     setCurrentNetwork(networkOption.id);
   };
 
-  const handleCheckWorksFor = (worksForOption: any) => {
-    setCurrentWorksFor(worksForOption.value);
-  };
-
   const handleDeleteKs = () => {};
 
   function WorksForSelect() {
-    const worksForOptions = [
-      {
-        value: 1,
-        label: "Auto-Flow",
-      },
-      {
-        value: 2,
-        label: "Token-swap",
-      },
-    ];
-
-    return (
-      <div className="flex w-full items-center">
-        <div className="flex items-center">
-          {worksForOptions.map((option) => (
-            <div
-              key={option.value}
-              className="mr-10 flex cursor-pointer items-center"
-            >
-              <Checkbox
-                checked={currentWorksFor === option.value}
-                onCheckedChange={() => handleCheckWorksFor(option)}
-                id={option.label}
-              />
-              <label
-                className="LabelText ml-2 cursor-pointer"
-                htmlFor={option.label}
-              >
-                {option.label}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return <div></div>;
   }
 
   function DetailCol() {
@@ -130,7 +106,7 @@ export default function KeyStoreItem({
             />
           </DetailItem>
           <DetailItem title="Works for">
-            <WorksForSelect />
+            <KeyStorePageSelect keyStoreName={keyStoreName} />
           </DetailItem>
         </div>
         <div className="flex w-full justify-end pr-2">
@@ -204,6 +180,7 @@ export default function KeyStoreItem({
       className="flex min-h-[400px] flex-1 items-stretch bg-[#fafafa]"
     >
       <DetailCol />
+
       <div className="flex flex-1 flex-col justify-stretch">
         <div
           style={{

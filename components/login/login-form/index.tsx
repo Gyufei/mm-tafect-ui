@@ -125,7 +125,9 @@ export default function LoginForm(props: LoginFormProps) {
           </div>
           <div>
             If you were invited to 1password by someone else , they can
-            <div className="Link">recover your account</div>
+            <div className="cursor-pointer text-primary">
+              recover your account
+            </div>
           </div>
         </div>
       );
@@ -182,7 +184,9 @@ export default function LoginForm(props: LoginFormProps) {
               >
                 sign in
               </button>
-              <div className="Link text-sm">Having trouble signing in?</div>
+              <div className="cursor-pointer text-sm text-primary">
+                Having trouble signing in?
+              </div>
             </div>
           </form>
         </Form>

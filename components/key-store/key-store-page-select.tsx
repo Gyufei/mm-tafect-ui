@@ -1,0 +1,70 @@
+import useSWR from "swr";
+import { Checkbox } from "@/components/ui/checkbox";
+
+import fetcher from "@/lib/fetcher";
+import { PathMap } from "@/lib/path-map";
+
+export const KeyStorePageSelect = ({
+  keyStoreName,
+}: {
+  keyStoreName: string;
+}) => {
+  const { data: pages } = useSWR(PathMap.allPages, fetcher);
+  const { data: currentPage, mutate: pageMutate } = useSWR(
+    `${PathMap.keyStorePages}?keystore=${keyStoreName}`,
+    fetcher,
+  );
+
+  async function handleCheckPage(pageName: string) {
+    if (currentPage?.includes(pageName)) {
+      pageMutate(removePage(pageName));
+    } else {
+      pageMutate(addPage(pageName));
+    }
+  }
+
+  async function addPage(pageName: string) {
+    const params = {
+      keystore_name: keyStoreName,
+      pages_name: pageName,
+    };
+
+    return fetcher(PathMap.keyStoreAddPage, {
+      method: "POST",
+      body: JSON.stringify(params),
+    }).then((res) => "123");
+  }
+
+  async function removePage(pageName: string) {
+    const params = {
+      keystore_name: keyStoreName,
+      pages_name: pageName,
+    };
+
+    return fetcher(PathMap.keyStoreRemovePage, {
+      method: "POST",
+      body: JSON.stringify(params),
+    }).then((res) => "123");
+  }
+  return (
+    <div className="flex w-full items-center">
+      <div className="flex items-center">
+        {(pages || []).map((p: Record<string, any>) => (
+          <div key={p.id} className="mr-10 flex cursor-pointer items-center">
+            <Checkbox
+              checked={currentPage?.includes(p.pages_name)}
+              onCheckedChange={() => handleCheckPage(p.pages_name)}
+              id={p.pages_name}
+            />
+            <label
+              className="LabelText ml-2 cursor-pointer"
+              htmlFor={p.pages_name}
+            >
+              {p.pages_name}
+            </label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};

@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Copy } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 
 export default function CopyIcon({ text }: { text: string }) {
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
   };
-
-  const { toast } = useToast();
 
   const [open, setOpen] = useState(false);
 

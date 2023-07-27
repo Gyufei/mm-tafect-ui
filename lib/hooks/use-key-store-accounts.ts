@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import { PathMap } from "../path";
-import { useFetcher } from "./use-fetcher";
 import useSWR from "swr";
+import { useEffect, useState } from "react";
+
+import fetcher from "@/lib/fetcher";
+import { PathMap } from "@/lib/path-map";
 
 export interface KeyStoreAccount {
   name: string;
@@ -9,33 +10,27 @@ export interface KeyStoreAccount {
   count: number;
 }
 
-export function useKeyStoreAccounts() {
-  const fetcher = useFetcher();
-  const { data: keyStoreData } = useSWR(PathMap.keyStores, fetcher);
-
-  const keyStores = useMemo<Array<string>>(
-    () => keyStoreData?.keystore_name_list || [],
-    [keyStoreData],
-  );
+export function useKeyStoreAccounts(network: number) {
+  const { data: keyStores } = useSWR(PathMap.userKeyStores, fetcher);
 
   const [keyStoreAccounts, setKeyStoreAccounts] = useState<
     Array<KeyStoreAccount>
   >([]);
 
   useEffect(() => {
-    if (!keyStores.length) {
+    if (!keyStores?.length || !network) {
       return;
     }
 
     async function getItemAccounts() {
       const ksAcs = await Promise.all(
-        keyStores.map(async (keyStore) => {
+        keyStores.map(async (name: string) => {
           const res = await fetcher(
-            `${PathMap.keyStoreAccounts}?keystore=${keyStore}`,
+            `${PathMap.keyStoreAccounts}?keystore=${name}&chain_id=${network}`,
           );
           const accounts = (res?.[0]?.accounts as Array<string>) || [];
           const count = res?.[0]?.count;
-          return { name: keyStore, accounts, count };
+          return { name, accounts, count };
         }),
       );
 
@@ -43,7 +38,7 @@ export function useKeyStoreAccounts() {
     }
 
     getItemAccounts();
-  }, [keyStores]);
+  }, [keyStores, network]);
 
   return keyStoreAccounts;
 }

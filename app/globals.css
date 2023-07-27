@@ -55,27 +55,6 @@ html {
     @apply text-sm font-medium text-content-color;
   }
 
-  .FormMessage {
-    @apply text-xs text-red-500 opacity-80;
-  }
-
-  .Link {
-    @apply cursor-pointer text-primary;
-  }
-
-  .SideLink {
-    @apply mb-2 border border-transparent px-4 py-[6px] text-sm font-medium text-content-color;
-  }
-
-  .SideLink.active,
-  .SideLink:hover {
-    @apply rounded border-primary bg-white text-primary;
-  }
-
-  .Label {
-    @apply pl-2 text-lg font-medium text-title-color;
-  }
-
   .Tag {
     @apply rounded-md border px-1 text-sm;
   }

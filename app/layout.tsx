@@ -9,6 +9,7 @@ import { chesna, inter } from "./fonts";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 import SessionContext from "@/lib/providers/SessionContext";
+import SWRContext from "@/lib/providers/SWRContext";
 
 export const metadata: Metadata = {
   title: "mm-tafect-ui",
@@ -35,7 +36,9 @@ export default async function RootLayout({
     <html lang="en" className={cn(chesna.variable, inter.variable)}>
       <body className="h-screen w-full overflow-y-hidden">
         <Suspense fallback="Loading">
-          <SessionContext session={session}>{children}</SessionContext>
+          <SessionContext session={session}>
+            <SWRContext>{children}</SWRContext>
+          </SessionContext>
         </Suspense>
         <Analytics />
         <Toaster />

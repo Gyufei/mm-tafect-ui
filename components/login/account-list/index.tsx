@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 
-import "./index.css";
 import { IUser } from "@/lib/types/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -59,7 +58,12 @@ export default function AccountList(props: AcProps) {
   };
 
   return (
-    <div className="account-list max-w-md">
+    <div
+      className="max-w-md"
+      style={{
+        paddingTop: "24vh",
+      }}
+    >
       <div className="mb-4 text-lg font-bold text-title-color">
         Pick up one account
       </div>

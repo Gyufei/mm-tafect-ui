@@ -1,20 +1,21 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
+import { uniqBy } from "lodash";
 import { format } from "date-fns";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowBigRight,
   ChevronDownCircle,
-  Check,
   ChevronDown,
-  Unlock,
   Loader2,
 } from "lucide-react";
-import { uniqBy } from "lodash";
 
 import { DateTimePickerInput } from "react-datetime-range-super-picker";
 import "react-datetime-range-super-picker/dist/index.css";
 import "./index.css";
+
+import { Checkbox } from "@/components/ui/checkbox";
 
 import {
   Popover,
@@ -27,8 +28,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Calendar } from "@/components/ui/calendar";
-import DetailItem from "@/components/common/DetailItem";
-import NetworkSelect from "@/components/common/NetworkSelect/network-select";
 import {
   Select,
   SelectContent,
@@ -40,67 +39,96 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn, displayText } from "@/lib/utils";
 
+import DetailItem from "@/components/shared/detail-item";
+import NetworkSelect from "@/components/shared/network-select/network-select";
 import UnlockIcon from "@/components/icons/unlock";
 import LockIcon from "@/components/icons/lock";
 import NoCheckIcon from "@/components/icons/noCheck";
+
 import { ITask, TaskType } from "@/lib/types/task";
-import { useFetcher } from "@/lib/hooks/use-fetcher";
-import { PathMap } from "@/lib/path";
+import fetcher from "@/lib/fetcher";
+import { PathMap } from "@/lib/path-map";
 import {
   KeyStoreAccount,
   useKeyStoreAccounts,
 } from "@/lib/hooks/use-key-store-accounts";
+
 import { useStrNum } from "@/lib/hooks/use-str-num";
-import useSWR from "swr";
+import FilterAccountList from "@/components/token-swap/filter-account-list";
 
 export default function TokenSwap() {
-  const fetcher = useFetcher();
   const [currentNetwork, setCurrentNetwork] = useState(11155111);
+  const [selectedToken, setSelectedToken] = useState<string>();
+  const [openKeyStorePop, setKeyStorePop] = useState(false);
+  const [selectedKeyStores, setSelectedKeyStore] = useState<
+    Array<KeyStoreAccount>
+  >([]);
+
+  const keyStoreOptions = useKeyStoreAccounts(currentNetwork);
+
+  useEffect(() => {
+    if (!selectedKeyStores.length && keyStoreOptions.length) {
+      setSelectedKeyStore([keyStoreOptions[0]]);
+    }
+  }, [keyStoreOptions]);
 
   const handleSelectNetwork = (networkOption: any) => {
+    if (networkOption.id === currentNetwork) {
+      filterResultReset();
+      setSelectedToken("");
+      setTokenMax("");
+      setTokenMin("");
+    }
     setCurrentNetwork(networkOption.id);
   };
 
-  const [openPopover, setOpenPopover] = useState(false);
-
-  const [currentKeyStore, setCurrentKeyStore] =
-    useState<KeyStoreAccount | null>(null);
-
-  const keyStoreOptions = useKeyStoreAccounts();
-
-  useEffect(() => {
-    setCurrentKeyStore(keyStoreOptions[0]);
-  }, [keyStoreOptions]);
-
   const handleSelectKeyStore = (keyStore: any) => {
-    setCurrentKeyStore(keyStore);
-    setOpenPopover(false);
+    setSelectedKeyStore((ks) => {
+      if (ks.some((k) => k.name === keyStore.name)) {
+        return ks.filter((k) => k.name !== keyStore.name);
+      } else {
+        return [...ks, keyStore];
+      }
+    });
+    setKeyStorePop(false);
   };
-
-  const [tokenAddress, setTokenAddress] = useState<string>("");
 
   const { data: tokens } = useSWR(
     `${PathMap.tokenList}?chain_id=${currentNetwork}`,
     fetcher,
   );
+
   const uniqueTokens = useMemo(() => {
     return uniqBy(tokens, "address") as any;
   }, [tokens]);
 
-  const [tokenMin, setTokenMin] = useStrNum();
-  const [tokenMax, setTokenMax] = useStrNum();
+  const [tokenMin, setTokenMin] = useStrNum("");
+  const [tokenMax, setTokenMax] = useStrNum("");
 
-  const [filterAccountParams, setFilterAccountParams] = useState<string>();
+  const {
+    data: filteredAccounts,
+    isMutating: filtering,
+    trigger: filterTrigger,
+    reset: filterResultReset,
+  } = useSWRMutation(
+    () => `${PathMap.filterAccount}?${getFilterQuery()}`,
+    fetcher as any,
+  );
 
-  function parseFilterAccountParams() {
+  useEffect(() => {}, [currentNetwork]);
+
+  function getFilterQuery() {
     const queryParams = new URLSearchParams();
 
     if (currentNetwork) {
       queryParams.set("chain_id", currentNetwork.toString());
     }
 
-    if (currentKeyStore) {
-      queryParams.set("keystore", currentKeyStore.name);
+    if (selectedKeyStores.length) {
+      queryParams.set(
+        "keystore",
+        selectedKeyStores.map((ks) => ks.name).join(","),
+      );
     }
 
     if (tokenMin) {
@@ -111,31 +139,16 @@ export default function TokenSwap() {
       queryParams.set("token_amount_maximum", tokenMax.toString());
     }
 
-    if (tokenAddress) {
-      queryParams.set("token_address", tokenAddress);
+    if (selectedToken) {
+      queryParams.set("token_address", selectedToken);
     }
 
-    return queryParams.toString();
-  }
+    const query = queryParams.toString();
 
-  const { data: filterAccounts, isLoading: filtering } = useSWR(
-    `${PathMap.filterAccount}?${filterAccountParams}`,
-    fetcher,
-    {
-      revalidateOnMount: false,
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    },
-  );
-
-  function handleFilterAccount() {
-    const params = parseFilterAccountParams();
-    setFilterAccountParams(params);
+    return query;
   }
 
   const [date, setDate] = useState<Date>();
-
   const [scheduledDateTime, setScheduledDateTime] = useState(new Date());
   const handleDateUpdate = ({ date }: any) => {
     setScheduledDateTime(date.date);
@@ -147,50 +160,6 @@ export default function TokenSwap() {
       title: "TransferSEP",
       type: "Queued",
       address: "0x131314112131113131311312321124241452334542342",
-      gas: "0.0012",
-      recipient: "0x13131411231311131313131312321124241452334542342",
-      value: "0.0032",
-      nonce: 3,
-      direction: "USDT->IPI",
-    },
-    {
-      date: "2021-09-09 12:00:00",
-      title: "TransferSEP",
-      type: "Pending",
-      address: "0x1313141123131113131311312321124241452334542342",
-      gas: "0.0012",
-      recipient: "0x13131411231311131313131312321124241452334542342",
-      value: "0.0032",
-      nonce: 3,
-      direction: "USDT->IPI",
-    },
-    {
-      date: "2021-09-09 12:00:00",
-      title: "TransferSEP",
-      type: "Finished",
-      address: "0x13131411231311131313313232112424152334542342",
-      gas: "0.0012",
-      recipient: "0x13131411231311131313131312321124241452334542342",
-      value: "0.0032",
-      nonce: 3,
-      direction: "USDT->IPI",
-    },
-    {
-      date: "2021-09-09 12:00:00",
-      title: "TransferSEP",
-      type: "Failed",
-      address: "0x1313141131311131313131312321124241452334542342",
-      gas: "0.0012",
-      recipient: "0x13131411231311131313131312321124241452334542342",
-      value: "0.0032",
-      nonce: 3,
-      direction: "USDT->IPI",
-    },
-    {
-      date: "2021-09-09 12:00:00",
-      title: "TransferSEP",
-      type: "Canceled",
-      address: "0x1313141123131113313131312321124241452334542342",
       gas: "0.0012",
       recipient: "0x13131411231311131313131312321124241452334542342",
       value: "0.0032",
@@ -345,20 +314,41 @@ export default function TokenSwap() {
     );
   }
 
+  const [selectedOp, setSelectedOp] = useState<Record<string, any> | null>(
+    null,
+  );
+
+  const handleSelectOP = (opId: string) => {
+    const op = opList.find((op: Record<string, any>) => op.id === opId);
+    setSelectedOp(op);
+  };
+
+  const { data: opList } = useSWR(
+    `${PathMap.ops}?chain_id=${currentNetwork}`,
+    fetcher,
+  );
+
+  const [queryAccount, setQueryAccount] = useState<string>("");
+
+  function handleQueryAccount() {}
+
   function SecondCol() {
     return (
       <div className="flex h-full flex-1 flex-col justify-between border-r border-r-[#dadada]">
         <div className="flex flex-col">
           <div className="p-3">
             <div className="LabelText mb-1">OP</div>
-            <Select>
+            <Select
+              value={selectedOp?.id}
+              onValueChange={(e) => handleSelectOP(e)}
+            >
               <SelectTrigger>
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Select OP" />
               </SelectTrigger>
               <SelectContent>
-                {(uniqueTokens || []).map((token: Record<string, string>) => (
-                  <SelectItem key={token.name} value={token.address}>
-                    {token.name}
+                {(opList || []).map((op: Record<string, string>) => (
+                  <SelectItem key={op.id} value={op.id}>
+                    {op.op_name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -368,8 +358,16 @@ export default function TokenSwap() {
           <div className="p-3 pt-0">
             <div className="LabelText mb-1">FromAddress</div>
             <div className="flex justify-between">
-              <Input className="mr-3 border-border-color bg-white" />
-              <button className="rounded-md border border-border-color bg-white px-6 font-bold text-title-color hover:bg-custom-bg-white">
+              <Input
+                value={queryAccount}
+                onChange={(e) => setQueryAccount(e.target.value)}
+                className="mr-3 border-border-color bg-white"
+                placeholder="0x11111111111"
+              />
+              <button
+                onClick={() => handleQueryAccount()}
+                className="rounded-md border border-border-color bg-white px-6 font-bold text-title-color hover:bg-custom-bg-white"
+              >
                 Query
               </button>
             </div>
@@ -577,21 +575,21 @@ export default function TokenSwap() {
           </DetailItem>
           <DetailItem title="KeyStore">
             <Popover
-              open={openPopover}
-              onOpenChange={(isOpen) => setOpenPopover(isOpen)}
+              open={openKeyStorePop}
+              onOpenChange={(isOpen) => setKeyStorePop(isOpen)}
             >
               <PopoverTrigger className="w-[350px]">
                 <div
                   className="flex items-center transition-all duration-75 active:bg-gray-100"
-                  onClick={() => setOpenPopover(!openPopover)}
+                  onClick={() => setKeyStorePop(!openKeyStorePop)}
                 >
-                  {currentKeyStore ? (
+                  {selectedKeyStores.length ? (
                     <>
                       <div className="mr-2 text-title-color">
-                        {currentKeyStore.name}
+                        {selectedKeyStores[0].name}
                       </div>
                       <div className="Tag mr-2 bg-[#e9eaee]">
-                        {currentKeyStore.accounts.length}
+                        {selectedKeyStores.length}
                       </div>
                     </>
                   ) : (
@@ -601,7 +599,7 @@ export default function TokenSwap() {
                   )}
                   <ChevronDown
                     className={`h-4 w-4 text-gray-600 transition-all ${
-                      openPopover ? "rotate-180" : ""
+                      openKeyStorePop ? "rotate-180" : ""
                     }`}
                   />
                 </div>
@@ -609,7 +607,7 @@ export default function TokenSwap() {
               <PopoverContent className="w-[360px]" align="start">
                 <div className="w-[340px] rounded-md bg-white">
                   <div className="flex flex-col">
-                    <div className="LabelText flex items-center">
+                    <div className="LabelText mb-1 flex items-center">
                       Available KeyStores
                     </div>
                     <div className="flex flex-wrap">
@@ -620,11 +618,13 @@ export default function TokenSwap() {
                         >
                           <Checkbox
                             id={option.name}
-                            checked={currentKeyStore?.name === option.name}
+                            checked={selectedKeyStores.some(
+                              (ks) => ks.name === option.name,
+                            )}
                             onCheckedChange={() => handleSelectKeyStore(option)}
                           />
                           <label
-                            className="Label flex cursor-pointer items-center"
+                            className="flex cursor-pointer items-center pl-2 text-lg font-medium text-title-color"
                             htmlFor={option.name}
                           >
                             {option.name}
@@ -647,8 +647,8 @@ export default function TokenSwap() {
             <div className="LabelText mb-1">Token</div>
             <div className="mb-3">
               <Select
-                value={tokenAddress}
-                onValueChange={(e) => setTokenAddress(e)}
+                value={selectedToken}
+                onValueChange={(e) => setSelectedToken(e)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Token" />
@@ -681,7 +681,7 @@ export default function TokenSwap() {
           <div className="relative mt-8 flex flex-col border-t border-shadow-color pt-5">
             <Button
               disabled={filtering}
-              onClick={() => handleFilterAccount()}
+              onClick={() => filterTrigger()}
               className="disabled:opacity-1 absolute top-[-20px] mx-3 flex w-[95%] items-center justify-center rounded border bg-white py-2 hover:bg-custom-bg-white"
             >
               {filtering && (
@@ -689,33 +689,7 @@ export default function TokenSwap() {
               )}
               <span className="text-title-color">Filter Account</span>
             </Button>
-            <div
-              className="overflow-y-auto pb-2"
-              style={{
-                height: "calc(100vh - 413px)",
-              }}
-            >
-              {Array.isArray(filterAccounts) &&
-                filterAccounts.map((acc, index) => (
-                  <div
-                    key={acc.account}
-                    className="flex h-[73px] items-center justify-between border-b p-4"
-                  >
-                    <div className="self-start pl-2 pr-5 text-lg leading-none text-content-color">
-                      {index + 1}
-                    </div>
-                    <div className="flex flex-1 flex-col">
-                      <div className="text-lg font-medium text-title-color">
-                        {displayText(acc.account)}
-                      </div>
-                      <div className="LabelText flex">
-                        <div className="mr-6">ETH {acc.gas_token_amount}</div>
-                        <div>USDT {acc.quote_token_amount}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
+            <FilterAccountList accounts={filteredAccounts} />
           </div>
         </div>
       </div>

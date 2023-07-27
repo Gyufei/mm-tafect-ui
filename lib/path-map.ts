@@ -1,0 +1,20 @@
+function WithHost(path: string) {
+  return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
+}
+
+export const PathMap = {
+  login: WithHost("/user/login"),
+  userKeyStores: WithHost("/keystore/user"),
+  keyStoreAccounts: WithHost("/keystore/accounts"),
+  tokenList: WithHost("/tokenswap/token_list"),
+  filterAccount: WithHost("/tokenswap/filter_account"),
+  allPages: WithHost("/keystore/pages/all"),
+  keyStorePages: WithHost("/keystore/pages"),
+  keyStoreRemovePage: WithHost("/keystore/pages/remove"),
+  keyStoreAddPage: WithHost("/keystore/pages/add"),
+  ops: WithHost("/setting/op"),
+  accountBalance: WithHost("/web3/batch_token_balanceof"),
+
+  //
+  accountGas: WithHost("/web3/balanceof"),
+};

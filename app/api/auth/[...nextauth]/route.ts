@@ -1,4 +1,4 @@
-import { PathMap } from "@/lib/path";
+import { PathMap } from "@/lib/path-map";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -19,7 +19,6 @@ export const authOptions: NextAuthOptions = {
         const json = await res.json();
         if (json && json.status) {
           const name = req?.body?.email.split("@")[0];
-          console.log(json.data);
 
           return {
             id: String(Math.floor(Math.random() * 10000)),
@@ -27,8 +26,6 @@ export const authOptions: NextAuthOptions = {
             email: req?.body?.email,
             image: json?.data?.access_token,
           };
-        } else {
-          return null;
         }
         return null;
       },

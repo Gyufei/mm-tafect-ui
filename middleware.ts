@@ -5,9 +5,9 @@ export const config = {
     "/",
     "/dashboard",
     "/dashboard/(.*)",
-    "/keyStore",
-    "/keyStore/(.*)",
-    "/tokenSwap",
-    "/tokenSwap/(.*)",
+    "/key-store",
+    "/key-store/(.*)",
+    "/token-swap",
+    "/token-swap/(.*)",
   ],
 };

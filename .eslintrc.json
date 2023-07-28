@@ -5,5 +5,13 @@
   ],
   "globals": {
     "React": true
+  },
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ]
   }
 }

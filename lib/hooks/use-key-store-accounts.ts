@@ -4,21 +4,21 @@ import { useEffect, useState } from "react";
 import fetcher from "@/lib/fetcher";
 import { PathMap } from "@/lib/path-map";
 
-export interface KeyStoreAccount {
+export interface IKeyStoreAccount {
   name: string;
   accounts: Array<string>;
   count: number;
 }
 
-export function useKeyStoreAccounts(network: string) {
+export function useKeyStoreAccounts(networkId: string | null) {
   const { data: keyStores } = useSWR(PathMap.userKeyStores, fetcher);
 
   const [keyStoreAccounts, setKeyStoreAccounts] = useState<
-    Array<KeyStoreAccount>
+    Array<IKeyStoreAccount>
   >([]);
 
   useEffect(() => {
-    if (!keyStores?.length || !network) {
+    if (!keyStores?.length || !networkId) {
       return;
     }
 
@@ -26,7 +26,7 @@ export function useKeyStoreAccounts(network: string) {
       const ksAcs = await Promise.all(
         keyStores.map(async (name: string) => {
           const res = await fetcher(
-            `${PathMap.keyStoreAccounts}?keystore=${name}&chain_id=${network}`,
+            `${PathMap.keyStoreAccounts}?keystore=${name}&chain_id=${networkId}`,
           );
           const accounts = (res?.[0]?.accounts as Array<string>) || [];
           const count = res?.[0]?.count;
@@ -38,7 +38,7 @@ export function useKeyStoreAccounts(network: string) {
     }
 
     getItemAccounts();
-  }, [keyStores, network]);
+  }, [keyStores, networkId]);
 
   return keyStoreAccounts;
 }

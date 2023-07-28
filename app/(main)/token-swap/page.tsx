@@ -1,156 +1,41 @@
 "use client";
-import useSWR from "swr";
-import useSWRMutation from "swr/mutation";
-import { uniqBy } from "lodash";
 import { format } from "date-fns";
-import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowBigRight,
-  ChevronDownCircle,
-  ChevronDown,
-  Loader2,
-} from "lucide-react";
+import { useState } from "react";
 
 import "./index.css";
-
-import { Checkbox } from "@/components/ui/checkbox";
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn, displayText } from "@/lib/utils";
 
 import DetailItem from "@/components/shared/detail-item";
 import NetworkSelect from "@/components/shared/network-select/network-select";
-import UnlockIcon from "@/components/icons/unlock";
-import LockIcon from "@/components/icons/lock";
-import NoCheckIcon from "@/components/icons/noCheck";
 
 import { ITask, TaskType } from "@/lib/types/task";
-import fetcher from "@/lib/fetcher";
-import { PathMap } from "@/lib/path-map";
-import {
-  KeyStoreAccount,
-  useKeyStoreAccounts,
-} from "@/lib/hooks/use-key-store-accounts";
+import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
 
-import { useStrNum } from "@/lib/hooks/use-str-num";
 import FilterAccountList from "@/components/token-swap/filter-account-list";
-import { DateTimePicker } from "@material-ui/pickers";
+import KeyStoreSelect from "@/components/token-swap/key-store-select";
+import { INetwork } from "@/lib/types/network";
+import { IToken } from "@/lib/types/token";
+import Op from "@/components/token-swap/op";
 
 export default function TokenSwap() {
-  const [currentNetwork, setCurrentNetwork] = useState("11155111");
-  const [selectedToken, setSelectedToken] = useState<string>();
-  const [openKeyStorePop, setKeyStorePop] = useState(false);
+  const [currentNetwork, setCurrentNetwork] = useState<INetwork | null>(null);
+  const [selectedToken, setSelectedToken] = useState<IToken | null>(null);
   const [selectedKeyStores, setSelectedKeyStore] = useState<
-    Array<KeyStoreAccount>
+    Array<IKeyStoreAccount>
   >([]);
 
-  const keyStoreOptions = useKeyStoreAccounts(currentNetwork);
+  const [filterTaskDate, setFilterTaskDate] = useState<Date>();
 
-  useEffect(() => {
-    if (!selectedKeyStores.length && keyStoreOptions.length) {
-      setSelectedKeyStore([keyStoreOptions[0]]);
-    }
-  }, [keyStoreOptions]);
-
-  const handleSelectNetwork = (networkOption: any) => {
-    if (networkOption.id !== currentNetwork) {
-      filterResultReset();
-      setSelectedToken("");
-      setTokenMax("");
-      setTokenMin("");
-      setCurrentNetwork(networkOption.id);
-    }
-  };
-
-  const handleSelectKeyStore = (keyStore: any) => {
-    setSelectedKeyStore((ks) => {
-      if (ks.some((k) => k.name === keyStore.name)) {
-        return ks.filter((k) => k.name !== keyStore.name);
-      } else {
-        return [...ks, keyStore];
-      }
-    });
-    setKeyStorePop(false);
-  };
-
-  const { data: tokens } = useSWR(
-    `${PathMap.tokenList}?chain_id=${currentNetwork}`,
-    fetcher,
-  );
-
-  const uniqueTokens = useMemo(() => {
-    return uniqBy(tokens, "address") as any;
-  }, [tokens]);
-
-  const [tokenMin, setTokenMin] = useStrNum("");
-  const [tokenMax, setTokenMax] = useStrNum("");
-
-  const {
-    data: filteredAccounts,
-    isMutating: filtering,
-    trigger: filterTrigger,
-    reset: filterResultReset,
-  } = useSWRMutation(
-    () => `${PathMap.filterAccount}?${getFilterQuery()}`,
-    fetcher as any,
-  );
-
-  function getFilterQuery() {
-    const queryParams = new URLSearchParams();
-
-    if (currentNetwork) {
-      queryParams.set("chain_id", currentNetwork.toString());
-    }
-
-    if (selectedKeyStores.length) {
-      queryParams.set(
-        "keystore",
-        selectedKeyStores.map((ks) => ks.name).join(","),
-      );
-    }
-
-    if (tokenMin) {
-      queryParams.set("token_amount_minimum", tokenMin.toString());
-    }
-
-    if (tokenMax) {
-      queryParams.set("token_amount_maximum", tokenMax.toString());
-    }
-
-    if (selectedToken) {
-      queryParams.set("token_address", selectedToken);
-    }
-
-    const query = queryParams.toString();
-
-    return query;
-  }
-
-  const [date, setDate] = useState<Date>();
-  const [scheduledDateTime, setScheduledDateTime] = useState(new Date());
-  const handleDateUpdate = (date: Date) => {
-    console.log(date);
-    setScheduledDateTime(date);
-  };
+  const [queryAccount, setQueryAccount] = useState<string>("");
 
   const tasks: Array<ITask> = [
     {
@@ -165,259 +50,6 @@ export default function TokenSwap() {
       direction: "USDT->IPI",
     },
   ];
-
-  function SmallTokenCard({
-    name,
-    num,
-    className,
-  }: {
-    name: string;
-    num: number;
-    className?: string;
-  }) {
-    return (
-      <div
-        className={cn(
-          "flex flex-col rounded-md border bg-custom-bg-white px-4 py-2",
-          className,
-        )}
-      >
-        <div className="LabelText ">{name}</div>
-        <div className="text-lg font-medium text-title-color">{num}</div>
-      </div>
-    );
-  }
-
-  function TokenSelectAndInput({ name }: { name: string }) {
-    return (
-      <div className="flex flex-1 flex-col">
-        <div className="LabelText mb-1">{name}</div>
-        <Select>
-          <SelectTrigger>
-            <SelectValue placeholder="Theme" />
-          </SelectTrigger>
-          <SelectContent>
-            {(uniqueTokens || []).map((token: Record<string, string>) => (
-              <SelectItem key={token.name} value={token.address}>
-                {token.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className="ml-2 h-3 border-l border-border-color" />
-        <Input className="rounded-md border-border-color" placeholder="0" />
-      </div>
-    );
-  }
-
-  function AdvanceCollapsible() {
-    const [open, setOpen] = useState(true);
-
-    return (
-      <Collapsible className="mt-6 w-full" open={open} onOpenChange={setOpen}>
-        <div className="mb-4 flex items-center pl-3">
-          <div className="mr-3 text-xs font-medium text-title-color">
-            Advance
-          </div>
-          <div className="h-[1px] flex-1 bg-shadow-color" />
-          <CollapsibleTrigger asChild>
-            <ChevronDownCircle
-              className="mx-3 h-4 w-4 cursor-pointer text-content-color"
-              style={{
-                transform: open ? "rotate(180deg)" : "rotate(0deg)",
-              }}
-            />
-          </CollapsibleTrigger>
-          <div className="h-[1px] w-[10px] bg-shadow-color" />
-        </div>
-
-        <CollapsibleContent>
-          <AdvanceContent />
-        </CollapsibleContent>
-      </Collapsible>
-    );
-  }
-
-  function AdvanceContent() {
-    return (
-      <div className="flex flex-col gap-y-3 px-3">
-        <div className="flex justify-between gap-x-3">
-          <div className="flex max-w-[150px] flex-col">
-            <div className="LabelText mb-1">Timeout(s)</div>
-            <Input className="rounded-md border-border-color" placeholder="0" />
-          </div>
-          <div className="flex flex-1 flex-col">
-            <div className="LabelText mb-1">Slippage</div>
-            <div className="relative">
-              <Input
-                className="rounded-md border-border-color"
-                placeholder="0"
-              />
-              <div className="absolute right-2 top-[7px] select-none text-title-color">
-                %
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-end justify-between gap-x-3">
-          <div>
-            <div className="LabelText mb-1">Nonce</div>
-            <Input className="rounded-md border-border-color" placeholder="0" />
-          </div>
-          <div>
-            <div className="LabelText mb-1">Gas(gwei)</div>
-            <Input className="rounded-md border-border-color" placeholder="0" />
-          </div>
-          <button className="flex h-10 cursor-pointer items-center justify-center rounded-md border px-[11px] hover:bg-custom-bg-white">
-            <UnlockIcon className="text-[#999]" />
-            {/* <LockIcon className="text-primary" /> */}
-          </button>
-          <button className="flex h-10 cursor-pointer items-center justify-center rounded-md border px-[11px] hover:bg-custom-bg-white">
-            <NoCheckIcon
-              className="text-primary"
-              style={{
-                color: "#999",
-              }}
-            />
-          </button>
-        </div>
-
-        <div className="flex flex-col">
-          <div className="LabelText mb-1">Schedule Time</div>
-          <div className="flex justify-between gap-x-3">
-            <DateTimePicker
-              inputVariant="outlined"
-              ampm={false}
-              disablePast={true}
-              value={scheduledDateTime}
-              emptyLabel="Select"
-              onChange={(e) => handleDateUpdate(e)}
-              format="YYY-MM-dd HH:mm"
-              hideTabs={true}
-              TextFieldComponent={(props) => (
-                <Input
-                  {...(props as any)}
-                  readOnly
-                  className="rounded-md border-border-color"
-                  placeholder="0"
-                />
-              )}
-            />
-            <button
-              onClick={() => setScheduledDateTime(new Date())}
-              className="flex h-10 w-[92px] cursor-pointer items-center justify-center rounded-md border hover:bg-custom-bg-white"
-            >
-              Now
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const { data: opList } = useSWR(
-    `${PathMap.ops}?chain_id=${currentNetwork}`,
-    fetcher,
-  );
-
-  const [selectedOp, setSelectedOp] = useState<Record<string, any> | null>(
-    null,
-  );
-
-  const handleSelectOP = (opName: string) => {
-    const op = opList.find((op: Record<string, any>) => op.op_name === opName);
-    setSelectedOp(op);
-  };
-
-  const [queryAccount, setQueryAccount] = useState<string>("");
-
-  function handleQueryAccount() {}
-
-  function SecondCol() {
-    return (
-      <div className="flex h-full flex-1 flex-col justify-between border-r border-r-[#dadada]">
-        <div className="flex flex-col">
-          <div className="p-3">
-            <div className="LabelText mb-1">OP</div>
-            <Select
-              value={selectedOp?.op_name}
-              onValueChange={(e) => handleSelectOP(e)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select OP" />
-              </SelectTrigger>
-              <SelectContent>
-                {(opList || []).map((op: Record<string, string>) => (
-                  <SelectItem key={op.op_name} value={op.op_name}>
-                    {op.op_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="p-3 pt-0">
-            <div className="LabelText mb-1">FromAddress</div>
-            <div className="flex justify-between">
-              <Input
-                value={queryAccount}
-                onChange={(e) => setQueryAccount(e.target.value)}
-                className="mr-3 border-border-color bg-white"
-                placeholder="0x11111111111"
-              />
-              <button
-                onClick={() => handleQueryAccount()}
-                className="rounded-md border border-border-color bg-white px-6 font-bold text-title-color hover:bg-custom-bg-white"
-              >
-                Query
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-1 flex justify-between gap-x-3 px-3">
-            <SmallTokenCard className="flex-1" name="ETH" num={0.001} />
-            <SmallTokenCard className="flex-1" name="Token" num={0.001} />
-            <SmallTokenCard className="flex-1" name="USDT" num={0.001} />
-          </div>
-
-          <div className="mt-3 flex items-center justify-between px-3">
-            <TokenSelectAndInput name="Token0" />
-            <ArrowBigRight
-              className="mx-1 mt-1 h-5 w-5 text-[#7d8998]"
-              style={{
-                transform: "translateY(10px)",
-              }}
-            />
-            <TokenSelectAndInput name="Token1" />
-          </div>
-
-          <AdvanceCollapsible />
-        </div>
-
-        <div
-          className="flex items-center gap-x-3 border-t bg-white px-3 py-2"
-          style={{
-            boxShadow:
-              "inset -1px 0px 0px 0px #D6D6D6,inset 0px 1px 0px 0px #D6D6D6",
-          }}
-        >
-          <Button
-            variant="outline"
-            className="h-[40px] w-[120px] rounded-md border border-primary text-primary"
-          >
-            Test Tx
-          </Button>
-          <Button
-            variant="outline"
-            className="h-[40px] w-[120px] rounded-md border border-primary text-primary"
-          >
-            Schedule
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   function TaskItemDetail({ task }: { task: Record<string, any> }) {
     return (
@@ -508,17 +140,21 @@ export default function TokenSwap() {
                 variant={"outline"}
                 className={cn(
                   "w-[280px] justify-start text-left font-normal",
-                  !date && "text-muted-foreground",
+                  !filterTaskDate && "text-muted-foreground",
                 )}
               >
-                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                {filterTaskDate ? (
+                  format(filterTaskDate, "PPP")
+                ) : (
+                  <span>Pick a date</span>
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                selected={date}
-                onSelect={setDate}
+                selected={filterTaskDate}
+                onSelect={setFilterTaskDate}
                 initialFocus
               />
             </PopoverContent>
@@ -530,17 +166,21 @@ export default function TokenSwap() {
                 variant={"outline"}
                 className={cn(
                   "w-[280px] justify-start text-left font-normal",
-                  !date && "text-muted-foreground",
+                  !filterTaskDate && "text-muted-foreground",
                 )}
               >
-                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                {filterTaskDate ? (
+                  format(filterTaskDate, "PPP")
+                ) : (
+                  <span>Pick a date</span>
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                selected={date}
-                onSelect={setDate}
+                selected={filterTaskDate}
+                onSelect={setFilterTaskDate}
                 initialFocus
               />
             </PopoverContent>
@@ -571,132 +211,33 @@ export default function TokenSwap() {
         <div className="flex flex-col p-4">
           <DetailItem title="Network">
             <NetworkSelect
-              value={currentNetwork}
-              onSelect={(e) => handleSelectNetwork(e)}
+              value={currentNetwork || null}
+              onSelect={(net: INetwork | null) => setCurrentNetwork(net)}
             />
           </DetailItem>
           <DetailItem title="KeyStore">
-            <Popover
-              open={openKeyStorePop}
-              onOpenChange={(isOpen) => setKeyStorePop(isOpen)}
-            >
-              <PopoverTrigger className="w-[350px]">
-                <div
-                  className="flex items-center transition-all duration-75 active:bg-gray-100"
-                  onClick={() => setKeyStorePop(!openKeyStorePop)}
-                >
-                  {selectedKeyStores.length ? (
-                    <>
-                      <div className="mr-2 text-title-color">
-                        {selectedKeyStores[0].name}
-                      </div>
-                      <div className="Tag mr-2 bg-[#e9eaee]">
-                        {selectedKeyStores.length}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-sm text-content-color">
-                      Select KeyStore
-                    </div>
-                  )}
-                  <ChevronDown
-                    className={`h-4 w-4 text-gray-600 transition-all ${
-                      openKeyStorePop ? "rotate-180" : ""
-                    }`}
-                  />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="w-[360px]" align="start">
-                <div className="w-[340px] rounded-md bg-white">
-                  <div className="flex flex-col">
-                    <div className="LabelText mb-1 flex items-center">
-                      Available KeyStores
-                    </div>
-                    <div className="flex flex-wrap">
-                      {keyStoreOptions.map((option) => (
-                        <div
-                          key={option.name}
-                          className="flex w-[160px] cursor-pointer items-center"
-                        >
-                          <Checkbox
-                            id={option.name}
-                            checked={selectedKeyStores.some(
-                              (ks) => ks.name === option.name,
-                            )}
-                            onCheckedChange={() => handleSelectKeyStore(option)}
-                          />
-                          <label
-                            className="flex cursor-pointer items-center pl-2 text-lg font-medium text-title-color"
-                            htmlFor={option.name}
-                          >
-                            {option.name}
-                            <div className="Tag ml-2 bg-[#e9eaee]">
-                              {option.accounts.length}
-                            </div>
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
+            <KeyStoreSelect
+              networkId={currentNetwork?.chain_id || null}
+              keyStores={selectedKeyStores}
+              handleKeystoreSelect={(e) => setSelectedKeyStore(e)}
+            />
           </DetailItem>
         </div>
 
-        <div className="flex flex-col justify-stretch">
-          <div className="flex flex-col px-4">
-            <div className="LabelText mb-1">Token</div>
-            <div className="mb-3">
-              <Select
-                value={selectedToken}
-                onValueChange={(e) => setSelectedToken(e)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Token" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(uniqueTokens || []).map((token: Record<string, string>) => (
-                    <SelectItem key={token.name} value={token.address}>
-                      {token.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center">
-              <Input
-                value={tokenMin}
-                onChange={(e) => setTokenMin(e.target.value)}
-                className="border-border-color bg-white"
-                placeholder="Min"
-              />
-              <div className="mx-2">-</div>
-              <Input
-                value={tokenMax}
-                onChange={(e) => setTokenMax(e.target.value)}
-                className="border-border-color bg-white"
-                placeholder="Max"
-              />
-            </div>
-          </div>
-          <div className="relative mt-8 flex flex-col border-t border-shadow-color pt-5">
-            <Button
-              disabled={filtering}
-              onClick={() => filterTrigger()}
-              className="disabled:opacity-1 absolute top-[-20px] mx-3 flex w-[95%] items-center justify-center rounded border bg-white py-2 hover:bg-custom-bg-white"
-            >
-              {filtering && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
-              )}
-              <span className="text-title-color">Filter Account</span>
-            </Button>
-            <FilterAccountList accounts={filteredAccounts} />
-          </div>
-        </div>
+        <FilterAccountList
+          token={selectedToken}
+          handleTokenSelect={(e) => setSelectedToken(e)}
+          networkId={currentNetwork?.chain_id || null}
+          keyStores={selectedKeyStores}
+        ></FilterAccountList>
       </div>
 
-      <SecondCol />
+      <Op
+        token={selectedToken}
+        network={currentNetwork}
+        queryAccount={queryAccount}
+        handleQueryAccountChange={setQueryAccount}
+      />
       <ThirdCol />
     </>
   );

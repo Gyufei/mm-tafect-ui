@@ -17,7 +17,8 @@ export const PathMap = {
 
   ops: WithHost("/setting/op"),
   networks: WithHost("/setting/networks"),
-  accountBalance: WithHost("/web3/batch_token_balanceof"),
+  accountTokenBalance: WithHost("/web3/token_balanceof"),
+  accountTokensBalance: WithHost("/web3/batch_token_balanceof"),
 
   // accountGas: WithHost("/web3/balanceof"),
 };

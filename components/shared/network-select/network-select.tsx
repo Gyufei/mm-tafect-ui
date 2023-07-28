@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -10,23 +10,16 @@ import { ChevronDown } from "lucide-react";
 import useSWR from "swr";
 import { PathMap } from "@/lib/path-map";
 import fetcher from "@/lib/fetcher";
-
-export interface INetwork {
-  block_explorer_url: string;
-  chain_id: string;
-  currency_symbol: string;
-  network_name: string;
-  rpc_url: string;
-}
+import { INetwork } from "@/lib/types/network";
 
 export default function NetworkSelect({
   value,
   onSelect,
 }: {
-  value: string | null;
-  // eslint-disable-next-line no-unused-vars
-  onSelect: (net: INetwork) => void;
+  value: INetwork | null;
+  onSelect: (_net: INetwork | null) => void;
 }) {
+  const defaultNetworkId = "11155111";
   const [openPopover, setOpenPopover] = useState(false);
 
   const { data: networks }: { data: Array<INetwork> } = useSWR(
@@ -34,9 +27,13 @@ export default function NetworkSelect({
     fetcher,
   );
 
-  const currentNetworkName = (networks || []).find(
-    (network) => network.chain_id === value,
-  )?.network_name;
+  useEffect(() => {
+    if (!value && networks?.length) {
+      onSelect(
+        networks.find((net) => net.chain_id === defaultNetworkId) || null,
+      );
+    }
+  }, [networks]);
 
   function handleSelectNetwork(network: INetwork) {
     setOpenPopover(false);
@@ -54,7 +51,7 @@ export default function NetworkSelect({
           className="flex cursor-pointer items-center transition-all duration-75 active:bg-gray-100"
         >
           <div className="mr-1 font-medium text-title-color">
-            {currentNetworkName || (
+            {value?.network_name || (
               <div className="text-content-color">Select Network</div>
             )}
           </div>
@@ -65,7 +62,7 @@ export default function NetworkSelect({
           />
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-36 p-1" align="start">
+      <PopoverContent className="w-[200px] p-1" align="start">
         <div className="rounded-md bg-white">
           {(networks || []).map((network) => (
             <button
@@ -73,7 +70,8 @@ export default function NetworkSelect({
               onClick={() => handleSelectNetwork(network)}
               className="flex w-full items-center justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100"
               style={{
-                backgroundColor: network.chain_id === value ? "#F5F5F5" : "",
+                backgroundColor:
+                  network.chain_id === value?.chain_id ? "#F5F5F5" : "",
               }}
             >
               {network.network_name}

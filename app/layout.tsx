@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 import SessionContext from "@/lib/providers/SessionContext";
 import SWRContext from "@/lib/providers/SWRContext";
+import MuiPickerContext from "@/lib/providers/MuiPickerContext";
 
 export const metadata: Metadata = {
   title: "mm-tafect-ui",
@@ -37,7 +38,9 @@ export default async function RootLayout({
       <body className="h-screen w-full overflow-y-hidden">
         <Suspense fallback="Loading">
           <SessionContext session={session}>
-            <SWRContext>{children}</SWRContext>
+            <SWRContext>
+              <MuiPickerContext>{children}</MuiPickerContext>
+            </SWRContext>
           </SessionContext>
         </Suspense>
         <Analytics />

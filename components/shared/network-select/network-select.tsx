@@ -7,39 +7,36 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronDown } from "lucide-react";
+import useSWR from "swr";
+import { PathMap } from "@/lib/path-map";
+import fetcher from "@/lib/fetcher";
 
 export interface INetwork {
-  id: number;
-  name: string;
+  block_explorer_url: string;
+  chain_id: string;
+  currency_symbol: string;
+  network_name: string;
+  rpc_url: string;
 }
 
 export default function NetworkSelect({
   value,
   onSelect,
 }: {
-  value: number | null;
+  value: string | null;
+  // eslint-disable-next-line no-unused-vars
   onSelect: (net: INetwork) => void;
 }) {
   const [openPopover, setOpenPopover] = useState(false);
 
-  const networks: Array<INetwork> = [
-    {
-      id: 1,
-      name: "Ethereum",
-    },
-    {
-      id: 56,
-      name: "Binance",
-    },
-    {
-      id: 11155111,
-      name: "Sepolia",
-    },
-  ];
+  const { data: networks }: { data: Array<INetwork> } = useSWR(
+    PathMap.networks,
+    fetcher,
+  );
 
-  const currentNetworkName = networks.find(
-    (network) => network.id === value,
-  )?.name;
+  const currentNetworkName = (networks || []).find(
+    (network) => network.chain_id === value,
+  )?.network_name;
 
   function handleSelectNetwork(network: INetwork) {
     setOpenPopover(false);
@@ -56,11 +53,11 @@ export default function NetworkSelect({
           onClick={() => setOpenPopover(!openPopover)}
           className="flex cursor-pointer items-center transition-all duration-75 active:bg-gray-100"
         >
-          <p className="mr-1 font-medium text-title-color">
+          <div className="mr-1 font-medium text-title-color">
             {currentNetworkName || (
               <div className="text-content-color">Select Network</div>
             )}
-          </p>
+          </div>
           <ChevronDown
             className={`h-4 w-4 text-gray-600 transition-all ${
               openPopover ? "rotate-180" : ""
@@ -70,16 +67,16 @@ export default function NetworkSelect({
       </PopoverTrigger>
       <PopoverContent className="w-36 p-1" align="start">
         <div className="rounded-md bg-white">
-          {networks.map((network) => (
+          {(networks || []).map((network) => (
             <button
-              key={network.id}
+              key={network.chain_id}
               onClick={() => handleSelectNetwork(network)}
               className="flex w-full items-center justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100"
               style={{
-                backgroundColor: network.id === value ? "#F5F5F5" : "",
+                backgroundColor: network.chain_id === value ? "#F5F5F5" : "",
               }}
             >
-              {network.name}
+              {network.network_name}
             </button>
           ))}
         </div>

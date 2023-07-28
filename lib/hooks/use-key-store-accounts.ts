@@ -10,7 +10,7 @@ export interface KeyStoreAccount {
   count: number;
 }
 
-export function useKeyStoreAccounts(network: number) {
+export function useKeyStoreAccounts(network: string) {
   const { data: keyStores } = useSWR(PathMap.userKeyStores, fetcher);
 
   const [keyStoreAccounts, setKeyStoreAccounts] = useState<

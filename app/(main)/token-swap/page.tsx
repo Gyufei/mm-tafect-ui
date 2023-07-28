@@ -11,8 +11,6 @@ import {
   Loader2,
 } from "lucide-react";
 
-import { DateTimePickerInput } from "react-datetime-range-super-picker";
-import "react-datetime-range-super-picker/dist/index.css";
 import "./index.css";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -55,9 +53,10 @@ import {
 
 import { useStrNum } from "@/lib/hooks/use-str-num";
 import FilterAccountList from "@/components/token-swap/filter-account-list";
+import { DateTimePicker } from "@material-ui/pickers";
 
 export default function TokenSwap() {
-  const [currentNetwork, setCurrentNetwork] = useState(11155111);
+  const [currentNetwork, setCurrentNetwork] = useState("11155111");
   const [selectedToken, setSelectedToken] = useState<string>();
   const [openKeyStorePop, setKeyStorePop] = useState(false);
   const [selectedKeyStores, setSelectedKeyStore] = useState<
@@ -73,13 +72,13 @@ export default function TokenSwap() {
   }, [keyStoreOptions]);
 
   const handleSelectNetwork = (networkOption: any) => {
-    if (networkOption.id === currentNetwork) {
+    if (networkOption.id !== currentNetwork) {
       filterResultReset();
       setSelectedToken("");
       setTokenMax("");
       setTokenMin("");
+      setCurrentNetwork(networkOption.id);
     }
-    setCurrentNetwork(networkOption.id);
   };
 
   const handleSelectKeyStore = (keyStore: any) => {
@@ -115,8 +114,6 @@ export default function TokenSwap() {
     fetcher as any,
   );
 
-  useEffect(() => {}, [currentNetwork]);
-
   function getFilterQuery() {
     const queryParams = new URLSearchParams();
 
@@ -150,8 +147,9 @@ export default function TokenSwap() {
 
   const [date, setDate] = useState<Date>();
   const [scheduledDateTime, setScheduledDateTime] = useState(new Date());
-  const handleDateUpdate = ({ date }: any) => {
-    setScheduledDateTime(date.date);
+  const handleDateUpdate = (date: Date) => {
+    console.log(date);
+    setScheduledDateTime(date);
   };
 
   const tasks: Array<ITask> = [
@@ -272,11 +270,8 @@ export default function TokenSwap() {
             <Input className="rounded-md border-border-color" placeholder="0" />
           </div>
           <button className="flex h-10 cursor-pointer items-center justify-center rounded-md border px-[11px] hover:bg-custom-bg-white">
-            {Math.random() > 0.5 ? (
-              <UnlockIcon className="text-[#999]" />
-            ) : (
-              <LockIcon className="text-primary" />
-            )}
+            <UnlockIcon className="text-[#999]" />
+            {/* <LockIcon className="text-primary" /> */}
           </button>
           <button className="flex h-10 cursor-pointer items-center justify-center rounded-md border px-[11px] hover:bg-custom-bg-white">
             <NoCheckIcon
@@ -291,21 +286,28 @@ export default function TokenSwap() {
         <div className="flex flex-col">
           <div className="LabelText mb-1">Schedule Time</div>
           <div className="flex justify-between gap-x-3">
-            <DateTimePickerInput
-              date={scheduledDateTime}
-              onDateTimeUpdate={(e) => handleDateUpdate(e)}
-              colors={
-                {
-                  primary_highlight_color: "#707070",
-                  secondary_highlight_color: "#333",
-                } as any
-              }
+            <DateTimePicker
+              inputVariant="outlined"
+              ampm={false}
+              disablePast={true}
+              value={scheduledDateTime}
+              emptyLabel="Select"
+              onChange={(e) => handleDateUpdate(e)}
               format="YYY-MM-dd HH:mm"
-              timeFormat="HH:mm"
-              dateFormat="YYY-MM-dd"
-              weekStartsOn={0}
+              hideTabs={true}
+              TextFieldComponent={(props) => (
+                <Input
+                  {...(props as any)}
+                  readOnly
+                  className="rounded-md border-border-color"
+                  placeholder="0"
+                />
+              )}
             />
-            <button className="flex h-10 w-[92px] cursor-pointer items-center justify-center rounded-md border hover:bg-custom-bg-white">
+            <button
+              onClick={() => setScheduledDateTime(new Date())}
+              className="flex h-10 w-[92px] cursor-pointer items-center justify-center rounded-md border hover:bg-custom-bg-white"
+            >
               Now
             </button>
           </div>
@@ -314,19 +316,19 @@ export default function TokenSwap() {
     );
   }
 
-  const [selectedOp, setSelectedOp] = useState<Record<string, any> | null>(
-    null,
-  );
-
-  const handleSelectOP = (opId: string) => {
-    const op = opList.find((op: Record<string, any>) => op.id === opId);
-    setSelectedOp(op);
-  };
-
   const { data: opList } = useSWR(
     `${PathMap.ops}?chain_id=${currentNetwork}`,
     fetcher,
   );
+
+  const [selectedOp, setSelectedOp] = useState<Record<string, any> | null>(
+    null,
+  );
+
+  const handleSelectOP = (opName: string) => {
+    const op = opList.find((op: Record<string, any>) => op.op_name === opName);
+    setSelectedOp(op);
+  };
 
   const [queryAccount, setQueryAccount] = useState<string>("");
 
@@ -339,7 +341,7 @@ export default function TokenSwap() {
           <div className="p-3">
             <div className="LabelText mb-1">OP</div>
             <Select
-              value={selectedOp?.id}
+              value={selectedOp?.op_name}
               onValueChange={(e) => handleSelectOP(e)}
             >
               <SelectTrigger>
@@ -347,7 +349,7 @@ export default function TokenSwap() {
               </SelectTrigger>
               <SelectContent>
                 {(opList || []).map((op: Record<string, string>) => (
-                  <SelectItem key={op.id} value={op.id}>
+                  <SelectItem key={op.op_name} value={op.op_name}>
                     {op.op_name}
                   </SelectItem>
                 ))}

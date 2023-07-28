@@ -2,14 +2,13 @@
 import useSWR from "swr";
 import { sortBy } from "lodash";
 import { useDebounce } from "use-debounce";
-import { useEffect, useMemo, useState } from "react";
-import { Check, PackageOpen, Trash2 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { PackageOpen, Trash2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -40,7 +39,7 @@ interface IAccountGas {
 export default function KeyStoreItem({ params }: { params: { item: string } }) {
   const keyStoreName = params.item;
 
-  const [currentNetwork, setCurrentNetwork] = useState(11155111);
+  const [currentNetwork, setCurrentNetwork] = useState("11155111");
 
   const { data: keyStoreAccountsData } = useSWR(
     `${PathMap.keyStoreAccounts}?keystore=${keyStoreName}&chain_id=${currentNetwork}`,
@@ -82,10 +81,6 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
   };
 
   const handleDeleteKs = () => {};
-
-  function WorksForSelect() {
-    return <div></div>;
-  }
 
   function DetailCol() {
     return (

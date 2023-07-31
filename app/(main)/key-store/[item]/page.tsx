@@ -1,50 +1,38 @@
 "use client";
 import useSWR from "swr";
 import { sortBy } from "lodash";
-import { useDebounce } from "use-debounce";
 import { useMemo, useState } from "react";
-import { PackageOpen, Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-
-import { displayText } from "@/lib/utils";
 import { PathMap } from "@/lib/path-map";
 import fetcher from "@/lib/fetcher";
 
 import { KeyStorePageSelect } from "@/components/key-store/key-store-page-select";
-import CopyIcon from "@/components/shared/copy-icon";
 import DetailItem from "@/components/shared/detail-item";
 import NetworkSelect from "@/components/shared/network-select/network-select";
-
-interface IAccountGas {
-  account: string;
-  gas: string;
-  tx: number;
-}
+import { INetwork } from "@/lib/types/network";
+import AccountsTable, {
+  IAccountGas,
+} from "@/components/key-store/accounts-table";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import useSWRMutation from "swr/mutation";
 
 export default function KeyStoreItem({ params }: { params: { item: string } }) {
   const keyStoreName = params.item;
 
-  const [currentNetwork, setCurrentNetwork] = useState("11155111");
+  const [currentNetwork, setCurrentNetwork] = useState<INetwork | null>(null);
+  const handleSelectNetwork = (networkOption: any) => {
+    setCurrentNetwork(networkOption);
+  };
 
-  const { data: keyStoreAccountsData } = useSWR(
-    `${PathMap.keyStoreAccounts}?keystore=${keyStoreName}&chain_id=${currentNetwork}`,
-    fetcher,
-  );
+  const { data: keyStoreAccountsData } = useSWR(() => {
+    if (keyStoreName && currentNetwork?.chain_id) {
+      return `${PathMap.keyStoreAccounts}?keystore=${keyStoreName}&chain_id=${currentNetwork?.chain_id}`;
+    } else {
+      return null;
+    }
+  }, fetcher);
 
   const accounts: Array<IAccountGas> = useMemo(() => {
     if (keyStoreAccountsData?.[0].accounts) {
@@ -53,37 +41,45 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
     }
     return [];
   }, [keyStoreAccountsData]);
+
   const accountCount: number = keyStoreAccountsData?.[0].count || 0;
+
   const tx = accounts.reduce(
     (acc: number, aG: Record<string, any>) => acc + aG.tx,
     0,
   );
+
   const gasAvailable = accounts.filter(
     (aG: Record<string, any>) => aG.gas > 0,
   ).length;
 
-  const [filterText, setFilterText] = useState<string>("");
-  const [filterTextDebounce] = useDebounce(filterText, 500);
-  const filterAccounts = useMemo(() => {
-    if (!filterTextDebounce) {
-      return accounts;
-    }
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
-    const filtered = accounts.filter((aG) =>
-      aG.account.toLowerCase().includes(filterTextDebounce.toLowerCase()),
-    );
+  const deleteFetcher = async () => {
+    const params = {
+      keystore_name: keyStoreName,
+    };
 
-    return filtered;
-  }, [filterTextDebounce, accounts]);
+    const res = await fetcher(PathMap.deleteKeyStore, {
+      method: "POST",
+      body: JSON.stringify(params),
+    });
 
-  const handleSelectNetwork = (networkOption: any) => {
-    setCurrentNetwork(networkOption.id);
+    setDeleteDialogOpen(false);
+
+    return res;
   };
 
-  const handleDeleteKs = () => {};
+  const { isMutating: deleting, trigger: deleteMutate } = useSWRMutation(
+    PathMap.deleteKeyStore,
+    deleteFetcher,
+  );
 
-  function DetailCol() {
-    return (
+  return (
+    <div
+      style={{ height: "calc(100vh - 70px)" }}
+      className="flex min-h-[400px] flex-1 items-stretch bg-[#fafafa]"
+    >
       <div
         className="ks-detail flex w-[400px] flex-col justify-between px-3 pb-4 pt-3"
         style={{
@@ -106,93 +102,46 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
         </div>
         <div className="flex w-full justify-end pr-2">
           <Trash2
-            onClick={() => handleDeleteKs()}
+            onClick={() => setDeleteDialogOpen(true)}
             className="h-5 w-5 cursor-pointer hover:text-[#ec5b55]"
           />
         </div>
       </div>
-    );
-  }
 
-  function AccountsTable() {
-    return (
-      <Table>
-        <TableHeader className="h-10 bg-white text-content-color">
-          <TableRow className="border-b border-shadow-color">
-            <TableHead className="w-[100px] text-center font-normal">
-              #
-            </TableHead>
-            <TableHead className="font-normal">Address</TableHead>
-            <TableHead className="font-normal">Gas</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody className="text-lg">
-          {filterAccounts.length ? (
-            filterAccounts?.map((aG, index) => (
-              <TableRow
-                key={aG.account}
-                className="h-[56px] border-b border-shadow-color"
-              >
-                <TableCell className="min-w-[40px] max-w-[40px] text-center">
-                  {index}
-                </TableCell>
-                <TableCell>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center">
-                          {displayText(aG.account)}
-                          <CopyIcon text={aG.account} />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{aG.account}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </TableCell>
-                <TableCell>{aG.gas}</TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={3}>
-                <div className="flex flex-col items-center justify-center pt-10 text-content-color">
-                  <PackageOpen className="mb-5 h-[40px] w-[40px]" />
-                  <p className="text-lg">Data Not Found</p>
-                </div>
-              </td>
-            </tr>
-          )}
-        </TableBody>
-      </Table>
-    );
-  }
+      <AccountsTable accounts={accounts} />
 
-  return (
-    <div
-      style={{ height: "calc(100vh - 70px)" }}
-      className="flex min-h-[400px] flex-1 items-stretch bg-[#fafafa]"
-    >
-      <DetailCol />
-
-      <div className="flex flex-1 flex-col justify-stretch">
-        <div
-          style={{
-            boxShadow: "inset 0px -1px 0px 0px #D6D6D6",
-          }}
-          className="bg-custom-bg-white px-3 py-2 "
-        >
-          <Input
-            className="rounded-3xl bg-custom-bg-white"
-            type="text"
-            placeholder="Search"
-            value={filterText}
-            onChange={(e) => setFilterText(e.target.value)}
-          />
-        </div>
-        <AccountsTable />
-      </div>
+      <Dialog
+        open={deleteDialogOpen}
+        onOpenChange={(val) => setDeleteDialogOpen(val)}
+      >
+        <DialogContent className="w-[320px]">
+          <div className="flex flex-col justify-center">
+            <div className="flex justify-center text-2xl text-title-color">
+              Title
+            </div>
+            <div className="mb-5 mt-2 text-center text-base">
+              {`Are you sure to delete "${keyStoreName}" ?`}
+            </div>
+            <Button
+              variant="default"
+              className="mb-2 flex items-center rounded-md shadow-none hover:border hover:border-primary hover:text-primary"
+              onClick={() => deleteMutate()}
+            >
+              {deleting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
+              )}
+              Yes
+            </Button>
+            <Button
+              className="rounded-md"
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
+              No
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -17,9 +17,11 @@ export const KeyStorePageSelect = ({
 
   async function handleCheckPage(pageName: string) {
     if (currentPage?.includes(pageName)) {
-      pageMutate(removePage(pageName));
+      await removePage(pageName);
+      pageMutate();
     } else {
-      pageMutate(addPage(pageName));
+      await addPage(pageName);
+      pageMutate();
     }
   }
 
@@ -32,7 +34,7 @@ export const KeyStorePageSelect = ({
     return fetcher(PathMap.keyStoreAddPage, {
       method: "POST",
       body: JSON.stringify(params),
-    }).then((res) => "123");
+    });
   }
 
   async function removePage(pageName: string) {
@@ -44,13 +46,13 @@ export const KeyStorePageSelect = ({
     return fetcher(PathMap.keyStoreRemovePage, {
       method: "POST",
       body: JSON.stringify(params),
-    }).then((res) => "123");
+    });
   }
   return (
     <div className="flex w-full items-center">
       <div className="flex items-center">
         {(pages || []).map((p: Record<string, any>) => (
-          <div key={p.id} className="mr-10 flex cursor-pointer items-center">
+          <div key={p.id} className="mr-5 flex cursor-pointer items-center">
             <Checkbox
               checked={currentPage?.includes(p.pages_name)}
               onCheckedChange={() => handleCheckPage(p.pages_name)}

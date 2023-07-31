@@ -6,6 +6,7 @@ export const PathMap = {
   login: WithHost("/user/login"),
 
   userKeyStores: WithHost("/keystore/user"),
+  deleteKeyStore: WithHost("/keystore/user/remove"),
   keyStoreAccounts: WithHost("/keystore/accounts"),
   allPages: WithHost("/keystore/pages/all"),
   keyStorePages: WithHost("/keystore/pages"),

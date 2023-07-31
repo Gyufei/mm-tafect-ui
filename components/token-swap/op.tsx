@@ -9,7 +9,7 @@ import { IToken } from "@/lib/types/token";
 import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
 
 import QueryAccountBalance from "@/components/token-swap/query-account-balance";
-import OpSelect from "@/components/token-swap/opSelect";
+import OpSelect from "@/components/token-swap/op-select";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import TokenSelectAndInput, {

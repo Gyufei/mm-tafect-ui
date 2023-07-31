@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/select";
 import { IToken } from "@/lib/types/token";
 import { useTokens } from "@/lib/hooks/use-tokens";
+import { useId } from "react";
 
 export default function TokenSelect({
   token,
@@ -15,8 +16,7 @@ export default function TokenSelect({
 }: {
   networkId: string | null;
   token: IToken | null;
-  // eslint-disable-next-line no-unused-vars
-  handleTokenSelect: (dispatchState: IToken | null) => void;
+  handleTokenSelect: (_t: IToken | null) => void;
 }) {
   const { data: tokens }: { data: Array<IToken> } = useTokens(networkId);
 
@@ -36,9 +36,9 @@ export default function TokenSelect({
         <SelectValue placeholder="Select Token" />
       </SelectTrigger>
       <SelectContent>
-        {(tokens || []).map((token) => (
-          <SelectItem key={token.symbol} value={token.address}>
-            {token.symbol}
+        {(tokens || []).map((t) => (
+          <SelectItem key={t.address} value={t.address}>
+            {t.symbol}
           </SelectItem>
         ))}
       </SelectContent>

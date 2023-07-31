@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 "use client";
 
 import { signOut } from "next-auth/react";
@@ -29,7 +30,6 @@ export default async function fetcher(
     }
 
     const resBody = await res.text();
-    const pathName = new URL(res.url).pathname;
     const error = new Error(
       "An error occurred while fetching the data.",
     ) as any;

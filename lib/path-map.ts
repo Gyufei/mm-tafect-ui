@@ -19,6 +19,17 @@ export const PathMap = {
   networks: WithHost("/setting/networks"),
   accountTokenBalance: WithHost("/web3/token_balanceof"),
   accountTokensBalance: WithHost("/web3/batch_token_balanceof"),
+  estimateToken: WithHost("/tokenswap/estimate_token_amount"),
+
+  gasPrice: WithHost("/web3/gas_price"),
+  nonceNum: WithHost("/web3/nonce"),
+
+  signSwap: WithHost("/tokenswap/swap/sign"),
+  signApprove: WithHost("/tokenswap/transfer/sign"),
+  signTransfer: WithHost("/tokenswap/approve/sign"),
+  sendSwap: WithHost("/tokenswap/swap/send"),
+  sendApprove: WithHost("/tokenswap/transfer/send"),
+  sendTransfer: WithHost("/tokenswap/approve/send"),
 
   // accountGas: WithHost("/web3/balanceof"),
 };

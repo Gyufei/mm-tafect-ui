@@ -1,8 +1,17 @@
 import { useState } from "react";
 
+export function replaceStrNum(str: string) {
+  return str.replace(/[^0-9.]|(?<=\..*)\./g, "");
+}
+
+export function replaceStrNumNoDecimal(str: string) {
+  return str.replace(/[^0-9.]/g, "");
+}
+
 export const useStrNum = (
   defaultVal?: string,
-): [string | undefined, (val: string) => void] => {
+  noDecimals?: boolean,
+): [string | undefined, (_val: string) => void] => {
   const [numVal, setNumVal] = useState(defaultVal);
 
   const handleChange = (val: string | null) => {
@@ -11,7 +20,7 @@ export const useStrNum = (
       return;
     }
 
-    val = val.replace(/[^0-9.]|(?<=\..*)\./g, "");
+    val = noDecimals ? replaceStrNumNoDecimal(val) : replaceStrNum(val);
 
     setNumVal(val);
   };

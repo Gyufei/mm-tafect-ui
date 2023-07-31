@@ -29,8 +29,7 @@ export default function FilterAccountList({
   networkId: string | null;
   token: IToken | null;
   keyStores: Array<IKeyStoreAccount>;
-  // eslint-disable-next-line no-unused-vars
-  handleTokenSelect: (t: IToken | null) => void;
+  handleTokenSelect: (_t: IToken | null) => void;
 }) {
   const [tokenMin, setTokenMin] = useStrNum("");
   const [tokenMax, setTokenMax] = useStrNum("");
@@ -96,14 +95,14 @@ export default function FilterAccountList({
         </div>
         <div className="flex items-center">
           <Input
-            value={tokenMin}
+            value={tokenMin || ""}
             onChange={(e) => setTokenMin(e.target.value)}
             className="border-border-color bg-white"
             placeholder="Min"
           />
           <div className="mx-2">-</div>
           <Input
-            value={tokenMax}
+            value={tokenMax || ""}
             onChange={(e) => setTokenMax(e.target.value)}
             className="border-border-color bg-white"
             placeholder="Max"

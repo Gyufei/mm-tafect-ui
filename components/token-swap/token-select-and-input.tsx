@@ -17,7 +17,7 @@ export default function TokenSelectAndInput({
   tokenParams: ITokenAddressAndNum;
   handleTokenParamsChange: (_t: ITokenAddressAndNum) => void;
 }) {
-  const handleTokenSelect = (token: IToken) => {
+  const handleTokenSelect = (token: IToken | null) => {
     handleTokenParamsChange({
       ...tokenParams,
       info: token,

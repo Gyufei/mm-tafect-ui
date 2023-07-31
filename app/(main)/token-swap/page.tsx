@@ -28,15 +28,12 @@ import Op from "@/components/token-swap/op";
 
 export default function TokenSwap() {
   const [currentNetwork, setCurrentNetwork] = useState<INetwork | null>(null);
-  const [selectedToken, setSelectedToken] = useState<IToken | null>(null);
   const [selectedKeyStores, setSelectedKeyStore] = useState<
     Array<IKeyStoreAccount>
   >([]);
+  const [selectedToken, setSelectedToken] = useState<IToken | null>(null);
 
   const [filterTaskDate, setFilterTaskDate] = useState<Date>();
-
-  const [queryAccount, setQueryAccount] = useState<string>("");
-
   const tasks: Array<ITask> = [
     {
       date: "2021-09-09 12:00:00",
@@ -235,8 +232,7 @@ export default function TokenSwap() {
       <Op
         token={selectedToken}
         network={currentNetwork}
-        queryAccount={queryAccount}
-        handleQueryAccountChange={setQueryAccount}
+        keyStores={selectedKeyStores}
       />
       <ThirdCol />
     </>

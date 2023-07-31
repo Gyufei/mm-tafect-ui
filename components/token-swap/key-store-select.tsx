@@ -21,11 +21,9 @@ export default function KeyStoreSelect({
   networkId: string | null;
   keyStores: Array<IKeyStoreAccount>;
   handleKeystoreSelect: (
-    // eslint-disable-next-line no-unused-vars
-    keyStoreUpdate:
+    _keyStoreUpdate:
       | Array<IKeyStoreAccount>
-      // eslint-disable-next-line no-unused-vars
-      | ((ks: Array<IKeyStoreAccount>) => Array<IKeyStoreAccount>),
+      | ((_ks: Array<IKeyStoreAccount>) => Array<IKeyStoreAccount>),
   ) => void;
 }) {
   const [openKeyStorePop, setKeyStorePop] = useState(false);

@@ -6,8 +6,14 @@ import { PathMap } from "@/lib/path-map";
 
 export interface IKeyStoreAccount {
   name: string;
-  accounts: Array<string>;
+  accounts: Array<IKeyStoreAccountItem>;
   count: number;
+}
+
+interface IKeyStoreAccountItem {
+  account: string;
+  gas: string;
+  tx: number;
 }
 
 export function useKeyStoreAccounts(networkId: string | null) {

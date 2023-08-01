@@ -58,4 +58,8 @@ html {
   .Tag {
     @apply rounded-md border px-1 text-sm;
   }
+
+  .TruncateSingleLine {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
+  }
 }

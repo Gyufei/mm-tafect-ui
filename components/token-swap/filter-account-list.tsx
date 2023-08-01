@@ -1,24 +1,18 @@
 import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
 import useSWRMutation from "swr/mutation";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import TokenSelect from "@/components/token-swap/token-select";
 
-import { displayText } from "@/lib/utils";
 import { useStrNum } from "@/lib/hooks/use-str-num";
 import { PathMap } from "@/lib/path-map";
 import fetcher from "@/lib/fetcher";
 import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
 import { IToken } from "@/lib/types/token";
+import TruncateText from "../shared/trunc-text";
+import LoadingIcon from "../shared/loading-icon";
 
 export default function FilterAccountList({
   networkId,
@@ -115,9 +109,7 @@ export default function FilterAccountList({
           onClick={() => filterTrigger()}
           className="disabled:opacity-1 absolute top-[-20px] mx-3 flex w-[95%] items-center justify-center rounded border bg-white py-2 hover:bg-custom-bg-white"
         >
-          {filtering && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
-          )}
+          <LoadingIcon isLoading={filtering} />
           <span className="text-title-color">Filter Account</span>
         </Button>
         <ScrollArea
@@ -139,18 +131,7 @@ export default function FilterAccountList({
                 </div>
                 <div className="flex flex-1 flex-col">
                   <div className="text-lg font-medium text-title-color">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="inline-flex items-center">
-                            {displayText(acc.account)}
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-sm">{acc.account}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <TruncateText text={acc.account} />
                   </div>
                   <div className="LabelText flex">
                     <div className="mr-6">ETH {acc.gas_token_amount}</div>

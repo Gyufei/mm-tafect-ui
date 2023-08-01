@@ -1,18 +1,49 @@
-export type TaskType =
-  | "Queued"
-  | "Pending"
-  | "Finished"
-  | "Failed"
-  | "Canceled";
+export enum StatusEnum {
+  "pre-queue" = 1,
+  queue,
+  pending,
+  finished,
+  failed,
+  cancel,
+  replace,
+}
 
 export interface ITask {
+  id: number;
   date: string;
-  title: string;
-  type: TaskType;
-  address: string;
-  gas: string;
-  recipient: string;
-  value: string;
+  account: string;
+  op: number;
+  opName: string;
+  status: StatusEnum;
+  txHash: string;
+  data: ITaskData;
+}
+
+export interface ITaskData {
+  chain_id: string;
+  keystore: string;
+  account: string;
+  amount: string;
   nonce: number;
-  direction: string;
+  gas: string;
+  fixed_gas: boolean;
+  no_check_gas: boolean;
+
+  //approve
+  token?: string;
+  tokenName?: string;
+  spender?: string;
+
+  // transfer
+  recipient?: string;
+
+  // swap
+  is_exact_input: boolean;
+  slippage: string;
+  swap_router_address: string;
+  timeout: number;
+  token_in: string;
+  token_out: string;
+  tokenInName: string;
+  tokenOutName: string;
 }

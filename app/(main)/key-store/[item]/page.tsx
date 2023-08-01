@@ -2,7 +2,7 @@
 import useSWR from "swr";
 import { sortBy } from "lodash";
 import { useMemo, useState } from "react";
-import { Loader2, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 import { PathMap } from "@/lib/path-map";
 import fetcher from "@/lib/fetcher";
@@ -11,12 +11,13 @@ import { KeyStorePageSelect } from "@/components/key-store/key-store-page-select
 import DetailItem from "@/components/shared/detail-item";
 import NetworkSelect from "@/components/shared/network-select/network-select";
 import { INetwork } from "@/lib/types/network";
-import AccountsTable, {
+import KeyStoreAccountsTable, {
   IAccountGas,
-} from "@/components/key-store/accounts-table";
+} from "@/components/key-store/key-store-accounts-table";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import useSWRMutation from "swr/mutation";
+import LoadingIcon from "@/components/shared/loading-icon";
 
 export default function KeyStoreItem({ params }: { params: { item: string } }) {
   const keyStoreName = params.item;
@@ -108,7 +109,7 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
         </div>
       </div>
 
-      <AccountsTable accounts={accounts} />
+      <KeyStoreAccountsTable accounts={accounts} />
 
       <Dialog
         open={deleteDialogOpen}
@@ -124,12 +125,11 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
             </div>
             <Button
               variant="default"
+              disabled={deleting}
               className="mb-2 flex items-center rounded-md shadow-none hover:border hover:border-primary hover:text-primary"
               onClick={() => deleteMutate()}
             >
-              {deleting && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary" />
-              )}
+              <LoadingIcon isLoading={deleting} />
               Yes
             </Button>
             <Button

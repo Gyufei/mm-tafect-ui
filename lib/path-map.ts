@@ -13,24 +13,25 @@ export const PathMap = {
   keyStoreRemovePage: WithHost("/keystore/pages/remove"),
   keyStoreAddPage: WithHost("/keystore/pages/add"),
 
+  networks: WithHost("/setting/networks"),
+  ops: WithHost("/setting/op"),
+
   tokenList: WithHost("/tokenswap/token_list"),
   filterAccount: WithHost("/tokenswap/filter_account"),
-
-  ops: WithHost("/setting/op"),
-  networks: WithHost("/setting/networks"),
-  accountTokenBalance: WithHost("/web3/token_balanceof"),
-  accountTokensBalance: WithHost("/web3/batch_token_balanceof"),
   estimateToken: WithHost("/tokenswap/estimate_token_amount"),
-
-  gasPrice: WithHost("/web3/gas_price"),
-  nonceNum: WithHost("/web3/nonce"),
-
   signSwap: WithHost("/tokenswap/swap/sign"),
   signApprove: WithHost("/tokenswap/transfer/sign"),
   signTransfer: WithHost("/tokenswap/approve/sign"),
   sendSwap: WithHost("/tokenswap/swap/send"),
   sendApprove: WithHost("/tokenswap/transfer/send"),
   sendTransfer: WithHost("/tokenswap/approve/send"),
+  swapHistory: WithHost("/tokenswap/history"),
 
-  // accountGas: WithHost("/web3/balanceof"),
+  accountTokensBalance: WithHost("/web3/batch_token_balanceof"),
+  gasPrice: WithHost("/web3/gas_price"),
+  nonceNum: WithHost("/web3/nonce"),
+
+  // not-use
+  accountGas: WithHost("/web3/balanceof"),
+  accountTokenBalance: WithHost("/web3/token_balanceof"),
 };

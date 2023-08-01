@@ -270,7 +270,7 @@ export default function Op({
   }
 
   return (
-    <div className="flex h-full flex-1 flex-col justify-between border-r border-r-[#dadada]">
+    <>
       <div className="flex flex-col">
         <div className="p-3">
           <div className="LabelText mb-1">OP</div>
@@ -348,6 +348,6 @@ export default function Op({
         setShow={setSendTxTipShow}
         message={sendTxResult?.message || ""}
       />
-    </div>
+    </>
   );
 }

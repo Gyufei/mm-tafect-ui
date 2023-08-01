@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -50,7 +49,7 @@ export default function MainLayout({
       </div>
 
       <div
-        className="flex h-full w-[240px] flex-col bg-[#f4f5fa]"
+        className="flex h-full w-[240px] min-w-[240px] flex-col bg-[#f4f5fa]"
         style={{
           boxShadow: "inset 1px 0px 0px 0px #d6d6d6",
         }}

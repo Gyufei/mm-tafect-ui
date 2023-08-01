@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
-import { PackageOpen } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -11,16 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
-import CopyIcon from "@/components/shared/copy-icon";
-
-import { displayText } from "@/lib/utils";
+import Empty from "@/components/shared/empty";
+import TruncateText from "@/components/shared/trunc-text";
 
 export interface IAccountGas {
   account: string;
@@ -28,7 +20,7 @@ export interface IAccountGas {
   tx: number;
 }
 
-export default function AccountsTable({
+export default function KeyStoreAccountsTable({
   accounts,
 }: {
   accounts: Array<IAccountGas>;
@@ -85,19 +77,7 @@ export default function AccountsTable({
                   {index}
                 </TableCell>
                 <TableCell>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center">
-                          {displayText(aG.account)}
-                          <CopyIcon text={aG.account} />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{aG.account}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <TruncateText text={aG.account} showCopy={true} />
                 </TableCell>
                 <TableCell>{aG.gas}</TableCell>
               </TableRow>
@@ -105,10 +85,7 @@ export default function AccountsTable({
           ) : (
             <tr>
               <td colSpan={3}>
-                <div className="flex flex-col items-center justify-center pt-10 text-content-color">
-                  <PackageOpen className="mb-5 h-[40px] w-[40px]" />
-                  <p className="text-lg">Data Not Found</p>
-                </div>
+                <Empty />
               </td>
             </tr>
           )}

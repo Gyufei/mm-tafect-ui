@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ArrowBigRight } from "lucide-react";
 import { useDebounce } from "use-debounce";
 import useSWR from "swr";
 
-import { INetwork } from "@/lib/types/network";
 import { IOp } from "@/lib/types/op";
 import { IToken } from "@/lib/types/token";
 import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
@@ -13,7 +12,7 @@ import OpSelect from "@/components/token-swap/op-select";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import TokenSelectAndInput, {
-  ITokenAddressAndNum as ITokenDesc,
+  ITokenNumDesc,
 } from "@/components/token-swap/token-select-and-input";
 import { PathMap } from "@/lib/path-map";
 import fetcher from "@/lib/fetcher";
@@ -22,16 +21,20 @@ import OpAdvanceOptions, {
 } from "@/components/token-swap/op-advance-options";
 import { TestTxResult } from "./test-tx-result";
 import ActionTip, { IActionType } from "../shared/action-tip";
+import { useSession } from "next-auth/react";
+import { Web3Context } from "@/lib/providers/web3-provider";
 
 export default function Op({
-  network,
-  token,
+  tokens,
   keyStores,
+  handleTokensChange,
 }: {
-  network: INetwork | null;
-  token: IToken | null;
+  tokens: Array<IToken>;
   keyStores: Array<IKeyStoreAccount>;
+  handleTokensChange: (_ts: Array<IToken>) => void;
 }) {
+  const { network } = useContext(Web3Context);
+  const { data: session } = useSession();
   const [selectedOp, setSelectedOp] = useState<IOp | null>(null);
   const [queryAccount, setQueryAccount] = useState<string>("");
 
@@ -51,6 +54,7 @@ export default function Op({
       return null;
     }
   }, fetcher);
+
   const { data: nonceData } = useSWR(() => {
     if (network?.chain_id && queryAccount) {
       return `${PathMap.nonceNum}?chain_id=${network?.chain_id}&account=${queryAccount}`;
@@ -74,12 +78,12 @@ export default function Op({
     }
   }, [gasPrice]);
 
-  const [tokenIn, setTokenIn] = useState<ITokenDesc>({
+  const [tokenIn, setTokenIn] = useState<ITokenNumDesc>({
     labelName: "Token0",
     info: null,
     num: "",
   });
-  const [tokenOut, setTokenOut] = useState<ITokenDesc>({
+  const [tokenOut, setTokenOut] = useState<ITokenNumDesc>({
     labelName: "Token1",
     info: null,
     num: "",
@@ -112,7 +116,7 @@ export default function Op({
     }
   }, 1000);
 
-  const handleTokenInChange = async (inParams: ITokenDesc) => {
+  const handleTokenInChange = async (inParams: ITokenNumDesc) => {
     setTokenIn(inParams);
     setIsExactInput(true);
     if (inParams.info && inParams.num && tokenOut.info) {
@@ -123,7 +127,7 @@ export default function Op({
     }
   };
 
-  const handleTokenOutChange = async (outParams: ITokenDesc) => {
+  const handleTokenOutChange = async (outParams: ITokenNumDesc) => {
     setTokenOut(outParams);
     setIsExactInput(false);
     if (outParams.info && outParams.num && tokenIn.info) {
@@ -155,6 +159,7 @@ export default function Op({
     const token = tokenIn.info?.address || "";
 
     return {
+      user_name: session?.user?.name,
       chain_id,
       account,
       token,
@@ -275,22 +280,20 @@ export default function Op({
         <div className="p-3">
           <div className="LabelText mb-1">OP</div>
           <OpSelect
-            networkId={network?.chain_id || null}
             op={selectedOp}
             handleOpSelect={(op) => setSelectedOp(op)}
           />
         </div>
 
         <QueryAccountBalance
-          token={token}
-          network={network || null}
           account={queryAccount}
           handleAccountChange={(e: string) => setQueryAccount(e)}
+          handleTokensChange={handleTokensChange}
         />
 
         <div className="mt-3 flex items-center justify-between px-3">
           <TokenSelectAndInput
-            networkId={network?.chain_id || null}
+            tokens={tokens}
             tokenParams={tokenIn}
             handleTokenParamsChange={(tP) => handleTokenInChange(tP)}
           />
@@ -301,7 +304,7 @@ export default function Op({
             }}
           />
           <TokenSelectAndInput
-            networkId={network?.chain_id || null}
+            tokens={tokens}
             tokenParams={tokenOut}
             handleTokenParamsChange={(tP) => handleTokenOutChange(tP)}
           />
@@ -309,7 +312,7 @@ export default function Op({
 
         <OpAdvanceOptions
           options={advanceOptions}
-          onChange={(e: IAdvanceOptions) => setAdvanceOptions(e)}
+          onChange={setAdvanceOptions}
         />
       </div>
 
@@ -338,8 +341,8 @@ export default function Op({
 
       <TestTxResult
         open={testTxDialogOpen}
-        onOpenChange={(open) => setTestTxDialogOpen(open)}
         result={testTxResult}
+        onOpenChange={setTestTxDialogOpen}
       />
 
       <ActionTip

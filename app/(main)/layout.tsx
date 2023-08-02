@@ -1,38 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { signOut, useSession } from "next-auth/react";
-import { IUser } from "@/lib/types/user";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
 
-const Links = [
-  {
-    name: "Dashboard",
-    href: "/dashboard",
-  },
-  {
-    name: "KeyStore",
-    href: "/key-store",
-  },
-  {
-    name: "TokenSwap",
-    href: "/token-swap",
-  },
-  {
-    name: "Setting",
-    href: "/setting",
-  },
-];
+import { TopBar } from "@/components/layout/top-bar";
+import { UserBox } from "@/components/layout/user-box";
+import { SideNav } from "@/components/layout/side-nav";
+
+import Web3Provider from "@/lib/providers/web3-provider";
 
 export default function MainLayout({
   children,
@@ -45,7 +19,7 @@ export default function MainLayout({
     <div className="flex h-full items-stretch">
       <div className="flex h-full grow flex-col">
         <TopBar pathname={pathname} />
-        {children}
+        <Web3Provider>{children}</Web3Provider>
       </div>
 
       <div
@@ -55,103 +29,8 @@ export default function MainLayout({
         }}
       >
         <UserBox />
-        <LinkGroup pathname={pathname} />
+        <SideNav pathname={pathname} />
       </div>
-    </div>
-  );
-}
-
-function TopBar({ pathname }: { pathname: string }) {
-  const title = Links.find(
-    (link) => link.href === pathname || pathname.includes(link.href),
-  )?.name;
-
-  return (
-    <div
-      className="flex h-[70px] min-h-[70px] items-center justify-start bg-white"
-      style={{
-        boxShadow: "inset 0px -1px 0px 0px #d6d6d6",
-      }}
-    >
-      <div className="ml-3 h-12 w-12 rounded-full bg-[#d8d8d8]"></div>
-      <div className="flex flex-1 items-center justify-center">{title}</div>
-    </div>
-  );
-}
-
-function UserBox() {
-  const { data: session } = useSession();
-  const currentUser: IUser = session?.user as IUser;
-
-  const [openPopover, setOpenPopover] = useState(false);
-
-  function handleSignOut() {
-    signOut();
-    window.localStorage.clear();
-  }
-
-  return (
-    <div
-      className="flex h-[70px] items-center justify-start pl-6"
-      style={{
-        boxShadow:
-          "inset 1px 0px 0px 0px #d6d6d6, inset 0px -1px 0px 0px #d6d6d6",
-      }}
-    >
-      <Avatar className="mr-3 h-8 w-8 rounded">
-        <AvatarImage src={currentUser?.image} />
-        <AvatarFallback>{currentUser?.name?.[0] || ""}</AvatarFallback>
-      </Avatar>
-      <Popover
-        open={openPopover}
-        onOpenChange={(isOpen) => setOpenPopover(isOpen)}
-      >
-        <PopoverTrigger>
-          <div
-            onClick={() => setOpenPopover(!openPopover)}
-            className="flex cursor-pointer items-center justify-between py-2 pr-4 transition-all duration-75 active:bg-gray-100"
-          >
-            <p className="mr-1 font-medium text-title-color">
-              {currentUser?.name}
-            </p>
-            <ChevronDown
-              className={`h-4 w-4 text-gray-600 transition-all ${
-                openPopover ? "rotate-180" : ""
-              }`}
-            />
-          </div>
-        </PopoverTrigger>
-        <PopoverContent className="w-[160px] p-1" align="start">
-          <div className="rounded-md bg-white">
-            <button
-              onClick={() => handleSignOut()}
-              className="flex w-full items-center justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100 active:bg-gray-200"
-            >
-              Sign Out
-            </button>
-          </div>
-        </PopoverContent>
-      </Popover>
-    </div>
-  );
-}
-
-function LinkGroup({ pathname }: { pathname: string }) {
-  return (
-    <div className="flex flex-1 flex-col justify-start px-4 py-3">
-      {Links.map((link) => (
-        <Link
-          key={link.name}
-          className={cn(
-            "mb-2 border border-transparent px-4 py-[6px] text-sm font-medium text-content-color hover:rounded hover:border-primary hover:bg-white hover:text-primary",
-            pathname.includes(link.href) &&
-              "rounded border-primary bg-white text-primary",
-          )}
-          href={link.href}
-        >
-          {link.name}
-        </Link>
-      ))}
     </div>
   );
 }

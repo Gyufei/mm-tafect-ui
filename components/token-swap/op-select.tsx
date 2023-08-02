@@ -1,3 +1,6 @@
+import { useContext } from "react";
+import useSWR from "swr";
+
 import {
   Select,
   SelectContent,
@@ -7,18 +10,19 @@ import {
 } from "@/components/ui/select";
 import fetcher from "@/lib/fetcher";
 import { PathMap } from "@/lib/path-map";
+import { Web3Context } from "@/lib/providers/web3-provider";
 import { IOp } from "@/lib/types/op";
-import useSWR from "swr";
 
-export default function TokenSelect({
+export default function OpSelect({
   op,
-  networkId,
   handleOpSelect,
 }: {
   op: IOp | null;
-  networkId: string | null;
   handleOpSelect: (_o: IOp) => void;
 }) {
+  const { network } = useContext(Web3Context);
+  const networkId = network?.chain_id;
+
   const { data: opList } = useSWR(() => {
     return networkId ? `${PathMap.ops}?chain_id=${networkId}` : null;
   }, fetcher);

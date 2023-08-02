@@ -16,6 +16,7 @@ export const PathMap = {
   networks: WithHost("/setting/networks"),
   ops: WithHost("/setting/op"),
 
+  web3Info: WithHost("/tokenswap/info"),
   tokenList: WithHost("/tokenswap/token_list"),
   filterAccount: WithHost("/tokenswap/filter_account"),
   estimateToken: WithHost("/tokenswap/estimate_token_amount"),

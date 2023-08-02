@@ -3,7 +3,7 @@
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
-export default function MuiPickerContext({
+export default function MuiPickerProvider({
   children,
 }: {
   children: React.ReactNode;

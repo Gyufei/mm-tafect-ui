@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,32 +12,34 @@ import {
   IKeyStoreAccount,
   useKeyStoreAccounts,
 } from "@/lib/hooks/use-key-store-accounts";
+import { Web3Context } from "@/lib/providers/web3-provider";
 
 export default function KeyStoreSelect({
-  networkId,
   keyStores,
-  handleKeystoreSelect,
+  handleKeyStoreSelect,
 }: {
-  networkId: string | null;
   keyStores: Array<IKeyStoreAccount>;
-  handleKeystoreSelect: (
+  handleKeyStoreSelect: (
     _keyStoreUpdate:
       | Array<IKeyStoreAccount>
       | ((_ks: Array<IKeyStoreAccount>) => Array<IKeyStoreAccount>),
   ) => void;
 }) {
+  const { network } = useContext(Web3Context);
+  const networkId = network?.chain_id || null;
+
   const [openKeyStorePop, setKeyStorePop] = useState(false);
 
   const keyStoreOptions = useKeyStoreAccounts(networkId);
 
   useEffect(() => {
     if (!keyStores.length && keyStoreOptions.length) {
-      handleKeystoreSelect([keyStoreOptions[0]]);
+      handleKeyStoreSelect([keyStoreOptions[0]]);
     }
   }, [keyStoreOptions]);
 
   const handleSelectKeyStore = (keyStore: any) => {
-    handleKeystoreSelect((ks: Array<IKeyStoreAccount>) => {
+    handleKeyStoreSelect((ks: Array<IKeyStoreAccount>) => {
       if (ks.some((k) => k.name === keyStore.name)) {
         return ks.filter((k) => k.name !== keyStore.name);
       } else {

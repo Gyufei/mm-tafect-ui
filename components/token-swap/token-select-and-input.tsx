@@ -2,20 +2,20 @@ import TokenSelect from "@/components/token-swap/token-select";
 import { Input } from "@/components/ui/input";
 import { IToken } from "@/lib/types/token";
 
-export interface ITokenAddressAndNum {
+export interface ITokenNumDesc {
   labelName: string;
   info: IToken | null;
   num: string;
 }
 
 export default function TokenSelectAndInput({
-  networkId,
+  tokens,
   tokenParams,
   handleTokenParamsChange,
 }: {
-  networkId: string | null;
-  tokenParams: ITokenAddressAndNum;
-  handleTokenParamsChange: (_t: ITokenAddressAndNum) => void;
+  tokens: Array<IToken>;
+  tokenParams: ITokenNumDesc;
+  handleTokenParamsChange: (_t: ITokenNumDesc) => void;
 }) {
   const handleTokenSelect = (token: IToken | null) => {
     handleTokenParamsChange({
@@ -35,7 +35,7 @@ export default function TokenSelectAndInput({
     <div className="flex flex-1 flex-col">
       <div className="LabelText mb-1">{tokenParams.labelName}</div>
       <TokenSelect
-        networkId={networkId}
+        tokens={tokens}
         token={tokenParams.info}
         handleTokenSelect={(e) => handleTokenSelect(e)}
       />

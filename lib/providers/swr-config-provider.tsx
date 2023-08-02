@@ -3,7 +3,7 @@
 import { toast } from "@/components/ui/use-toast";
 import { SWRConfig } from "swr";
 
-export default function SWRContext({
+export default function SWRConfigProvider({
   children,
 }: {
   children: React.ReactNode;

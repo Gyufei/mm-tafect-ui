@@ -1,10 +1,9 @@
 "use client";
 
 import { SessionProvider } from "next-auth/react";
-import useLocalStorage from "../hooks/use-local-storage";
 import { useEffect } from "react";
 
-export default function ThemeProvider({
+export default function SessionWrapProvider({
   children,
   session,
 }: {

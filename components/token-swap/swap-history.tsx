@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { differenceInCalendarDays, format } from "date-fns";
 
 import {
@@ -17,29 +17,24 @@ import useSWRMutation from "swr/mutation";
 import fetcher from "@/lib/fetcher";
 import Empty from "../shared/empty";
 import useSWR from "swr";
-import { IToken } from "@/lib/types/token";
-import { useTokens } from "@/lib/hooks/use-tokens";
 import SwapHistoryItem from "./swap-history-item";
 import LoadingIcon from "../shared/loading-icon";
+import { Web3Context } from "@/lib/providers/web3-provider";
 
-export default function SwapHistory({
-  networkId,
-}: {
-  networkId: string | null;
-}) {
+export default function SwapHistory() {
+  const { tokens, network } = useContext(Web3Context);
+  const networkId = network?.chain_id || null;
+
   const { data: opList } = useSWR(() => {
     return networkId ? `${PathMap.ops}?chain_id=${networkId}` : null;
   }, fetcher);
-  const { data: tokens }: { data: Array<IToken> } = useTokens(networkId);
 
   const [filterTaskDate, setFilterTaskDate] = useState<{
     min: Date | null;
     max: Date | null;
   }>({
-    // min: null,
-    // max: null,
-    min: new Date("2023-07-01"),
-    max: new Date("2023-07-31"),
+    min: null,
+    max: null,
   });
 
   const [openMinPopover, setOpenMinPopover] = useState(false);
@@ -78,43 +73,40 @@ export default function SwapHistory({
     const taskRes = await fetcher(url);
     if (!taskRes) return undefined;
 
-    const parsed = taskRes
-      .map((t: Record<string, any>) => {
-        const data = JSON.parse(t.data);
-        const date = format(new Date(t.create_time), "YYY-MM-dd HH:mm");
+    const parsed = taskRes.map((t: Record<string, any>) => {
+      const data = JSON.parse(t.data);
+      const date = format(new Date(t.create_time), "YYY-MM-dd HH:mm");
 
-        const opType = opList.find((op: Record<string, any>) => {
-          return op.op_id === t.op;
-        }).op_name;
+      const opType = opList.find((op: Record<string, any>) => {
+        return op.op_id === t.op;
+      }).op_name;
 
-        if (t.op === 1) {
-          data.tokenInName = tokens.find(
-            (tk) => tk.address === data.token_in,
-          )?.symbol;
-          data.tokenOutName = tokens.find(
-            (tk) => tk.address === data.token_out,
-          )?.symbol;
-        }
+      if (t.op === 1) {
+        data.tokenInName = tokens.find(
+          (tk) => tk.address === data.token_in,
+        )?.symbol;
+        data.tokenOutName = tokens.find(
+          (tk) => tk.address === data.token_out,
+        )?.symbol;
+      }
 
-        if (t.op === 3) {
-          data.tokenName =
-            tokens.find((tk) => tk.address === data.token)?.symbol || "";
-        }
+      if (t.op === 3) {
+        data.tokenName =
+          tokens.find((tk) => tk.address === data.token)?.symbol || "";
+      }
 
-        return {
-          id: t.id,
-          account: t.account,
-          status: t.status,
-          txHash: t.tx_hash,
-          op: t.op,
-          opName: opType,
-          date,
-          data,
-        };
-      })
-      .filter((t) => t.op === 1);
+      return {
+        id: t.id,
+        account: t.account,
+        status: t.status,
+        txHash: t.tx_hash,
+        op: t.op,
+        opName: opType,
+        date,
+        data,
+      };
+    });
 
-    console.log(parsed);
     return parsed;
   };
 
@@ -127,6 +119,20 @@ export default function SwapHistory({
     trigger: any;
     isMutating: boolean;
   } = useSWRMutation(`${PathMap.swapHistory}?${getQueryStr()}`, fetchTasks);
+
+  const [searchText, setSearchText] = useState("");
+
+  const filteredTasks = useMemo(() => {
+    return tasks?.filter((task) => {
+      if (searchText === "") {
+        return true;
+      } else {
+        const isTxHash = task.txHash.includes(searchText);
+        const isAccount = task.account.includes(searchText);
+        return isTxHash || isAccount;
+      }
+    });
+  }, [tasks, searchText]);
 
   const handleSearch = () => {
     if (!filterTaskDate.min && !filterTaskDate.max) {
@@ -145,6 +151,8 @@ export default function SwapHistory({
         className="bg-custom-bg-white px-3 py-2"
       >
         <Input
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
           className="rounded-3xl bg-custom-bg-white"
           type="text"
           placeholder="Search"
@@ -224,8 +232,10 @@ export default function SwapHistory({
           }}
           className="flex flex-col justify-stretch gap-y-3 overflow-y-auto px-3 pb-2"
         >
-          {tasks?.length ? (
-            tasks.map((task) => <SwapHistoryItem key={task.id} task={task} />)
+          {filteredTasks?.length ? (
+            filteredTasks.map((task) => (
+              <SwapHistoryItem key={task.id} task={task} />
+            ))
           ) : Array.isArray(tasks) ? (
             <Empty />
           ) : null}

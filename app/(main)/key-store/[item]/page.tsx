@@ -1,7 +1,7 @@
 "use client";
 import useSWR from "swr";
 import { sortBy } from "lodash";
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Trash2 } from "lucide-react";
 
 import { PathMap } from "@/lib/path-map";
@@ -9,8 +9,6 @@ import fetcher from "@/lib/fetcher";
 
 import { KeyStorePageSelect } from "@/components/key-store/key-store-page-select";
 import DetailItem from "@/components/shared/detail-item";
-import NetworkSelect from "@/components/shared/network-select/network-select";
-import { INetwork } from "@/lib/types/network";
 import KeyStoreAccountsTable, {
   IAccountGas,
 } from "@/components/key-store/key-store-accounts-table";
@@ -18,18 +16,15 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import useSWRMutation from "swr/mutation";
 import LoadingIcon from "@/components/shared/loading-icon";
+import { Web3Context } from "@/lib/providers/web3-provider";
 
 export default function KeyStoreItem({ params }: { params: { item: string } }) {
   const keyStoreName = params.item;
-
-  const [currentNetwork, setCurrentNetwork] = useState<INetwork | null>(null);
-  const handleSelectNetwork = (networkOption: any) => {
-    setCurrentNetwork(networkOption);
-  };
+  const { network } = useContext(Web3Context);
 
   const { data: keyStoreAccountsData } = useSWR(() => {
-    if (keyStoreName && currentNetwork?.chain_id) {
-      return `${PathMap.keyStoreAccounts}?keystore=${keyStoreName}&chain_id=${currentNetwork?.chain_id}`;
+    if (keyStoreName) {
+      return `${PathMap.keyStoreAccounts}?keystore=${keyStoreName}`;
     } else {
       return null;
     }
@@ -92,10 +87,7 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
           <DetailItem title="Gas Available">{gasAvailable}</DetailItem>
           <DetailItem title="Tx">{tx}</DetailItem>
           <DetailItem title="Default Network">
-            <NetworkSelect
-              value={currentNetwork}
-              onSelect={(e) => handleSelectNetwork(e)}
-            />
+            {network?.network_name}
           </DetailItem>
           <DetailItem title="Works for">
             <KeyStorePageSelect keyStoreName={keyStoreName} />

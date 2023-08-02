@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import useSWRMutation from "swr/mutation";
 
 import { Button } from "@/components/ui/button";
@@ -13,23 +13,24 @@ import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
 import { IToken } from "@/lib/types/token";
 import TruncateText from "../shared/trunc-text";
 import LoadingIcon from "../shared/loading-icon";
+import { Web3Context } from "@/lib/providers/web3-provider";
 
 export default function FilterAccountList({
-  networkId,
-  token,
+  tokens,
   keyStores,
-  handleTokenSelect,
 }: {
-  networkId: string | null;
-  token: IToken | null;
+  tokens: Array<IToken>;
   keyStores: Array<IKeyStoreAccount>;
-  handleTokenSelect: (_t: IToken | null) => void;
 }) {
+  const { network } = useContext(Web3Context);
+  const networkId = network?.chain_id;
+
+  const [token, setToken] = useState<IToken | null>(null);
   const [tokenMin, setTokenMin] = useStrNum("");
   const [tokenMax, setTokenMax] = useStrNum("");
 
   useEffect(() => {
-    handleTokenSelect(null);
+    setToken(null);
     filterResultReset();
     setTokenMax("");
     setTokenMin("");
@@ -82,9 +83,9 @@ export default function FilterAccountList({
         <div className="LabelText mb-1">Token</div>
         <div className="mb-3">
           <TokenSelect
-            networkId={networkId}
+            tokens={tokens}
             token={token || null}
-            handleTokenSelect={(e) => handleTokenSelect(e)}
+            handleTokenSelect={setToken}
           />
         </div>
         <div className="flex items-center">

@@ -6,20 +6,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { IToken } from "@/lib/types/token";
-import { useTokens } from "@/lib/hooks/use-tokens";
-import { useId } from "react";
 
 export default function TokenSelect({
+  tokens,
   token,
-  networkId,
   handleTokenSelect,
 }: {
-  networkId: string | null;
+  tokens: Array<IToken>;
   token: IToken | null;
   handleTokenSelect: (_t: IToken | null) => void;
 }) {
-  const { data: tokens }: { data: Array<IToken> } = useTokens(networkId);
-
   const handleSelect = (add: string) => {
     const token = tokens.find(
       (token: Record<string, any>) => token.address === add,

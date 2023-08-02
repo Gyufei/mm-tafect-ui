@@ -1,15 +1,14 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Loader, PlusCircle } from "lucide-react";
+import { ChevronRight, PlusCircle } from "lucide-react";
 
 import { PathMap } from "@/lib/path-map";
 
 import fetcher from "@/lib/fetcher";
-import { useEffect, useMemo } from "react";
 import { redirect } from "next/navigation";
-import { Skeleton } from "../ui/skeleton";
 import useSWR from "swr";
 
 export default function KeyStoreLinks() {

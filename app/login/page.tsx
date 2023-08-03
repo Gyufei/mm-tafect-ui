@@ -5,7 +5,7 @@ import { IUser } from "@/lib/types/user";
 
 import LoginForm from "@/components/login/login-form";
 import AccountList from "@/components/login/account-list";
-import { AuthRedirect } from "@/lib/auth";
+import { AuthRedirect } from "@/lib/auth/auth";
 
 export default function Login() {
   AuthRedirect();

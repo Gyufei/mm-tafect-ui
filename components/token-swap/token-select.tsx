@@ -17,9 +17,7 @@ export default function TokenSelect({
   handleTokenSelect: (_t: IToken | null) => void;
 }) {
   const handleSelect = (add: string) => {
-    const token = tokens.find(
-      (token: Record<string, any>) => token.address === add,
-    );
+    const token = tokens.find((token: IToken) => token.address === add);
     handleTokenSelect(token || null);
   };
 

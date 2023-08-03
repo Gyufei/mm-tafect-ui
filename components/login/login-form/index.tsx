@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { signIn } from "next-auth/react";
 
@@ -14,13 +14,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 
 interface LoginFormProps {
   account: IUser | null;
@@ -35,8 +33,8 @@ const formSchema = z.object({
 export default function LoginForm(props: LoginFormProps) {
   const account = useMemo(() => props.account, [props.account]);
 
-  const [showSessionTip, setShowSessionTip] = useState(false);
-  const [showLoginFailTip, setShowLoginFailTip] = useState(false);
+  const [showSessionTip] = useState(false);
+  const [showLoginFailTip] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

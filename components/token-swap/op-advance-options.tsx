@@ -15,8 +15,8 @@ import { replaceStrNum, replaceStrNumNoDecimal } from "@/lib/hooks/use-str-num";
 
 export interface IAdvanceOptions {
   schedule: Date | null;
-  timeouts: number | null;
-  slippage: number | null;
+  timeout: number | null;
+  slippage: string | null;
   nonce: number | null;
   gas: number | null;
   fixed_gas: boolean;
@@ -31,20 +31,16 @@ export default function OpAdvanceOptions({
   onChange: (_o: IAdvanceOptions) => void;
 }) {
   function handleAdvanceOptionsChange(key: string, value: any) {
-    if (key === "timeouts" || key === "slippage" || key === "gas") {
+    if (key === "timeout" || key === "slippage" || key === "gas") {
       value = value ? replaceStrNum(value) : null;
     }
 
     if (key === "nonce") {
-      value = value ? replaceStrNumNoDecimal(value) : null;
-    }
-
-    if (key === "slippage") {
-      value = value ? value / 100 : null;
+      value = value ? Number(replaceStrNumNoDecimal(value)) : null;
     }
 
     if (key === "schedule") {
-      value = new Date(value).getTime();
+      value = (new Date(value).getTime() / 1000).toFixed();
     }
 
     onChange({
@@ -60,9 +56,9 @@ export default function OpAdvanceOptions({
           <div className="flex max-w-[150px] flex-col">
             <div className="LabelText mb-1">Timeout(s)</div>
             <Input
-              value={options.timeouts || ""}
+              value={options.timeout || ""}
               onChange={(e) =>
-                handleAdvanceOptionsChange("timeouts", e.target.value)
+                handleAdvanceOptionsChange("timeout", e.target.value)
               }
               className="rounded-md border-border-color"
               placeholder="0"
@@ -74,7 +70,7 @@ export default function OpAdvanceOptions({
               <Input
                 className="rounded-md border-border-color"
                 placeholder="0"
-                value={options.slippage ? options.slippage * 100 : ""}
+                value={options.slippage || ""}
                 onChange={(e) =>
                   handleAdvanceOptionsChange("slippage", e.target.value)
                 }
@@ -101,7 +97,7 @@ export default function OpAdvanceOptions({
           <div>
             <div className="LabelText mb-1">Gas(gwei)</div>
             <Input
-              value={Number(options.gas) * 10 ** 9 || ""}
+              value={String(Number(options.gas) / 10 ** 9) || ""}
               onChange={(e) =>
                 handleAdvanceOptionsChange("gas", e.target.value)
               }
@@ -143,7 +139,7 @@ export default function OpAdvanceOptions({
               inputVariant="outlined"
               ampm={false}
               disablePast={true}
-              value={options.schedule}
+              value={options.schedule ? Number(options.schedule) * 1000 : null}
               emptyLabel="Select"
               onChange={(e: Date | null) =>
                 handleAdvanceOptionsChange("schedule", e)

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { PathMap } from "@/lib/path-map";
 import fetcher from "@/lib/fetcher";
 import { Web3Context } from "@/lib/providers/web3-provider";
-import { ETH_ADDRESS } from "@/lib/constants";
+import { GAS_TOKEN_ADDRESS } from "@/lib/constants";
 
 import { Input } from "../ui/input";
 
@@ -31,7 +31,7 @@ export default function QueryAccountBalance({
   const stableTokens = (tokens || []).filter((t: IToken) => t.is_stable_token);
 
   const gasToken =
-    (tokens || []).find((t: IToken) => t.address === ETH_ADDRESS) || null;
+    (tokens || []).find((t: IToken) => t.address === GAS_TOKEN_ADDRESS) || null;
 
   const [stableToken, setStableToken] = useState<IToken | null>(null);
 
@@ -140,7 +140,7 @@ export default function QueryAccountBalance({
               ))}
             </SelectContent>
           </Select>
-          <div className="text-lg font-medium text-title-color">
+          <div className="TruncateSingleLine text-lg font-medium text-title-color">
             {accountBalances[2]}
           </div>
         </div>
@@ -166,7 +166,9 @@ function SmallTokenCard({
       )}
     >
       <div className="LabelText h-[20px]">{name}</div>
-      <div className="text-lg font-medium text-title-color">{num}</div>
+      <div className="TruncateSingleLine text-lg font-medium text-title-color">
+        {num}
+      </div>
     </div>
   );
 }

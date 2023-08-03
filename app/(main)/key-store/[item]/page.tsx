@@ -24,7 +24,7 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
 
   const { data: keyStoreAccountsData } = useSWR(() => {
     if (keyStoreName) {
-      return `${PathMap.keyStoreAccounts}?keystore=${keyStoreName}`;
+      return `${PathMap.keyStoreAccounts}?keystore=${keyStoreName}&chain_id=${network?.chain_id}`;
     } else {
       return null;
     }

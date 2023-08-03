@@ -228,7 +228,7 @@ export default function SwapHistory() {
         </Button>
         <div
           style={{
-            height: "calc(100vh - 240px)",
+            height: "calc(100vh - 245px)",
           }}
           className="flex flex-col justify-stretch gap-y-3 overflow-y-auto px-3 pb-2"
         >

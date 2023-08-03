@@ -73,7 +73,7 @@ export default function Op({
     if (gasPrice) {
       setAdvanceOptions({
         ...advanceOptions,
-        gas: gasPrice.gas_price / 10 ** 9,
+        gas: gasPrice.gas_price,
       });
     }
   }, [gasPrice]);
@@ -92,6 +92,8 @@ export default function Op({
   const [isExactInput, setIsExactInput] = useState<boolean>(true);
 
   const [estimateTokenAmount] = useDebounce(async (amount: number) => {
+    if (!selectedOp?.op_detail?.swap_router) return null;
+
     const query = new URLSearchParams();
     query.set("chain_id", network?.chain_id || "");
     query.set("token_in", tokenIn.info?.address || "");
@@ -140,8 +142,8 @@ export default function Op({
 
   const [advanceOptions, setAdvanceOptions] = useState<IAdvanceOptions>({
     schedule: null,
-    timeouts: null,
-    slippage: null,
+    timeout: 1800,
+    slippage: "0.02",
     nonce: null,
     gas: null,
     fixed_gas: false,
@@ -159,7 +161,7 @@ export default function Op({
     const token = tokenIn.info?.address || "";
 
     return {
-      user_name: session?.user?.name,
+      user_name: session?.user?.email,
       chain_id,
       account,
       token,

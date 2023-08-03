@@ -14,6 +14,7 @@ import { IToken } from "@/lib/types/token";
 import TruncateText from "../shared/trunc-text";
 import LoadingIcon from "../shared/loading-icon";
 import { Web3Context } from "@/lib/providers/web3-provider";
+import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
 
 export default function FilterAccountList({
   tokens,
@@ -36,13 +37,21 @@ export default function FilterAccountList({
     setTokenMin("");
   }, [networkId]);
 
+  function handleTokenSelect(token: IToken | null) {
+    setToken(token);
+    filterResultReset();
+  }
+
+  const gasToken = tokens.find((t) => t.address === GAS_TOKEN_ADDRESS);
+  const isFilterGasToken = token?.address === GAS_TOKEN_ADDRESS;
+
   const {
     data: accounts,
     isMutating: filtering,
     trigger: filterTrigger,
     reset: filterResultReset,
   } = useSWRMutation(
-    () => `${PathMap.filterAccount}?${getFilterQuery()}`,
+    `${PathMap.filterAccount}?${getFilterQuery()}`,
     fetcher as any,
   );
 
@@ -64,17 +73,28 @@ export default function FilterAccountList({
       queryParams.set("token_address", token.address);
     }
 
-    if (tokenMin) {
-      queryParams.set("token_amount_minimum", tokenMin.toString());
+    let min = tokenMin || "0";
+    let max = tokenMax || UNIT256_MAX;
+
+    if (tokenMin && tokenMax && Number(tokenMin) > Number(tokenMax)) {
+      min = tokenMax;
+      max = tokenMin;
     }
 
-    if (tokenMax) {
-      queryParams.set("token_amount_maximum", tokenMax.toString());
-    }
+    queryParams.set("token_amount_minimum", min);
+    queryParams.set("token_amount_maximum", max);
 
     const query = queryParams.toString();
 
     return query;
+  }
+
+  function handleFilter() {
+    if (!token?.address) {
+      return;
+    }
+
+    filterTrigger();
   }
 
   return (
@@ -85,7 +105,7 @@ export default function FilterAccountList({
           <TokenSelect
             tokens={tokens}
             token={token || null}
-            handleTokenSelect={setToken}
+            handleTokenSelect={handleTokenSelect}
           />
         </div>
         <div className="flex items-center">
@@ -107,18 +127,16 @@ export default function FilterAccountList({
       <div className="relative mt-8 flex flex-col border-t border-shadow-color pt-5">
         <Button
           disabled={filtering}
-          onClick={() => filterTrigger()}
+          onClick={handleFilter}
           className="disabled:opacity-1 absolute top-[-20px] mx-3 flex w-[95%] items-center justify-center rounded border bg-white py-2 hover:bg-custom-bg-white"
         >
           <LoadingIcon isLoading={filtering} />
           <span className="text-title-color">Filter Account</span>
         </Button>
         <ScrollArea
-          className="
-        pb-2
-    "
+          className="pb-2"
           style={{
-            height: "calc(100vh - 413px)",
+            height: "calc(100vh - 430px)",
           }}
         >
           {Array.isArray(accounts) &&
@@ -135,8 +153,15 @@ export default function FilterAccountList({
                     <TruncateText text={acc.account} />
                   </div>
                   <div className="LabelText flex">
-                    <div className="mr-6">ETH {acc.gas_token_amount}</div>
-                    <div>USDT {acc.quote_token_amount}</div>
+                    <div className="mr-6">
+                      {gasToken?.symbol} {acc.gas_token_amount}
+                    </div>
+
+                    {!isFilterGasToken && (
+                      <div>
+                        {token?.symbol} {acc.quote_token_amount}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

@@ -19,4 +19,7 @@ export const LINKS = [
   },
 ];
 
-export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+export const GAS_TOKEN_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+
+export const UNIT256_MAX =
+  "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";

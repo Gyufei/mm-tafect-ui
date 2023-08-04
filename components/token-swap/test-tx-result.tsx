@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/dialog";
 
 export function TestTxResult(props: {
-  result: any;
+  result: Record<string, any>;
   open: boolean;
   onOpenChange: (_o: boolean) => void;
 }) {
@@ -27,7 +27,7 @@ export function TestTxResult(props: {
           </div>
           <div>
             <div className="text-sm text-content-color">estimate_gas</div>
-            <div>{Number(result?.gaslimit)}</div>
+            <div>{Number(result?.gas)}</div>
           </div>
         </div>
       </DialogContent>

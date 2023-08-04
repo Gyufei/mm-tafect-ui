@@ -65,7 +65,7 @@ export default function Op({
 
   useEffect(() => {
     if (nonceData) {
-      setAdvanceOptions({ ...advanceOptions, nonce: nonceData.nonce });
+      setAdvanceOptions({ ...advanceOptions, nonce: Number(nonceData.nonce) });
     }
   }, [nonceData]);
 
@@ -213,13 +213,13 @@ export default function Op({
 
   async function handleSign() {
     let url, params;
-    if (selectedOp?.op_name.includes("approve")) {
+    if (selectedOp?.op_id === 3) {
       url = PathMap.signApprove;
       params = getApproveParams();
-    } else if (selectedOp?.op_name.includes("transfer")) {
+    } else if (selectedOp?.op_id === 2) {
       url = PathMap.signTransfer;
       params = getTransferParams();
-    } else if (selectedOp?.op_name.includes("swap")) {
+    } else if (selectedOp?.op_id === 1) {
       url = PathMap.signSwap;
       params = getSwapParams();
     } else {
@@ -231,8 +231,7 @@ export default function Op({
         method: "POST",
         body: JSON.stringify(params),
       });
-      setTestTxResult(res);
-      setTestTxDialogOpen(true);
+      handleShowTxResult(res);
     } catch (e: any) {
       toast({
         variant: "destructive",
@@ -241,15 +240,23 @@ export default function Op({
     }
   }
 
+  const handleShowTxResult = (res: Record<string, any>) => {
+    if (res.gaslimit) {
+      res.gas = (Number(res.gaslimit) * Number(gasPrice.gas_price)) / 10 ** 18;
+    }
+    setTestTxResult(res);
+    setTestTxDialogOpen(true);
+  };
+
   async function handleSend() {
     let url, params;
-    if (selectedOp?.op_name.includes("approve")) {
+    if (selectedOp?.op_id === 3) {
       url = PathMap.sendApprove;
       params = getApproveParams();
-    } else if (selectedOp?.op_name.includes("transfer")) {
+    } else if (selectedOp?.op_id === 2) {
       url = PathMap.sendTransfer;
       params = getTransferParams();
-    } else if (selectedOp?.op_name.includes("swap")) {
+    } else if (selectedOp?.op_id === 1) {
       url = PathMap.sendSwap;
       params = getSwapParams();
     } else {

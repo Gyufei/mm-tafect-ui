@@ -37,7 +37,7 @@ export default function Web3Provider({
     return uniqueT;
   };
 
-  const { data: web3Info } = useSWR(PathMap.web3Info, fetcher);
+  const { data: userWeb3Info } = useSWR(PathMap.web3Info, fetcher);
   const { data: networks }: { data: Array<INetwork> } = useSWR(
     PathMap.networks,
     fetcher,
@@ -48,22 +48,22 @@ export default function Web3Provider({
   );
 
   useEffect(() => {
-    if (networks && web3Info?.chain_id) {
+    if (networks && userWeb3Info?.chain_id) {
       const curNet = networks.find(
-        (n) => n.chain_id === String(web3Info?.chain_id),
+        (n) => n.chain_id === String(userWeb3Info?.chain_id),
       );
       setNetwork(curNet || null);
     }
-  }, [networks, web3Info]);
+  }, [networks, userWeb3Info]);
 
   useEffect(() => {
-    if (tokens && web3Info?.token_address) {
+    if (tokens && userWeb3Info?.token_address) {
       const curToken = tokens.find(
-        (t) => t.address === web3Info?.token_address,
+        (t) => t.address === userWeb3Info?.token_address,
       );
       setToken(curToken || null);
     }
-  }, [tokens, web3Info]);
+  }, [tokens, userWeb3Info]);
 
   return (
     <Web3Context.Provider

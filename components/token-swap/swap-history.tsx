@@ -1,5 +1,5 @@
 import { useContext, useMemo, useState } from "react";
-import { differenceInCalendarDays, format } from "date-fns";
+import { setHours, setMinutes, setSeconds, format } from "date-fns";
 
 import {
   Popover,
@@ -49,15 +49,13 @@ export default function SwapHistory() {
   };
 
   const handleMaxDateChange = (d: Date | undefined) => {
+    const date = d ? setHours(setMinutes(setSeconds(d, 59), 59), 23) : null;
+
     setFilterTaskDate((prev) => ({
       ...prev,
-      max: d || null,
+      max: date,
     }));
     setOpenMaxPopover(false);
-  };
-
-  const disabledDate = (date: Date) => {
-    return differenceInCalendarDays(date, new Date()) > 0;
   };
 
   const getQueryStr = () => {
@@ -183,7 +181,6 @@ export default function SwapHistory() {
               mode="single"
               selected={filterTaskDate.min || undefined}
               onSelect={(e) => handleMinDateChange(e)}
-              disabled={disabledDate}
             />
           </PopoverContent>
         </Popover>
@@ -212,7 +209,6 @@ export default function SwapHistory() {
               mode="single"
               selected={filterTaskDate.max || undefined}
               onSelect={(e) => handleMaxDateChange(e)}
-              disabled={disabledDate}
             />
           </PopoverContent>
         </Popover>

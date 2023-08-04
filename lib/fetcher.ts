@@ -23,17 +23,29 @@ export default async function fetcher(
   const res = await fetch(input, newInit);
 
   if (!res.ok) {
+    const error = new Error(
+      "An error occurred while fetching the data.",
+    ) as any;
+
     if (res.status === 401) {
       signOut();
       window.localStorage.clear();
       return null;
     }
 
-    const resBody = await res.text();
-    const error = new Error(
-      "An error occurred while fetching the data.",
-    ) as any;
-    error.info = resBody;
+    if (res.status === 422) {
+      error.info = "params error, sign failed";
+    }
+
+    if (res.status === 500) {
+      error.info = "failed: An error occurred";
+    }
+
+    if (!error.info) {
+      const resBody = await res.text();
+      error.info = resBody;
+    }
+
     error.status = res.status;
 
     throw error;

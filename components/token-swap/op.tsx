@@ -119,10 +119,10 @@ export default function Op({
   }, 1000);
 
   const handleTokenInChange = async (inParams: ITokenNumDesc) => {
-    const isSame = Number(inParams.num) === Number(tokenIn.num);
+    const isSameVal = Number(inParams.num) === Number(tokenIn.num);
     setTokenIn(inParams);
     setIsExactInput(true);
-    if (isSame) return;
+    if (isSameVal) return;
 
     if (Number(inParams.num) === 0) {
       setTokenOut({ ...tokenOut, num: "0" });
@@ -140,10 +140,11 @@ export default function Op({
   };
 
   const handleTokenOutChange = async (outParams: ITokenNumDesc) => {
-    const isSame = Number(outParams.num) === Number(tokenOut.num);
+    const isSameVal = Number(outParams.num) === Number(tokenOut.num);
+
     setTokenOut(outParams);
     setIsExactInput(false);
-    if (isSame) return;
+    if (isSameVal) return;
 
     if (Number(outParams.num) === 0) {
       setTokenIn({ ...tokenIn, num: "0" });

@@ -27,7 +27,7 @@ export default function KeyStoreLinks() {
     <>
       <div className="flex flex-col self-stretch pt-3">
         {(keyStores || []).map((ks: string) => (
-          <Link key={ks} href={`/keyStore/${ks}`}>
+          <Link key={ks} href={`/key-store/${ks}`}>
             <div
               className="mb-3 flex w-full cursor-pointer justify-between rounded-s border border-transparent px-3 py-[10px] text-content-color"
               style={

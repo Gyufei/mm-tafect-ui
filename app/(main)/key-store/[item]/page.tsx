@@ -23,7 +23,7 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
   const { network } = useContext(Web3Context);
 
   const { data: keyStoreAccountsData } = useSWR(() => {
-    if (keyStoreName) {
+    if (keyStoreName && network?.chain_id) {
       return `${PathMap.keyStoreAccounts}?keystore=${keyStoreName}&chain_id=${network?.chain_id}`;
     } else {
       return null;

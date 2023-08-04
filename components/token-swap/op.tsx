@@ -119,19 +119,37 @@ export default function Op({
   }, 1000);
 
   const handleTokenInChange = async (inParams: ITokenNumDesc) => {
+    const isSame = Number(inParams.num) === Number(tokenIn.num);
     setTokenIn(inParams);
     setIsExactInput(true);
+    if (isSame) return;
+
+    if (Number(inParams.num) === 0) {
+      setTokenOut({ ...tokenOut, num: "0" });
+      return;
+    }
+
     if (inParams.info && inParams.num && tokenOut.info) {
       const amount = Number(inParams.num);
       const result = await estimateTokenAmount(amount);
 
-      if (result) setTokenOut({ ...tokenOut, num: String(result) });
+      if (result) {
+        setTokenOut({ ...tokenOut, num: String(result) });
+      }
     }
   };
 
   const handleTokenOutChange = async (outParams: ITokenNumDesc) => {
+    const isSame = Number(outParams.num) === Number(tokenOut.num);
     setTokenOut(outParams);
     setIsExactInput(false);
+    if (isSame) return;
+
+    if (Number(outParams.num) === 0) {
+      setTokenIn({ ...tokenIn, num: "0" });
+      return;
+    }
+
     if (outParams.info && outParams.num && tokenIn.info) {
       const amount = Number(outParams.num);
       const result = await estimateTokenAmount(amount);

@@ -1,5 +1,6 @@
 import TokenSelect from "@/components/token-swap/token-select";
 import { Input } from "@/components/ui/input";
+import { replaceStrNum } from "@/lib/hooks/use-str-num";
 import { IToken } from "@/lib/types/token";
 
 export interface ITokenNumDesc {
@@ -25,9 +26,10 @@ export default function TokenSelectAndInput({
   };
 
   const handleNumChange = (num: string) => {
+    const reNum = replaceStrNum(num);
     handleTokenParamsChange({
       ...tokenParams,
-      num,
+      num: reNum,
     });
   };
 

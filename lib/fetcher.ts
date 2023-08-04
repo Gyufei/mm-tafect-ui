@@ -37,13 +37,11 @@ export default async function fetcher(
       error.info = "params error, sign failed";
     }
 
-    if (res.status === 500) {
-      error.info = "failed: An error occurred";
-    }
-
     if (!error.info) {
       const resBody = await res.text();
-      error.info = resBody;
+      const errorTip =
+        resBody.length > 100 ? "Failed: An error occurred" : resBody;
+      error.info = errorTip;
     }
 
     error.status = res.status;

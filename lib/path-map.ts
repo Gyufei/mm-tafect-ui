@@ -29,10 +29,10 @@ export const PathMap = {
   swapHistory: WithHost("/tokenswap/history"),
 
   accountTokensBalance: WithHost("/web3/batch_token_balanceof"),
+  accountTokenBalance: WithHost("/web3/balanceof"),
   gasPrice: WithHost("/web3/gas_price"),
   nonceNum: WithHost("/web3/nonce"),
 
   // not-use
   accountGas: WithHost("/web3/balanceof"),
-  accountTokenBalance: WithHost("/web3/token_balanceof"),
 };

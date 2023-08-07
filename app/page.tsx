@@ -1,8 +1,5 @@
-"use client";
-import { AuthRedirect } from "@/lib/auth/auth";
+import AuthRedirect from "@/components/shared/auth-redirect";
 
 export default function App() {
-  AuthRedirect();
-
-  return <></>;
+  return <AuthRedirect />;
 }

@@ -2,6 +2,8 @@ import TokenSelect from "@/components/token-swap/token-select";
 import { Input } from "@/components/ui/input";
 import { replaceStrNum } from "@/lib/hooks/use-str-num";
 import { IToken } from "@/lib/types/token";
+import { useEffect, useState } from "react";
+import { useDebounce } from "use-debounce";
 
 export interface ITokenNumDesc {
   labelName: string;
@@ -25,12 +27,23 @@ export default function TokenSelectAndInput({
     });
   };
 
-  const handleNumChange = (num: string) => {
-    const reNum = replaceStrNum(num);
+  const [num, setNum] = useState(tokenParams.num);
+  const [debouncedNum] = useDebounce(num, 500);
+
+  useEffect(() => {
+    setNum(tokenParams.num);
+  }, [tokenParams.num]);
+
+  useEffect(() => {
     handleTokenParamsChange({
       ...tokenParams,
-      num: reNum,
+      num: debouncedNum,
     });
+  }, [debouncedNum]);
+
+  const handleNumChange = (e: string) => {
+    const reNum = replaceStrNum(e);
+    setNum(reNum);
   };
 
   return (
@@ -43,7 +56,7 @@ export default function TokenSelectAndInput({
       />
       <div className="ml-2 h-3 border-l border-border-color" />
       <Input
-        value={tokenParams.num}
+        value={num}
         onChange={(e) => handleNumChange(e.target.value)}
         className="rounded-md border-border-color"
         placeholder="0"

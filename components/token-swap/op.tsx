@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { ArrowBigRight } from "lucide-react";
-import { useDebounce } from "use-debounce";
 import useSWR from "swr";
 
 import { IOp } from "@/lib/types/op";
@@ -23,6 +22,8 @@ import { TestTxResult } from "./test-tx-result";
 import ActionTip, { IActionType } from "../shared/action-tip";
 import { useSession } from "next-auth/react";
 import { Web3Context } from "@/lib/providers/web3-provider";
+import useSWRMutation from "swr/mutation";
+import { UNIT256_MAX } from "@/lib/constants";
 
 export default function Op({
   tokens,
@@ -88,74 +89,122 @@ export default function Op({
     info: null,
     num: "",
   });
-
   const [isExactInput, setIsExactInput] = useState<boolean>(true);
 
-  const [estimateTokenAmount] = useDebounce(async (amount: number) => {
+  const fetchEstimate = async (
+    url: string,
+    {
+      arg,
+    }: {
+      arg: {
+        inP: ITokenNumDesc;
+        outP: ITokenNumDesc;
+        exactInput: boolean;
+      };
+    },
+  ) => {
     if (!selectedOp?.op_detail?.swap_router) return null;
+
+    const { inP, outP, exactInput } = arg;
+    const amount = Number(exactInput ? inP.num : outP.num);
 
     const query = new URLSearchParams();
     query.set("chain_id", network?.chain_id || "");
-    query.set("token_in", tokenIn.info?.address || "");
-    query.set("token_out", tokenOut.info?.address || "");
+    query.set("token_in", inP.info?.address || "");
+    query.set("token_out", outP.info?.address || "");
     query.set("token_amount", String(amount) || "");
-    query.set("is_exact_input", isExactInput ? "true" : "false");
+    query.set("is_exact_input", exactInput ? "true" : "false");
     query.set("swap_router_address", selectedOp?.op_detail?.swap_router || "");
 
     const queryStr = query.toString();
+    const res = await fetcher(`${url}?${queryStr}`);
 
-    const url = `${PathMap.estimateToken}?${queryStr}`;
+    return res?.amount;
+  };
 
-    try {
-      const estimateRes = await fetcher(url);
-      return estimateRes?.amount;
-    } catch (e: any) {
-      toast({
-        variant: "destructive",
-        description: e.info,
+  useEffect(() => {
+    if (!selectedOp?.op_detail?.swap_router) return;
+
+    if (tokenIn.info && tokenOut.info && (tokenIn.num || tokenOut.num)) {
+      triggerEstimate({
+        inP: tokenIn,
+        outP: tokenOut,
+        exactInput: isExactInput,
+      }).then((result) => {
+        console.log(result);
+        if (isExactInput) {
+          setTokenOut({ ...tokenOut, num: String(result || 0) });
+        } else {
+          setTokenIn({ ...tokenIn, num: String(result || 0) });
+        }
       });
-      return null;
     }
-  }, 1000);
+  }, [selectedOp?.op_detail?.swap_router]);
+
+  const { trigger: triggerEstimate } = useSWRMutation(
+    `${PathMap.estimateToken}`,
+    fetchEstimate,
+  );
 
   const handleTokenInChange = async (inParams: ITokenNumDesc) => {
-    const isSameVal = Number(inParams.num) === Number(tokenIn.num);
+    const preVal = JSON.parse(JSON.stringify(tokenIn));
     setTokenIn(inParams);
     setIsExactInput(true);
+
+    const isSameToken = inParams.info?.address === tokenOut.info?.address;
+    if (isSameToken) {
+      setTokenOut({ ...tokenOut, num: inParams.num });
+      return;
+    }
+
+    const isSameVal =
+      inParams.info?.address === preVal.info?.address &&
+      Number(inParams.num) === Number(preVal.num);
     if (isSameVal) return;
 
     if (Number(inParams.num) === 0) {
-      setTokenOut({ ...tokenOut, num: "0" });
+      setTokenOut({ ...tokenOut, num: "" });
       return;
     }
 
     if (inParams.info && inParams.num && tokenOut.info) {
-      const amount = Number(inParams.num);
-      const result = await estimateTokenAmount(amount);
-
-      if (result) {
-        setTokenOut({ ...tokenOut, num: String(result) });
-      }
+      const result = await triggerEstimate({
+        inP: inParams,
+        outP: tokenOut,
+        exactInput: true,
+      });
+      setTokenOut({ ...tokenOut, num: String(result || "") });
     }
   };
 
   const handleTokenOutChange = async (outParams: ITokenNumDesc) => {
-    const isSameVal = Number(outParams.num) === Number(tokenOut.num);
-
+    const preVal = JSON.parse(JSON.stringify(tokenOut));
     setTokenOut(outParams);
     setIsExactInput(false);
+
+    const isSameToken = outParams.info?.address === tokenIn.info?.address;
+    if (isSameToken) {
+      setTokenIn({ ...tokenIn, num: outParams.num });
+      return;
+    }
+
+    const isSameVal =
+      outParams.info?.address === preVal.info?.address &&
+      Number(outParams.num) === Number(preVal.num);
     if (isSameVal) return;
 
     if (Number(outParams.num) === 0) {
-      setTokenIn({ ...tokenIn, num: "0" });
+      setTokenIn({ ...tokenIn, num: "" });
       return;
     }
 
     if (outParams.info && outParams.num && tokenIn.info) {
-      const amount = Number(outParams.num);
-      const result = await estimateTokenAmount(amount);
-
-      if (result) setTokenIn({ ...tokenIn, num: String(result) });
+      const result = await triggerEstimate({
+        inP: tokenIn,
+        outP: outParams,
+        exactInput: false,
+      });
+      setTokenIn({ ...tokenIn, num: String(result || "") });
     }
   };
 
@@ -193,9 +242,7 @@ export default function Op({
     const commonParams = getCommonParams();
     const params = {
       ...commonParams,
-      amount:
-        tokenIn.num ||
-        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      amount: tokenIn.num || UNIT256_MAX,
       spender: selectedOp?.op_detail?.swap_router || "",
     };
 
@@ -345,7 +392,7 @@ export default function Op({
       </div>
 
       <div
-        className="flex items-center gap-x-3 border-t bg-white px-3 py-2"
+        className="mt-5 flex items-center gap-x-3 border-t bg-white px-3 py-2"
         style={{
           boxShadow:
             "inset -1px 0px 0px 0px #D6D6D6,inset 0px 1px 0px 0px #D6D6D6",

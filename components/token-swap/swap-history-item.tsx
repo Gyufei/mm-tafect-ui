@@ -4,6 +4,7 @@ import SwapHistoryItemStatus from "./swap-history-items-status";
 import { ExternalLink } from "lucide-react";
 import { useContext } from "react";
 import { Web3Context } from "@/lib/providers/web3-provider";
+import { toNonExponential } from "@/lib/utils";
 
 export default function SwapHistoryItem({ task }: { task: ITask }) {
   const { network } = useContext(Web3Context);
@@ -13,7 +14,7 @@ export default function SwapHistoryItem({ task }: { task: ITask }) {
 
   const taskTxData = task.data;
 
-  const handleGoToExploer = () => {
+  const handleGoToExplorer = () => {
     window.open(`${network?.block_explorer_url}/tx/${task.txHash}`);
   };
 
@@ -31,11 +32,12 @@ export default function SwapHistoryItem({ task }: { task: ITask }) {
           <TruncateText text={task.txHash} />
           <ExternalLink
             className="mb-1 ml-1 h-4 w-4 cursor-pointer text-primary"
-            onClick={handleGoToExploer}
+            onClick={handleGoToExplorer}
           />
         </div>
         <div className="TruncateSingleLine max-w-[200px]">
-          Gas: {taskTxData?.gas}
+          Gas:{" "}
+          {toNonExponential((Number(taskTxData?.gas) || 0) / 10 ** 9) + " Gwei"}
         </div>
       </div>
       {isTransfer ? (

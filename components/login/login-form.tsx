@@ -33,8 +33,8 @@ const formSchema = z.object({
 export default function LoginForm(props: LoginFormProps) {
   const account = useMemo(() => props.account, [props.account]);
 
-  const [showSessionTip] = useState(false);
-  const [showLoginFailTip] = useState(false);
+  const [showSessionTip] = useState(true);
+  const [showLoginFailTip] = useState(true);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,7 +61,7 @@ export default function LoginForm(props: LoginFormProps) {
 
   const SessionTip = () => {
     return showSessionTip ? (
-      <div className="mb-5 w-[420px] rounded border border-[#DFCA9C] bg-[#FEFAF4] px-4 py-3 text-title-color">
+      <div className="mb-5 rounded border border-[#DFCA9C] bg-[#FEFAF4] px-4 py-3 text-title-color md:w-[420px]">
         Your session ended after 10 minutes of inactivity.
       </div>
     ) : null;
@@ -70,10 +70,7 @@ export default function LoginForm(props: LoginFormProps) {
   const LinkOfAccount = () => {
     return (
       <div
-        className="absolute flex select-none items-center hover:cursor-pointer"
-        style={{
-          top: "-3.8em",
-        }}
+        className="absolute top-[-64px] flex select-none items-center hover:cursor-pointer md:top-[-3.8em]"
         onClick={() => props.showAccountCb()}
       >
         <ChevronLeft className="mr-2 h-4 w-4" />
@@ -87,10 +84,9 @@ export default function LoginForm(props: LoginFormProps) {
       <>
         {account?.name ? (
           <>
-            <SessionTip />
             <div className="mb-5 flex justify-start">
               <Avatar className="mr-4 h-16 w-16 rounded-lg">
-                <AvatarImage src={account.image} />
+                <AvatarImage src={account.image || ""} />
                 <AvatarFallback>{account?.name?.[0] || ""}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col items-start justify-around">
@@ -135,16 +131,12 @@ export default function LoginForm(props: LoginFormProps) {
   };
 
   return (
-    <div
-      style={{
-        paddingTop: "24vh",
-      }}
-      className="login-form flex w-full max-w-md grow flex-col items-stretch"
-    >
+    <div className="login-form flex w-full max-w-md grow flex-col items-stretch pt-28 md:pt-[24vh]">
       <div className="relative flex w-full flex-col">
+        {account?.name ? <SessionTip /> : null}
         <FormHead />
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-[420px]">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="md:w-[420px]">
             {!account?.name ? (
               <FormField
                 name="email"
@@ -175,14 +167,14 @@ export default function LoginForm(props: LoginFormProps) {
               )}
             />
 
-            <div className="mt-5 flex items-center justify-between ">
+            <div className="mt-5 flex flex-col items-stretch justify-center md:flex-row md:items-center md:justify-between ">
               <button
-                className="flex h-10 w-36 items-center rounded-3xl bg-primary px-10 py-2.5 text-white"
+                className="mb-3 flex h-10 w-full items-center justify-center rounded-3xl bg-primary px-10 py-2.5 text-white md:mb-0 md:w-36"
                 type="submit"
               >
                 sign in
               </button>
-              <div className="cursor-pointer text-sm text-primary">
+              <div className="cursor-pointer text-center text-sm text-primary">
                 Having trouble signing in?
               </div>
             </div>

@@ -23,7 +23,7 @@ export default function Login() {
   }, []);
 
   return (
-    <div className="mr-16 flex w-full max-w-md grow flex-col items-start p-0">
+    <div className="flex w-full grow flex-col items-start px-4 md:max-w-md md:p-0">
       <AuthRedirect />
       {showAccountList ? (
         <AccountList selectAccountCb={handleSelectAccount} />

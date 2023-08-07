@@ -108,7 +108,7 @@ const AccountCard = ({
               ? "translateX(-60px)"
               : "translateX(0)",
           }}
-          className="ml-4 flex cursor-pointer items-center self-stretch rounded-md border-[#dea69c] bg-[#F8DEDA] px-2"
+          className="ml-4 flex cursor-pointer items-center self-stretch rounded-md border-[#dea69c] bg-[#F8DEDA] px-2 animate-in slide-in-from-left duration-300"
         >
           <Trash2 className="hover:text-primary" onClick={() => onDelete(ac)} />
         </div>

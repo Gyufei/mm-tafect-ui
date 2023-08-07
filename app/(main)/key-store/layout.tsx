@@ -1,6 +1,6 @@
 import KeyStoreLinks from "@/components/key-store/key-store-links";
 
-export default async function KeyStoreLayout({
+export default function KeyStoreLayout({
   children,
 }: {
   children: React.ReactNode;

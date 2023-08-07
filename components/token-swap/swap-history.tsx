@@ -1,16 +1,9 @@
 import { useContext, useMemo, useState } from "react";
 import { setHours, setMinutes, setSeconds, format } from "date-fns";
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { cn } from "@/lib/utils";
 import { ITask } from "@/lib/types/task";
 import { PathMap } from "@/lib/path-map";
 import useSWRMutation from "swr/mutation";
@@ -20,6 +13,7 @@ import useSWR from "swr";
 import SwapHistoryItem from "./swap-history-item";
 import LoadingIcon from "../shared/loading-icon";
 import { Web3Context } from "@/lib/providers/web3-provider";
+import { DatePicker } from "@mui/x-date-pickers";
 
 export default function SwapHistory() {
   const { tokens, network } = useContext(Web3Context);
@@ -37,25 +31,20 @@ export default function SwapHistory() {
     max: null,
   });
 
-  const [openMinPopover, setOpenMinPopover] = useState(false);
-  const [openMaxPopover, setOpenMaxPopover] = useState(false);
-
-  const handleMinDateChange = (d: Date | undefined) => {
+  const handleMinDateChange = (d: Date | null) => {
     setFilterTaskDate((prev) => ({
       ...prev,
-      min: d || null,
+      min: d,
     }));
-    setOpenMinPopover(false);
   };
 
-  const handleMaxDateChange = (d: Date | undefined) => {
+  const handleMaxDateChange = (d: Date | null) => {
     const date = d ? setHours(setMinutes(setSeconds(d, 59), 59), 23) : null;
 
     setFilterTaskDate((prev) => ({
       ...prev,
       max: date,
     }));
-    setOpenMaxPopover(false);
   };
 
   const getQueryStr = () => {
@@ -157,61 +146,17 @@ export default function SwapHistory() {
         />
       </div>
       <div className="flex items-center justify-between gap-x-1 px-3 pb-8 pt-3">
-        <Popover
-          open={openMinPopover}
-          onOpenChange={(isOpen) => setOpenMinPopover(isOpen)}
-        >
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={cn(
-                "w-[280px] justify-start text-left font-normal",
-                !filterTaskDate.min && "text-muted-foreground",
-              )}
-            >
-              {filterTaskDate.min ? (
-                format(filterTaskDate.min, "YYY-MM-dd")
-              ) : (
-                <span>Pick a date</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={filterTaskDate.min || undefined}
-              onSelect={(e) => handleMinDateChange(e)}
-            />
-          </PopoverContent>
-        </Popover>
+        <DatePicker
+          slotProps={{ textField: { size: "small" } }}
+          value={filterTaskDate.min}
+          onChange={(e) => handleMinDateChange(e)}
+        />
         <div>-</div>
-        <Popover
-          open={openMaxPopover}
-          onOpenChange={(isOpen) => setOpenMaxPopover(isOpen)}
-        >
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={cn(
-                "w-[280px] justify-start text-left font-normal",
-                !filterTaskDate.max && "text-muted-foreground",
-              )}
-            >
-              {filterTaskDate.max ? (
-                format(filterTaskDate.max, "YYY-MM-dd")
-              ) : (
-                <span>Pick a date</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={filterTaskDate.max || undefined}
-              onSelect={(e) => handleMaxDateChange(e)}
-            />
-          </PopoverContent>
-        </Popover>
+        <DatePicker
+          slotProps={{ textField: { size: "small" } }}
+          value={filterTaskDate.max}
+          onChange={(e) => handleMaxDateChange(e)}
+        />
       </div>
       <div className="relative border-t pt-8">
         <Button

@@ -1,7 +1,7 @@
 "use client";
 
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 export default function MuiPickerProvider({
   children,
@@ -9,8 +9,8 @@ export default function MuiPickerProvider({
   children: React.ReactNode;
 }) {
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       {children}
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 }

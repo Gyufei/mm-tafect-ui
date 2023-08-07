@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { DateTimePicker } from "@material-ui/pickers";
 import { ChevronDownCircle } from "lucide-react";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 import {
   Collapsible,
@@ -136,24 +136,20 @@ export default function OpAdvanceOptions({
           <div className="LabelText mb-1">Schedule Time</div>
           <div className="flex justify-between gap-x-3">
             <DateTimePicker
-              inputVariant="outlined"
               ampm={false}
+              closeOnSelect={true}
               disablePast={true}
-              value={options.schedule ? Number(options.schedule) * 1000 : null}
-              emptyLabel="Select"
+              timeSteps={{ hours: 1, minutes: 1 }}
+              slotProps={{ textField: { size: "small" } }}
+              value={
+                options.schedule
+                  ? new Date(Number(options.schedule) * 1000)
+                  : null
+              }
               onChange={(e: Date | null) =>
                 handleAdvanceOptionsChange("schedule", e)
               }
-              format="YYY-MM-dd HH:mm"
-              hideTabs={true}
-              TextFieldComponent={(props) => (
-                <Input
-                  {...(props as any)}
-                  readOnly
-                  className="rounded-md border-border-color"
-                  placeholder="0"
-                />
-              )}
+              format="yyyy-MM-dd HH:mm"
             />
             <button
               onClick={() => handleAdvanceOptionsChange("schedule", new Date())}

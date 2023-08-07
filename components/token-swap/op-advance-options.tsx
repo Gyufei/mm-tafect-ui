@@ -136,12 +136,11 @@ export default function OpAdvanceOptions({
           <div className="LabelText mb-1">Schedule Time</div>
           <div className="flex justify-between gap-x-3">
             <DateTimePicker
-              className="flex-1"
               ampm={false}
               closeOnSelect={true}
               disablePast={true}
               timeSteps={{ hours: 1, minutes: 1 }}
-              slotProps={{ textField: { size: "small" } }}
+              slotProps={{ textField: { size: "small", fullWidth: true } }}
               value={
                 options.schedule
                   ? new Date(Number(options.schedule) * 1000)

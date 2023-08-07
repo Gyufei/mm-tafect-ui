@@ -23,10 +23,10 @@ export default function Login() {
   }, []);
 
   return (
-    <div className="flex w-full grow flex-col items-start px-4 md:max-w-md md:p-0">
+    <div className="flex w-full grow flex-col items-start md:max-w-md">
       <AuthRedirect />
       {showAccountList ? (
-        <AccountList selectAccountCb={handleSelectAccount} />
+        <AccountList onSelect={handleSelectAccount} />
       ) : (
         <LoginForm
           account={currentSelectedAccount}

@@ -136,6 +136,7 @@ export default function OpAdvanceOptions({
           <div className="LabelText mb-1">Schedule Time</div>
           <div className="flex justify-between gap-x-3">
             <DateTimePicker
+              className="flex-1"
               ampm={false}
               closeOnSelect={true}
               disablePast={true}

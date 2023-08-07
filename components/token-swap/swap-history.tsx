@@ -147,12 +147,14 @@ export default function SwapHistory() {
       </div>
       <div className="flex items-center justify-between gap-x-1 px-3 pb-8 pt-3">
         <DatePicker
+          className="flex-1"
           slotProps={{ textField: { size: "small" } }}
           value={filterTaskDate.min}
           onChange={(e) => handleMinDateChange(e)}
         />
         <div>-</div>
         <DatePicker
+          className="flex-1"
           slotProps={{ textField: { size: "small" } }}
           value={filterTaskDate.max}
           onChange={(e) => handleMaxDateChange(e)}

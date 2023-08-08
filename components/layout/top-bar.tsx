@@ -1,6 +1,11 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { LINKS } from "@/lib/constants";
 
-export function TopBar({ pathname }: { pathname: string }) {
+export function TopBar() {
+  const pathname = usePathname();
+
   const title = LINKS.find(
     (link) => link.href === pathname || pathname.includes(link.href),
   )?.name;

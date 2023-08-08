@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { LINKS } from "@/lib/constants";
 
-export function SideNav({ pathname }: { pathname: string }) {
+export function SideNav() {
+  const pathname = usePathname();
+
   return (
     <div className="flex flex-1 flex-col justify-start px-4 py-3">
       {LINKS.map((link) => (

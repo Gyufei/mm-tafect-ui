@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronLeft } from "lucide-react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 
 import { IUser } from "@/lib/types/user";
@@ -20,6 +19,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import useWindowSize from "@/lib/hooks/use-window-size";
+
+import LoginFailTip from "./login-fail-tip";
+import SessionTip from "./session-tip";
+import LinkToAccountList from "./link-to-account-list";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -45,19 +48,19 @@ export default function LoginForm({
     },
   });
 
+  useEffect(() => {
+    if (account?.name) {
+      form.setValue("email", account.email);
+    }
+  }, [account]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     const { email: username } = values;
 
-    signIn(
-      "credentials",
-      {
-        ...values,
-        username,
-      },
-      {
-        callbackUrl: "/dashboard",
-      },
-    );
+    signIn("credentials", {
+      ...values,
+      username,
+    });
   }
 
   const FormHead = () => {
@@ -80,7 +83,7 @@ export default function LoginForm({
           </>
         ) : (
           <>
-            <LinkOfAccount onShow={showAccountCb} />
+            <LinkToAccountList onShow={showAccountCb} />
             <div className="mb-4 text-lg font-bold text-title-color">
               Sign in to your Tafect account
             </div>
@@ -97,7 +100,7 @@ export default function LoginForm({
         <FormHead />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="md:w-[420px]">
-            {!account?.name ? (
+            {!account?.name && (
               <FormField
                 name="email"
                 control={form.control}
@@ -111,7 +114,7 @@ export default function LoginForm({
                   </FormItem>
                 )}
               />
-            ) : null}
+            )}
 
             <FormField
               name="password"
@@ -141,49 +144,8 @@ export default function LoginForm({
           </form>
         </Form>
         {account?.name && isMobile ? <SessionTip /> : null}
-        <LoginFailTip show={showLoginFailTip} />
+        {showLoginFailTip && <LoginFailTip />}
       </div>
     </div>
   );
 }
-
-const LoginFailTip = ({ show }: { show: boolean }) => {
-  if (show) {
-    return (
-      <div className="mt-5 flex flex-col rounded border border-[#DEA69C] bg-[#F8DEDA] p-4 text-sm">
-        <div className="mb-4">
-          We weren&apos;t able to sign in to your account . Check your password
-          and try again.
-        </div>
-        <div>
-          If you were invited to 1password by someone else , they can
-          <div className="cursor-pointer text-primary">
-            recover your account
-          </div>
-        </div>
-      </div>
-    );
-  } else {
-    return null;
-  }
-};
-
-const SessionTip = () => {
-  return (
-    <div className="mt-5 rounded border border-[#DFCA9C] bg-[#FEFAF4] px-4 py-3 text-title-color md:mb-5 md:w-[420px]">
-      Your session ended after 10 minutes of inactivity.
-    </div>
-  );
-};
-
-const LinkOfAccount = ({ onShow }: { onShow: () => void }) => {
-  return (
-    <div
-      className="absolute top-[-40px] flex select-none items-center hover:cursor-pointer md:top-[-3.8em]"
-      onClick={onShow}
-    >
-      <ChevronLeft className="mr-2 h-4 w-4" />
-      <span className="text-primary">Account List</span>
-    </div>
-  );
-};

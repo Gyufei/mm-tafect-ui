@@ -18,7 +18,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import useWindowSize from "@/lib/hooks/use-window-size";
 
 import LoginFailTip from "./login-fail-tip";
 import SessionTip from "./session-tip";
@@ -36,8 +35,6 @@ export default function LoginForm({
   account: IUser | null;
   showAccountCb: () => void;
 }) {
-  const { isMobile } = useWindowSize();
-
   const [showLoginFailTip] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -96,7 +93,7 @@ export default function LoginForm({
   return (
     <div className="flex w-full grow flex-col items-stretch px-4 pt-20 md:max-w-md md:pt-[24vh]">
       <div className="relative flex w-full flex-col">
-        {account?.name && !isMobile ? <SessionTip /> : null}
+        {account?.name && <SessionTip className="hidden md:block" />}
         <FormHead />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="md:w-[420px]">
@@ -143,7 +140,7 @@ export default function LoginForm({
             </div>
           </form>
         </Form>
-        {account?.name && isMobile ? <SessionTip /> : null}
+        {account?.name && <SessionTip className="md:hidden" />}
         {showLoginFailTip && <LoginFailTip />}
       </div>
     </div>

@@ -5,7 +5,6 @@ import { IUser } from "@/lib/types/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useSwipeable } from "react-swipeable";
-import useWindowSize from "@/lib/hooks/use-window-size";
 
 export default function AccountList({
   onSelect,
@@ -66,26 +65,21 @@ const AccountCard = ({
 }) => {
   const swiperHandlers = useSwipeable({
     onSwipedLeft: (_e) => {
-      if (isMobile) setShowTrash(true);
+      setShowTrash(true);
     },
     onSwipedRight: (_e) => {
-      if (isMobile) setShowTrash(false);
+      setShowTrash(false);
     },
   });
 
   const [showTrash, setShowTrash] = useState(false);
-  const { isMobile } = useWindowSize();
-
-  const showTrashInMobile = isMobile && showTrash;
 
   return (
     <div className="mb-5 flex w-full items-center overflow-x-hidden px-4">
       <div
-        style={{
-          transform: showTrashInMobile ? "translateX(-60px)" : "translateX(0)",
-        }}
         {...swiperHandlers}
-        className="flex min-w-full cursor-pointer justify-start rounded border border-border-color bg-white p-4 hover:bg-slate-50 md:w-[420px] md:min-w-[auto]"
+        data-state={showTrash ? "show" : "hide"}
+        className="flex min-w-full cursor-pointer justify-start rounded border border-border-color bg-white p-4 hover:bg-slate-50 data-[state=hide]:translate-x-0 data-[state=show]:-translate-x-16 md:w-[420px] md:min-w-[auto] md:translate-x-0"
         onClick={() => onSelect(ac)}
       >
         <Avatar className="mr-4 h-10 w-10 rounded-lg">
@@ -101,24 +95,16 @@ const AccountCard = ({
           </div>
         </div>
       </div>
-      {showTrashInMobile && (
-        <div
-          style={{
-            transform: showTrashInMobile
-              ? "translateX(-60px)"
-              : "translateX(0)",
-          }}
-          className="ml-4 flex cursor-pointer items-center self-stretch rounded-md border-[#dea69c] bg-[#F8DEDA] px-2 animate-in slide-in-from-left duration-300"
-        >
-          <Trash2 className="hover:text-primary" onClick={() => onDelete(ac)} />
-        </div>
-      )}
-      {!isMobile && (
-        <Trash2
-          className="ml-4 cursor-pointer hover:text-primary"
-          onClick={() => onDelete(ac)}
-        />
-      )}
+      <div
+        data-state={showTrash ? "show" : "hide"}
+        className=" ml-4 flex cursor-pointer items-center self-stretch rounded-md border-[#dea69c] bg-[#F8DEDA] px-2 slide-in-from-left data-[state=hide]:translate-x-0 data-[state=show]:-translate-x-16 data-[state=show]:animate-in md:hidden"
+      >
+        <Trash2 className="hover:text-primary" onClick={() => onDelete(ac)} />
+      </div>
+      <Trash2
+        className="ml-4 hidden cursor-pointer hover:text-primary md:inline-block"
+        onClick={() => onDelete(ac)}
+      />
     </div>
   );
 };

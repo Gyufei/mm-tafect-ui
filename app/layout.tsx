@@ -34,7 +34,10 @@ export default async function RootLayout({
   const session = await getServerSession();
 
   return (
-    <html lang="en" className={cn(chesna.variable, inter.variable)}>
+    <html
+      lang="en"
+      className={cn(chesna.variable, inter.variable, "h-full w-full")}
+    >
       <body className="h-screen w-full overflow-x-hidden overflow-y-hidden md:overflow-x-auto">
         <Suspense fallback="Loading">
           <SessionWrapProvider session={session}>

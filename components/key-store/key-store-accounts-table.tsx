@@ -56,13 +56,15 @@ export default function KeyStoreAccountsTable({
           onChange={(e) => setFilterText(e.target.value)}
         />
       </div>
-      <Table>
+      <Table className="table-fixed">
         <TableHeader className="h-10 bg-white text-content-color">
           <TableRow className="border-b border-shadow-color">
-            <TableHead className="w-[100px] text-center font-normal">
+            <TableHead className="w-[30px] text-center font-normal md:w-[100px]">
               #
             </TableHead>
-            <TableHead className="font-normal">Address</TableHead>
+            <TableHead className="w-[230px] font-normal md:w-auto">
+              Address
+            </TableHead>
             <TableHead className="font-normal">Gas</TableHead>
           </TableRow>
         </TableHeader>
@@ -73,13 +75,15 @@ export default function KeyStoreAccountsTable({
                 key={aG.account}
                 className="h-[56px] border-b border-shadow-color"
               >
-                <TableCell className="min-w-[40px] max-w-[40px] text-center">
-                  {index}
-                </TableCell>
+                <TableCell className="text-center">{index}</TableCell>
                 <TableCell>
                   <TruncateText text={aG.account} showCopy={true} />
                 </TableCell>
-                <TableCell>{aG.gas}</TableCell>
+                <TableCell>
+                  <span className="TruncateSingleLine inline-block max-w-[100px] leading-4 md:max-w-none">
+                    {aG.gas}
+                  </span>
+                </TableCell>
               </TableRow>
             ))
           ) : (

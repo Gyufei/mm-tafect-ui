@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { sortBy } from "lodash";
 import { useContext, useMemo, useState } from "react";
 import { Trash2 } from "lucide-react";
+import KeyStoreLinks from "@/components/key-store/key-store-links";
 
 import { PathMap } from "@/lib/path-map";
 import fetcher from "@/lib/fetcher";
@@ -14,9 +15,9 @@ import KeyStoreAccountsTable, {
 } from "@/components/key-store/key-store-accounts-table";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import useSWRMutation from "swr/mutation";
 import LoadingIcon from "@/components/shared/loading-icon";
 import { Web3Context } from "@/lib/providers/web3-provider";
+import useSWRMutation from "swr/mutation";
 
 export default function KeyStoreItem({ params }: { params: { item: string } }) {
   const keyStoreName = params.item;
@@ -72,36 +73,32 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
   );
 
   return (
-    <div
-      style={{ height: "calc(100vh - 70px)" }}
-      className="flex min-h-[400px] flex-1 items-stretch bg-[#fafafa]"
-    >
-      <div
-        className="ks-detail flex w-[400px] flex-col justify-between px-3 pb-4 pt-3"
-        style={{
-          boxShadow: "inset -1px 0px 0px 0px #d6d6d6",
-        }}
-      >
-        <div className="flex flex-col justify-stretch">
-          <DetailItem title="Address">{accountCount}</DetailItem>
-          <DetailItem title="Gas Available">{gasAvailable}</DetailItem>
-          <DetailItem title="Tx">{tx}</DetailItem>
-          <DetailItem title="Default Network">
-            {network?.network_name}
-          </DetailItem>
-          <DetailItem title="Works for">
-            <KeyStorePageSelect keyStoreName={keyStoreName} />
-          </DetailItem>
-        </div>
-        <div className="flex w-full justify-end pr-2">
-          <Trash2
-            onClick={() => setDeleteDialogOpen(true)}
-            className="h-5 w-5 cursor-pointer hover:text-[#ec5b55]"
-          />
-        </div>
-      </div>
+    <>
+      <KeyStoreLinks onDelete={() => setDeleteDialogOpen(true)}></KeyStoreLinks>
 
-      <KeyStoreAccountsTable accounts={accounts} />
+      <div className="flex min-h-[400px] flex-1 flex-col items-stretch overflow-y-auto bg-[#fafafa] md:flex-row md:overflow-y-hidden">
+        <div className="flex w-full flex-col justify-between border-b border-shadow-color px-3 pb-4 pt-3 md:w-[400px] md:border-b-0 md:border-r">
+          <div className="flex flex-col justify-stretch">
+            <DetailItem title="Address">{accountCount}</DetailItem>
+            <DetailItem title="Gas Available">{gasAvailable}</DetailItem>
+            <DetailItem title="Tx">{tx}</DetailItem>
+            <DetailItem title="Default Network">
+              {network?.network_name}
+            </DetailItem>
+            <DetailItem title="Works for">
+              <KeyStorePageSelect keyStoreName={keyStoreName} />
+            </DetailItem>
+          </div>
+          <div className="hidden w-full justify-end pr-2 md:flex">
+            <Trash2
+              onClick={() => setDeleteDialogOpen(true)}
+              className="h-5 w-5 cursor-pointer hover:text-[#ec5b55]"
+            />
+          </div>
+        </div>
+
+        <KeyStoreAccountsTable accounts={accounts} />
+      </div>
 
       <Dialog
         open={deleteDialogOpen}
@@ -134,6 +131,6 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }

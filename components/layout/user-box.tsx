@@ -22,7 +22,7 @@ export function UserBox() {
   }
 
   return (
-    <div className="flex h-[70px] items-center justify-start border-b border-l border-r-0 border-t-0 border-[#d6d6d6] pl-6">
+    <div className="flex h-[70px] items-center justify-start border-b border-r-0 border-t-0 border-[#d6d6d6] pl-6">
       <Avatar className="mr-3 h-8 w-8 rounded">
         <AvatarImage src={currentUser?.image || ""} />
         <AvatarFallback>{currentUser?.name?.[0] || ""}</AvatarFallback>

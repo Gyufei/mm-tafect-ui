@@ -1,7 +1,6 @@
 "use client";
 import { useContext, useState } from "react";
-
-import "./index.css";
+import { useSwipeable } from "react-swipeable";
 
 import DetailItem from "@/components/shared/detail-item";
 
@@ -13,6 +12,7 @@ import { IToken } from "@/lib/types/token";
 import Op from "@/components/token-swap/op";
 import SwapHistory from "@/components/token-swap/swap-history";
 import { Web3Context } from "@/lib/providers/web3-provider";
+import MobileFoldBtn from "@/components/token-swap/mobile-fold-btn";
 
 export default function TokenSwap() {
   const { network } = useContext(Web3Context);
@@ -22,9 +22,32 @@ export default function TokenSwap() {
     Array<IKeyStoreAccount>
   >([]);
 
+  const foldPages = ["Filter Account", "Filter Task"];
+  const [showSlidePage, setShowSlidePage] = useState<
+    "Filter Account" | "Filter Task" | null
+  >(null);
+
+  const swiperHandlers = useSwipeable({
+    onSwipedDown: (_e) => {
+      setShowSlidePage(null);
+    },
+  });
+
+  const SwiperHandlerBox = () => {
+    return (
+      <div className="md:hidden" {...swiperHandlers}>
+        <div className="mx-auto mt-3 h-1 w-12 rounded-md bg-shadow-color"></div>
+      </div>
+    );
+  };
+
   return (
     <>
-      <div className="h-full border-r border-r-[#dadada]">
+      <div
+        data-state={showSlidePage === "Filter Account"}
+        className="absolute top-[-69px] z-10  h-screen w-full rounded-t-3xl border-[#dadada] bg-[#fafafa] data-[state=false]:hidden data-[state=true]:animate-in data-[state=false]:animate-out data-[state=false]:slide-out-to-bottom data-[state=true]:slide-in-from-bottom md:static md:h-full md:w-auto md:rounded-none md:border-r md:data-[state=false]:block"
+      >
+        <SwiperHandlerBox />
         <div className="flex flex-col p-4">
           <DetailItem title="Network">{network?.network_name}</DetailItem>
           <DetailItem title="KeyStore">
@@ -46,10 +69,21 @@ export default function TokenSwap() {
           tokens={tokenOptions}
           keyStores={selectedKeyStores}
           handleTokensChange={setTokenOptions}
-        />
+        >
+          <MobileFoldBtn
+            pages={foldPages}
+            onChange={(e) =>
+              setShowSlidePage(e as "Filter Account" | "Filter Task")
+            }
+          />
+        </Op>
       </div>
 
-      <div className="flex flex-col">
+      <div
+        data-state={showSlidePage === "Filter Task"}
+        className="absolute top-[-69px] z-10 h-screen w-full rounded-t-3xl border-[#dadada] bg-[#fafafa] data-[state=false]:hidden md:static md:h-full md:w-auto md:rounded-none md:border-r md:data-[state=false]:block"
+      >
+        <SwiperHandlerBox />
         <SwapHistory />
       </div>
     </>

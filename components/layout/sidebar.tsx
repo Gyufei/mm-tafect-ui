@@ -23,7 +23,7 @@ export default function Sidebar() {
       >
         <div
           onClick={() => setIsSidebarOpen(false)}
-          className="absolute left-[-38px] top-0 flex h-10 w-10 cursor-pointer items-center justify-center border-b border-l bg-[#f4f5fa] md:hidden"
+          className="absolute left-[-40px] top-0 flex h-10 w-10 cursor-pointer items-center justify-center border-b border-l bg-[#f4f5fa] md:hidden"
         >
           <Menu />
         </div>

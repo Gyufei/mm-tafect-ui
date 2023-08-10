@@ -29,10 +29,12 @@ export default function Op({
   tokens,
   keyStores,
   handleTokensChange,
+  children,
 }: {
   tokens: Array<IToken>;
   keyStores: Array<IKeyStoreAccount>;
   handleTokensChange: (_ts: Array<IToken>) => void;
+  children?: React.ReactNode;
 }) {
   const { network } = useContext(Web3Context);
   const { data: session } = useSession();
@@ -399,9 +401,10 @@ export default function Op({
             "inset -1px 0px 0px 0px #D6D6D6,inset 0px 1px 0px 0px #D6D6D6",
         }}
       >
+        {children}
         <Button
           variant="outline"
-          className="h-[40px] w-[120px] rounded-md border border-primary text-primary"
+          className="h-10 w-32 rounded-md border border-primary text-primary"
           onClick={() => handleSign()}
         >
           Test Tx
@@ -409,7 +412,7 @@ export default function Op({
         <Button
           variant="outline"
           onClick={() => handleSend()}
-          className="h-[40px] w-[120px] rounded-md border border-primary text-primary"
+          className="h-10 w-32 rounded-md border border-primary text-primary"
         >
           Schedule
         </Button>

@@ -131,7 +131,6 @@ export default function Op({
         outP: tokenOut,
         exactInput: isExactInput,
       }).then((result) => {
-        console.log(result);
         if (isExactInput) {
           setTokenOut({ ...tokenOut, num: String(result || 0) });
         } else {
@@ -149,7 +148,6 @@ export default function Op({
   const handleTokenInChange = async (inParams: ITokenNumDesc) => {
     const preVal = JSON.parse(JSON.stringify(tokenIn));
     setTokenIn(inParams);
-    setIsExactInput(true);
 
     const isSameToken = inParams.info?.address === tokenOut.info?.address;
     if (isSameToken) {
@@ -175,12 +173,13 @@ export default function Op({
       });
       setTokenOut({ ...tokenOut, num: String(result || "") });
     }
+
+    setIsExactInput(true);
   };
 
   const handleTokenOutChange = async (outParams: ITokenNumDesc) => {
     const preVal = JSON.parse(JSON.stringify(tokenOut));
     setTokenOut(outParams);
-    setIsExactInput(false);
 
     const isSameToken = outParams.info?.address === tokenIn.info?.address;
     if (isSameToken) {
@@ -206,6 +205,8 @@ export default function Op({
       });
       setTokenIn({ ...tokenIn, num: String(result || "") });
     }
+
+    setIsExactInput(true);
   };
 
   const [advanceOptions, setAdvanceOptions] = useState<IAdvanceOptions>({

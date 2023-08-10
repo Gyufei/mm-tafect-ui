@@ -22,6 +22,7 @@ import {
 import LoginFailTip from "./login-fail-tip";
 import SessionTip from "./session-tip";
 import LinkToAccountList from "./link-to-account-list";
+import md5 from "js-md5";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -52,11 +53,13 @@ export default function LoginForm({
   }, [account]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const { email: username } = values;
+    const { email, password } = values;
+    const mPassword = md5(password);
 
     signIn("credentials", {
-      ...values,
-      username,
+      email,
+      username: email,
+      password: mPassword,
     });
   }
 

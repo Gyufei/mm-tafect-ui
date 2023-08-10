@@ -75,7 +75,6 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
   return (
     <>
       <KeyStoreLinks onDelete={() => setDeleteDialogOpen(true)}></KeyStoreLinks>
-
       <div className="flex min-h-[400px] flex-1 flex-col items-stretch overflow-y-auto bg-[#fafafa] md:flex-row md:overflow-y-hidden">
         <div className="flex w-full flex-col justify-between border-b border-shadow-color px-3 pb-4 pt-3 md:w-[400px] md:border-b-0 md:border-r">
           <div className="flex flex-col justify-stretch">

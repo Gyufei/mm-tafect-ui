@@ -1,9 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export function TestTxResult(props: {
   result: Record<string, any>;
@@ -14,11 +9,8 @@ export function TestTxResult(props: {
 
   return (
     <Dialog {...reset}>
-      <DialogContent className="w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Test Tx</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
+      <DialogContent title="Text Tx" showClose={true} className="md:w-[600px]">
+        <div className="grid gap-4 px-5">
           <div>
             <div className="text-sm text-content-color">transaction_hash</div>
             <div className="break-all">

@@ -116,9 +116,9 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
               {`Are you sure to delete "${keyStoreName}" ?`}
             </div>
             <Button
-              variant="default"
+              variant="destructive"
               disabled={deleting}
-              className="mb-2 flex items-center rounded-md shadow-none hover:border hover:border-primary hover:text-primary"
+              className="mb-2 flex items-center rounded-md shadow-none"
               onClick={() => deleteMutate()}
             >
               <LoadingIcon isLoading={deleting} />

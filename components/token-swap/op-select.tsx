@@ -8,9 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import { SystemEndPointPathMap } from "@/lib/end-point";
 import fetcher from "@/lib/fetcher";
-import { PathMap } from "@/lib/path-map";
-import { Web3Context } from "@/lib/providers/web3-provider";
+import { NetworkContext } from "@/lib/providers/network-provider";
 import { IOp } from "@/lib/types/op";
 
 export default function OpSelect({
@@ -20,11 +21,13 @@ export default function OpSelect({
   op: IOp | null;
   handleOpSelect: (_o: IOp) => void;
 }) {
-  const { network } = useContext(Web3Context);
+  const { network } = useContext(NetworkContext);
   const networkId = network?.chain_id;
 
   const { data: opList } = useSWR(() => {
-    return networkId ? `${PathMap.ops}?chain_id=${networkId}` : null;
+    return networkId
+      ? `${SystemEndPointPathMap.ops}?chain_id=${networkId}`
+      : null;
   }, fetcher);
 
   const handleSelect = (opName: string) => {

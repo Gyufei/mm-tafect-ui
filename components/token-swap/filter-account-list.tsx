@@ -7,14 +7,14 @@ import { Input } from "@/components/ui/input";
 import TokenSelect from "@/components/token-swap/token-select";
 
 import { useStrNum } from "@/lib/hooks/use-str-num";
-import { PathMap } from "@/lib/path-map";
 import fetcher from "@/lib/fetcher";
 import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
 import { IToken } from "@/lib/types/token";
 import TruncateText from "../shared/trunc-text";
 import LoadingIcon from "../shared/loading-icon";
-import { Web3Context } from "@/lib/providers/web3-provider";
+import { NetworkContext } from "@/lib/providers/network-provider";
 import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
+import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 
 export default function FilterAccountList({
   tokens,
@@ -23,7 +23,9 @@ export default function FilterAccountList({
   tokens: Array<IToken>;
   keyStores: Array<IKeyStoreAccount>;
 }) {
-  const { network } = useContext(Web3Context);
+  const { network } = useContext(NetworkContext);
+  const { userPathMap } = useContext(UserEndPointContext);
+
   const networkId = network?.chain_id;
 
   const [token, setToken] = useState<IToken | null>(null);
@@ -51,7 +53,7 @@ export default function FilterAccountList({
     trigger: filterTrigger,
     reset: filterResultReset,
   } = useSWRMutation(
-    `${PathMap.filterAccount}?${getFilterQuery()}`,
+    `${userPathMap.filterAccount}?${getFilterQuery()}`,
     fetcher as any,
   );
 

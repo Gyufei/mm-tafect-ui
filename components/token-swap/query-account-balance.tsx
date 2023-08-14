@@ -3,9 +3,8 @@ import useSWRMutation from "swr/mutation";
 
 import { IToken } from "@/lib/types/token";
 import { cn } from "@/lib/utils";
-import { PathMap } from "@/lib/path-map";
 import fetcher from "@/lib/fetcher";
-import { Web3Context } from "@/lib/providers/web3-provider";
+import { NetworkContext } from "@/lib/providers/network-provider";
 import { GAS_TOKEN_ADDRESS } from "@/lib/constants";
 
 import { Input } from "../ui/input";
@@ -17,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TokenContext } from "@/lib/providers/token-provider";
+import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 
 export default function QueryAccountBalance({
   account,
@@ -27,7 +28,9 @@ export default function QueryAccountBalance({
   handleAccountChange: (_acc: string) => void;
   handleTokensChange: (_ts: Array<IToken>) => void;
 }) {
-  const { token: userToken, tokens, network } = useContext(Web3Context);
+  const { userPathMap } = useContext(UserEndPointContext);
+  const { network } = useContext(NetworkContext);
+  const { token: userToken, tokens } = useContext(TokenContext);
 
   const gasToken =
     (tokens || []).find((t: IToken) => t.address === GAS_TOKEN_ADDRESS) || null;
@@ -98,7 +101,7 @@ export default function QueryAccountBalance({
     trigger: triggerAccountBalance,
     reset: resetAccountBalance,
   } = useSWRMutation(
-    `${PathMap.accountTokensBalance}?${getAccountBalanceQuery()}`,
+    `${userPathMap.accountTokensBalance}?${getAccountBalanceQuery()}`,
     fetcher as any,
   );
 
@@ -107,7 +110,7 @@ export default function QueryAccountBalance({
     trigger: triggerGasBalance,
     reset: resetGasBalance,
   } = useSWRMutation(
-    `${PathMap.accountTokenBalance}?${getGasBalanceQuery()}`,
+    `${userPathMap.accountTokenBalance}?${getGasBalanceQuery()}`,
     fetcher as any,
   );
   const gasBalance = gasBalanceRes?.balance_of || 0;

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
 
-import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
@@ -17,25 +16,27 @@ export default function MobileFoldBtn({
 }) {
   const [openPopover, setOpenPopover] = useState(false);
 
+  const handleOnChange = (page: string) => {
+    onChange(page);
+    setOpenPopover(false);
+  };
+
   return (
     <Popover
       open={openPopover}
       onOpenChange={(isOpen) => setOpenPopover(isOpen)}
     >
       <PopoverTrigger>
-        <Button
-          variant="outline"
-          className="h-10 w-10 border-primary p-0 md:hidden"
-        >
+        <div className="flex h-10 w-10 items-center justify-center rounded-md border border-primary p-0 md:hidden">
           <Image alt="fold" src="/icons/fold.svg" width={16} height={16} />
-        </Button>
+        </div>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-1" align="start">
         <div className="rounded-md bg-white">
           {(pages || []).map((page) => (
             <button
               key={page}
-              onClick={() => onChange(page)}
+              onClick={() => handleOnChange(page)}
               className="flex w-full items-center justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100"
             >
               {page}

@@ -1,8 +1,9 @@
 import useSWR from "swr";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import fetcher from "@/lib/fetcher";
-import { PathMap } from "@/lib/path-map";
+import { SystemEndPointPathMap } from "../end-point";
+import { UserEndPointContext } from "../providers/user-end-point-provider";
 
 export interface IKeyStoreAccount {
   name: string;
@@ -17,7 +18,12 @@ interface IKeyStoreAccountItem {
 }
 
 export function useKeyStoreAccounts(networkId: string | null) {
-  const { data: keyStores } = useSWR(PathMap.userKeyStores, fetcher);
+  const { userPathMap } = useContext(UserEndPointContext);
+
+  const { data: keyStores } = useSWR(
+    SystemEndPointPathMap.userKeyStores,
+    fetcher,
+  );
 
   const [keyStoreAccounts, setKeyStoreAccounts] = useState<
     Array<IKeyStoreAccount>
@@ -32,7 +38,7 @@ export function useKeyStoreAccounts(networkId: string | null) {
       const ksAcs = await Promise.all(
         keyStores.map(async (name: string) => {
           const res = await fetcher(
-            `${PathMap.keyStoreAccounts}?keystore=${name}&chain_id=${networkId}`,
+            `${userPathMap.keyStoreAccounts}?keystore=${name}&chain_id=${networkId}`,
           );
           const accounts = (res?.[0]?.accounts as Array<string>) || [];
           const count = res?.[0]?.count;

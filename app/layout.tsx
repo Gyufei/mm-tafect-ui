@@ -8,7 +8,7 @@ import { chesna, inter } from "./fonts";
 
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
-import SessionWrapProvider from "@/lib/providers/session-context";
+import SessionWrapProvider from "@/lib/providers/session-provider";
 import SWRConfigProvider from "@/lib/providers/swr-config-provider";
 import MuiPickerProvider from "@/lib/providers/mui-picker-provider";
 
@@ -39,7 +39,13 @@ export default async function RootLayout({
       className={cn(chesna.variable, inter.variable, "h-full w-full")}
     >
       <body className="h-screen w-full overflow-x-hidden overflow-y-hidden md:overflow-x-auto">
-        <Suspense fallback="Loading">
+        <Suspense
+          fallback={
+            <div className="flex h-full w-full items-center justify-center">
+              Loading...
+            </div>
+          }
+        >
           <SessionWrapProvider session={session}>
             <SWRConfigProvider>
               <MuiPickerProvider>{children}</MuiPickerProvider>

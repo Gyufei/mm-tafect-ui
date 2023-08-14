@@ -1,7 +1,9 @@
-import { TopBar } from "@/components/layout/top-bar";
-
-import Web3Provider from "@/lib/providers/web3-provider";
+import TopBar from "@/components/layout/top-bar";
 import Sidebar from "@/components/layout/sidebar";
+
+import NetworkProvider from "@/lib/providers/network-provider";
+import TokenProvider from "@/lib/providers/token-provider";
+import UserEndPointProvider from "@/lib/providers/user-end-point-provider";
 
 export default function MainLayout({
   children,
@@ -12,7 +14,11 @@ export default function MainLayout({
     <div className="flex h-full items-stretch">
       <div className="flex h-full grow flex-col">
         <TopBar />
-        <Web3Provider>{children}</Web3Provider>
+        <UserEndPointProvider>
+          <NetworkProvider>
+            <TokenProvider>{children}</TokenProvider>
+          </NetworkProvider>
+        </UserEndPointProvider>
       </div>
 
       <Sidebar />

@@ -1,26 +1,33 @@
 import { useContext, useMemo, useState } from "react";
+import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
 import { setHours, setMinutes, setSeconds, format } from "date-fns";
+import { DatePicker } from "@mui/x-date-pickers";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-import { ITask } from "@/lib/types/task";
-import { PathMap } from "@/lib/path-map";
-import useSWRMutation from "swr/mutation";
-import fetcher from "@/lib/fetcher";
-import Empty from "../shared/empty";
-import useSWR from "swr";
+import Empty from "@/components/shared/empty";
+import LoadingIcon from "@/components/shared/loading-icon";
 import SwapHistoryItem from "./swap-history-item";
-import LoadingIcon from "../shared/loading-icon";
-import { Web3Context } from "@/lib/providers/web3-provider";
-import { DatePicker } from "@mui/x-date-pickers";
+
+import { NetworkContext } from "@/lib/providers/network-provider";
+import { ITask } from "@/lib/types/task";
+import { SystemEndPointPathMap } from "@/lib/end-point";
+import fetcher from "@/lib/fetcher";
+import { TokenContext } from "@/lib/providers/token-provider";
+import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 
 export default function SwapHistory() {
-  const { tokens, network } = useContext(Web3Context);
+  const { userPathMap } = useContext(UserEndPointContext);
+  const { network } = useContext(NetworkContext);
   const networkId = network?.chain_id || null;
 
+  const { tokens } = useContext(TokenContext);
+
   const { data: opList } = useSWR(() => {
-    return networkId ? `${PathMap.ops}?chain_id=${networkId}` : null;
+    return networkId
+      ? `${SystemEndPointPathMap.ops}?chain_id=${networkId}`
+      : null;
   }, fetcher);
 
   const [filterTaskDate, setFilterTaskDate] = useState<{
@@ -105,7 +112,7 @@ export default function SwapHistory() {
     data: Array<any> | undefined;
     trigger: any;
     isMutating: boolean;
-  } = useSWRMutation(`${PathMap.swapHistory}?${getQueryStr()}`, fetchTasks);
+  } = useSWRMutation(`${userPathMap.swapHistory}?${getQueryStr()}`, fetchTasks);
 
   const [searchText, setSearchText] = useState("");
 
@@ -167,12 +174,7 @@ export default function SwapHistory() {
           <LoadingIcon isLoading={filtering} />
           Filter Task
         </Button>
-        <div
-          style={{
-            height: "calc(100vh - 245px)",
-          }}
-          className="flex flex-col justify-stretch gap-y-3 overflow-y-auto px-3 pb-2"
-        >
+        <div className="flex h-[calc(100vh-190px)] flex-col justify-stretch gap-y-3 overflow-y-auto px-3 pb-2 md:h-[calc(100vh-245px)]">
           {filteredTasks?.length ? (
             filteredTasks.map((task) => (
               <SwapHistoryItem key={task.id} task={task} />

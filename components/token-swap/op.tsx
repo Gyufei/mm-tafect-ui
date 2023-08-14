@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import TokenSelectAndInput, {
   ITokenNumDesc,
 } from "@/components/token-swap/token-select-and-input";
-import { PathMap } from "@/lib/path-map";
 import fetcher from "@/lib/fetcher";
 import OpAdvanceOptions, {
   IAdvanceOptions,
@@ -21,9 +20,10 @@ import OpAdvanceOptions, {
 import { TestTxResult } from "./test-tx-result";
 import ActionTip, { IActionType } from "../shared/action-tip";
 import { useSession } from "next-auth/react";
-import { Web3Context } from "@/lib/providers/web3-provider";
+import { NetworkContext } from "@/lib/providers/network-provider";
 import useSWRMutation from "swr/mutation";
 import { UNIT256_MAX } from "@/lib/constants";
+import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 
 export default function Op({
   tokens,
@@ -36,7 +36,9 @@ export default function Op({
   handleTokensChange: (_ts: Array<IToken>) => void;
   children?: React.ReactNode;
 }) {
-  const { network } = useContext(Web3Context);
+  const { userPathMap } = useContext(UserEndPointContext);
+  const { network } = useContext(NetworkContext);
+
   const { data: session } = useSession();
   const [selectedOp, setSelectedOp] = useState<IOp | null>(null);
   const [queryAccount, setQueryAccount] = useState<string>("");
@@ -52,7 +54,7 @@ export default function Op({
 
   const { data: gasPrice } = useSWR(() => {
     if (network?.chain_id) {
-      return `${PathMap.gasPrice}?chain_id=${network?.chain_id}`;
+      return `${userPathMap.gasPrice}?chain_id=${network?.chain_id}`;
     } else {
       return null;
     }
@@ -60,7 +62,7 @@ export default function Op({
 
   const { data: nonceData } = useSWR(() => {
     if (network?.chain_id && queryAccount) {
-      return `${PathMap.nonceNum}?chain_id=${network?.chain_id}&account=${queryAccount}`;
+      return `${userPathMap.nonceNum}?chain_id=${network?.chain_id}&account=${queryAccount}`;
     } else {
       return null;
     }
@@ -143,7 +145,7 @@ export default function Op({
   }, [selectedOp?.op_detail?.swap_router]);
 
   const { trigger: triggerEstimate } = useSWRMutation(
-    `${PathMap.estimateToken}`,
+    `${userPathMap.estimateToken}`,
     fetchEstimate,
   );
 
@@ -283,13 +285,13 @@ export default function Op({
   async function handleSign() {
     let url, params;
     if (selectedOp?.op_id === 3) {
-      url = PathMap.signApprove;
+      url = userPathMap.signApprove;
       params = getApproveParams();
     } else if (selectedOp?.op_id === 2) {
-      url = PathMap.signTransfer;
+      url = userPathMap.signTransfer;
       params = getTransferParams();
     } else if (selectedOp?.op_id === 1) {
-      url = PathMap.signSwap;
+      url = userPathMap.signSwap;
       params = getSwapParams();
     } else {
       return;
@@ -320,13 +322,13 @@ export default function Op({
   async function handleSend() {
     let url, params;
     if (selectedOp?.op_id === 3) {
-      url = PathMap.sendApprove;
+      url = userPathMap.sendApprove;
       params = getApproveParams();
     } else if (selectedOp?.op_id === 2) {
-      url = PathMap.sendTransfer;
+      url = userPathMap.sendTransfer;
       params = getTransferParams();
     } else if (selectedOp?.op_id === 1) {
-      url = PathMap.sendSwap;
+      url = userPathMap.sendSwap;
       params = getSwapParams();
     } else {
       return "";

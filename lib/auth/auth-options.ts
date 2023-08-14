@@ -1,4 +1,4 @@
-import { PathMap } from "@/lib/path-map";
+import { SystemEndPointPathMap } from "@/lib/end-point";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -11,7 +11,7 @@ export const authOptions: NextAuthOptions = {
       name: "",
       credentials: {},
       async authorize(credentials, req) {
-        const res = await fetch(PathMap.login, {
+        const res = await fetch(SystemEndPointPathMap.login, {
           method: "POST",
           body: JSON.stringify(credentials),
           headers: { "Content-Type": "application/json" },

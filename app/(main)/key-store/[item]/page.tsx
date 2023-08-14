@@ -1,11 +1,14 @@
 "use client";
+
 import useSWR from "swr";
 import { sortBy } from "lodash";
 import { useContext, useMemo, useState } from "react";
 import { Trash2 } from "lucide-react";
+import useSWRMutation from "swr/mutation";
+
 import KeyStoreLinks from "@/components/key-store/key-store-links";
 
-import { PathMap } from "@/lib/path-map";
+import { SystemEndPointPathMap } from "@/lib/end-point";
 import fetcher from "@/lib/fetcher";
 
 import { KeyStorePageSelect } from "@/components/key-store/key-store-page-select";
@@ -16,16 +19,17 @@ import KeyStoreAccountsTable, {
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import LoadingIcon from "@/components/shared/loading-icon";
-import { Web3Context } from "@/lib/providers/web3-provider";
-import useSWRMutation from "swr/mutation";
+import { NetworkContext } from "@/lib/providers/network-provider";
+import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 
 export default function KeyStoreItem({ params }: { params: { item: string } }) {
   const keyStoreName = params.item;
-  const { network } = useContext(Web3Context);
+  const { userPathMap } = useContext(UserEndPointContext);
+  const { network } = useContext(NetworkContext);
 
   const { data: keyStoreAccountsData } = useSWR(() => {
     if (keyStoreName && network?.chain_id) {
-      return `${PathMap.keyStoreAccounts}?keystore=${keyStoreName}&chain_id=${network?.chain_id}`;
+      return `${userPathMap.keyStoreAccounts}?keystore=${keyStoreName}&chain_id=${network?.chain_id}`;
     } else {
       return null;
     }
@@ -57,7 +61,7 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
       keystore_name: keyStoreName,
     };
 
-    const res = await fetcher(PathMap.deleteKeyStore, {
+    const res = await fetcher(SystemEndPointPathMap.deleteKeyStore, {
       method: "POST",
       body: JSON.stringify(params),
     });
@@ -68,7 +72,7 @@ export default function KeyStoreItem({ params }: { params: { item: string } }) {
   };
 
   const { isMutating: deleting, trigger: deleteMutate } = useSWRMutation(
-    PathMap.deleteKeyStore,
+    SystemEndPointPathMap.deleteKeyStore,
     deleteFetcher,
   );
 

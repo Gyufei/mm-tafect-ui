@@ -2,16 +2,16 @@ import useSWR from "swr";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import fetcher from "@/lib/fetcher";
-import { PathMap } from "@/lib/path-map";
+import { SystemEndPointPathMap } from "@/lib/end-point";
 
 export const KeyStorePageSelect = ({
   keyStoreName,
 }: {
   keyStoreName: string;
 }) => {
-  const { data: pages } = useSWR(PathMap.allPages, fetcher);
+  const { data: pages } = useSWR(SystemEndPointPathMap.allPages, fetcher);
   const { data: currentPage, mutate: pageMutate } = useSWR(
-    `${PathMap.keyStorePages}?keystore=${keyStoreName}`,
+    `${SystemEndPointPathMap.keyStorePages}?keystore=${keyStoreName}`,
     fetcher,
   );
 
@@ -31,7 +31,7 @@ export const KeyStorePageSelect = ({
       pages_name: pageName,
     };
 
-    return fetcher(PathMap.keyStoreAddPage, {
+    return fetcher(SystemEndPointPathMap.keyStoreAddPage, {
       method: "POST",
       body: JSON.stringify(params),
     });
@@ -43,7 +43,7 @@ export const KeyStorePageSelect = ({
       pages_name: pageName,
     };
 
-    return fetcher(PathMap.keyStoreRemovePage, {
+    return fetcher(SystemEndPointPathMap.keyStoreRemovePage, {
       method: "POST",
       body: JSON.stringify(params),
     });

@@ -11,11 +11,11 @@ import KeyStoreSelect from "@/components/token-swap/key-store-select";
 import { IToken } from "@/lib/types/token";
 import Op from "@/components/token-swap/op";
 import SwapHistory from "@/components/token-swap/swap-history";
-import { Web3Context } from "@/lib/providers/web3-provider";
+import { NetworkContext } from "@/lib/providers/network-provider";
 import MobileFoldBtn from "@/components/token-swap/mobile-fold-btn";
 
 export default function TokenSwap() {
-  const { network } = useContext(Web3Context);
+  const { network } = useContext(NetworkContext);
 
   const [tokenOptions, setTokenOptions] = useState<Array<IToken>>([]);
   const [selectedKeyStores, setSelectedKeyStore] = useState<
@@ -27,15 +27,16 @@ export default function TokenSwap() {
     "Filter Account" | "Filter Task" | null
   >(null);
 
-  const swiperHandlers = useSwipeable({
-    onSwipedDown: (_e) => {
-      setShowSlidePage(null);
-    },
-  });
-
   const SwiperHandlerBox = () => {
+    const swiperHandlers = useSwipeable({
+      onSwipedDown: (_e) => {
+        console.log(_e);
+        setShowSlidePage(null);
+      },
+    });
+
     return (
-      <div className="md:hidden" {...swiperHandlers}>
+      <div className="h-5 md:hidden" {...swiperHandlers}>
         <div className="mx-auto mt-3 h-1 w-12 rounded-md bg-shadow-color"></div>
       </div>
     );
@@ -48,7 +49,7 @@ export default function TokenSwap() {
         className="absolute top-[-69px] z-10  h-screen w-full rounded-t-3xl border-[#dadada] bg-[#fafafa] data-[state=false]:hidden data-[state=true]:animate-in data-[state=false]:animate-out data-[state=false]:slide-out-to-bottom data-[state=true]:slide-in-from-bottom md:static md:h-full md:w-auto md:rounded-none md:border-r md:data-[state=false]:block"
       >
         <SwiperHandlerBox />
-        <div className="flex flex-col p-4">
+        <div className="flex flex-col px-4 pb-4 md:pt-4">
           <DetailItem title="Network">{network?.network_name}</DetailItem>
           <DetailItem title="KeyStore">
             <KeyStoreSelect

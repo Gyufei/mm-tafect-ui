@@ -4,16 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight, PlusCircle, X } from "lucide-react";
 
-import { PathMap } from "@/lib/path-map";
-
 import fetcher from "@/lib/fetcher";
 import useSWR from "swr";
+import { SystemEndPointPathMap } from "@/lib/end-point";
 
 export default function KeyStoreLinks({ onDelete }: { onDelete: () => void }) {
   const pathname = usePathname();
   const currentId = pathname.split("/")[2] || "";
 
-  const { data: keyStores, mutate } = useSWR(PathMap.userKeyStores, fetcher);
+  const { data: keyStores, mutate } = useSWR(SystemEndPointPathMap.userKeyStores, fetcher);
 
   return (
     <div className="flex w-full flex-row items-center justify-start overflow-x-auto border-b border-shadow-color bg-[#f4f5fa] px-3 py-2 md:w-[284px] md:flex-col md:items-start md:justify-between md:overflow-hidden md:border-r md:py-0 md:pl-3 md:pr-0">

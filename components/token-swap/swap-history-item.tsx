@@ -3,11 +3,11 @@ import TruncateText from "@/components/shared/trunc-text";
 import SwapHistoryItemStatus from "./swap-history-items-status";
 import { ExternalLink } from "lucide-react";
 import { useContext } from "react";
-import { Web3Context } from "@/lib/providers/web3-provider";
+import { NetworkContext } from "@/lib/providers/network-provider";
 import { toNonExponential } from "@/lib/utils";
 
 export default function SwapHistoryItem({ task }: { task: ITask }) {
-  const { network } = useContext(Web3Context);
+  const { network } = useContext(NetworkContext);
   const isSwap = task.op === 1;
   const isTransfer = task.op === 2;
   const isApprove = task.op === 3;

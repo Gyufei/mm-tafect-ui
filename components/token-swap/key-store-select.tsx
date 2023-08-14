@@ -12,7 +12,7 @@ import {
   IKeyStoreAccount,
   useKeyStoreAccounts,
 } from "@/lib/hooks/use-key-store-accounts";
-import { Web3Context } from "@/lib/providers/web3-provider";
+import { NetworkContext } from "@/lib/providers/network-provider";
 
 export default function KeyStoreSelect({
   keyStores,
@@ -25,7 +25,7 @@ export default function KeyStoreSelect({
       | ((_ks: Array<IKeyStoreAccount>) => Array<IKeyStoreAccount>),
   ) => void;
 }) {
-  const { network } = useContext(Web3Context);
+  const { network } = useContext(NetworkContext);
   const networkId = network?.chain_id || null;
 
   const [openKeyStorePop, setKeyStorePop] = useState(false);

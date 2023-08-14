@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { LINKS } from "@/lib/constants";
 
-export function TopBar() {
+export default function TopBar() {
   const pathname = usePathname();
 
   const title = LINKS.find(

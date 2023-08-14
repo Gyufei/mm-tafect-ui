@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/popover";
 import { ChevronDown } from "lucide-react";
 import useSWR from "swr";
-import { PathMap } from "@/lib/path-map";
 import fetcher from "@/lib/fetcher";
 import { INetwork } from "@/lib/types/network";
+import { SystemEndPointPathMap } from "@/lib/end-point";
 
 export default function NetworkSelect({
   value,
@@ -23,7 +23,7 @@ export default function NetworkSelect({
   const [openPopover, setOpenPopover] = useState(false);
 
   const { data: networks }: { data: Array<INetwork> } = useSWR(
-    PathMap.networks,
+    SystemEndPointPathMap.networks,
     fetcher,
   );
 

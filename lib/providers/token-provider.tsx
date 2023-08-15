@@ -28,7 +28,10 @@ export default function TokenProvider({
 
   const [token, setToken] = useState<IToken | null>(null);
 
-  const { data: userWeb3Info } = useSWR(userPathMap.web3Info, fetcher);
+  const { data: userWeb3Info } = useSWR(
+    () => userPathMap.web3Info || null,
+    fetcher,
+  );
 
   const { network } = useContext(NetworkContext);
   const networkId = network?.chain_id || null;

@@ -48,7 +48,7 @@ export default function UserEndPointProvider({
     const keys = Object.keys(newMap) as Array<keyof PathMap>;
 
     keys.map((key) => {
-      newMap[key] = `${userEndPoint}${newMap[key]}`;
+      newMap[key] = userEndPoint ? `${userEndPoint}${newMap[key]}` : "";
     });
 
     setPathMap(newMap);

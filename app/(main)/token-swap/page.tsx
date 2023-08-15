@@ -30,7 +30,6 @@ export default function TokenSwap() {
   const SwiperHandlerBox = () => {
     const swiperHandlers = useSwipeable({
       onSwipedDown: (_e) => {
-        console.log(_e);
         setShowSlidePage(null);
       },
     });

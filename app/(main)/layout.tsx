@@ -5,11 +5,7 @@ import NetworkProvider from "@/lib/providers/network-provider";
 import TokenProvider from "@/lib/providers/token-provider";
 import UserEndPointProvider from "@/lib/providers/user-end-point-provider";
 
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-full items-stretch">
       <div className="flex h-full grow flex-col">

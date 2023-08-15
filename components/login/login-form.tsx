@@ -48,7 +48,7 @@ export default function LoginForm({
 
   useEffect(() => {
     if (account?.name) {
-      form.setValue("email", account.email);
+      form.setValue("email", account.email || "");
     }
   }, [account]);
 

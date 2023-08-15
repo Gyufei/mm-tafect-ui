@@ -1,5 +1,3 @@
-export interface IUser {
-  name: string;
-  email: string;
-  image: string | null;
-}
+import { Session } from "next-auth";
+
+export type IUser = Session["user"];

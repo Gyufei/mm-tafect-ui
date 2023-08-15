@@ -9,5 +9,7 @@ export const config = {
     "/key-store/(.*)",
     "/token-swap",
     "/token-swap/(.*)",
+    "/setting",
+    "/setting/(.*)",
   ],
 };

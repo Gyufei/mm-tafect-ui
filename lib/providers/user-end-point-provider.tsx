@@ -5,15 +5,21 @@ import useSWR from "swr";
 
 import fetcher from "@/lib/fetcher";
 import { SystemEndPointPathMap, UserEndPointPathMap } from "../end-point";
+import { cloneDeep } from "lodash";
+import { redirect } from "next/navigation";
+
+type PathMap = typeof UserEndPointPathMap;
 
 interface IUserEndPointContext {
   userEndPoint: string | null;
-  userPathMap: typeof UserEndPointPathMap;
+  userPathMap: PathMap;
+  refreshEndPoint: (arg: any) => void;
 }
 
 export const UserEndPointContext = createContext<IUserEndPointContext>({
   userEndPoint: null,
-  userPathMap: {} as typeof UserEndPointPathMap,
+  refreshEndPoint: () => {},
+  userPathMap: {} as PathMap,
 });
 
 export default function UserEndPointProvider({
@@ -21,7 +27,7 @@ export default function UserEndPointProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { data: userEndPointData } = useSWR(
+  const { data: userEndPointData, mutate: refreshEndPoint } = useSWR(
     SystemEndPointPathMap.endPoint,
     fetcher,
   );
@@ -29,20 +35,20 @@ export default function UserEndPointProvider({
     () => userEndPointData?.end_point,
     [userEndPointData],
   );
-  console.log(userEndPointData, userEndPoint);
 
-  const [userPathMap, setPathMap] = useState({} as typeof UserEndPointPathMap);
+  const [userPathMap, setPathMap] = useState({} as PathMap);
 
   useEffect(() => {
-    if (!userEndPoint) return;
+    if (userEndPointData && !userEndPoint) {
+      redirect("/setting");
+      return;
+    }
 
-    const newMap = UserEndPointPathMap;
-    const keys = Object.keys(UserEndPointPathMap) as Array<
-      keyof typeof UserEndPointPathMap
-    >;
+    const newMap = cloneDeep(UserEndPointPathMap);
+    const keys = Object.keys(newMap) as Array<keyof PathMap>;
 
     keys.map((key) => {
-      newMap[key] = `${userEndPoint}${UserEndPointPathMap[key]}`;
+      newMap[key] = `${userEndPoint}${newMap[key]}`;
     });
 
     setPathMap(newMap);
@@ -51,8 +57,9 @@ export default function UserEndPointProvider({
   return (
     <UserEndPointContext.Provider
       value={{
-        userEndPoint: userEndPointData,
+        userEndPoint,
         userPathMap,
+        refreshEndPoint,
       }}
     >
       {children}

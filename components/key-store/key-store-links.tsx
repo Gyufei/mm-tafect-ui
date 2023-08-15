@@ -62,7 +62,7 @@ export default function KeyStoreLinks({ onDelete }: { onDelete: () => void }) {
       <LoadKeyStoreDialog
         show={showLoadDialog}
         setShow={setLoadDialog}
-        onSubmitted={(_val: string) => handleSubmitLoad()}
+        onSubmitted={(_val: any) => handleSubmitLoad()}
       />
     </>
   );

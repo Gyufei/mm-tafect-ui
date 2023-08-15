@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
+import useSWRMutation from "swr/mutation";
 import { Minus, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { replaceStrNum } from "@/lib/hooks/use-str-num";
+import fetcher from "@/lib/fetcher";
+import { SystemEndPointPathMap } from "@/lib/end-point";
+import { toast } from "../ui/use-toast";
 
 const EmptyRow = {
   root_account: "",
@@ -52,8 +56,30 @@ export function LoadKeyStoreDialog({
 
   const [rootAddress, setRootAddress] = useState(false);
 
-  const onSubmit: SubmitHandler<IFormFields> = (data) => {
-    onSubmitted(data);
+  const submitFetcher = async (url: string, { arg }: { arg: IFormFields }) => {
+    const res = await fetcher(url, {
+      method: "POST",
+      body: JSON.stringify(arg),
+    });
+
+    toast({
+      description: "Add KeyStore Success",
+    });
+    onSubmitted(arg);
+    return res;
+  };
+
+  const { trigger: submitAction, isMutating: isSubmitting } = useSWRMutation(
+    SystemEndPointPathMap.addKeyStore,
+    submitFetcher as any,
+  );
+
+  const onSubmit: SubmitHandler<IFormFields> = (formValue) => {
+    if (!rootAddress) {
+      formValue.range = [];
+    }
+
+    submitAction(formValue as any);
   };
 
   return (
@@ -157,11 +183,11 @@ export function LoadKeyStoreDialog({
           </div>
           <Button
             variant="default"
-            disabled={false}
+            disabled={isSubmitting}
             className="flex w-64 items-center rounded-full shadow-none"
             onClick={handleSubmit(onSubmit)}
           >
-            <LoadingIcon className="text-white" isLoading={false} />
+            <LoadingIcon className="text-white" isLoading={isSubmitting} />
             Load
           </Button>
         </div>

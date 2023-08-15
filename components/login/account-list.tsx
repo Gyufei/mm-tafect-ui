@@ -30,7 +30,7 @@ export default function AccountList({
   ]);
 
   const handleDelete = (ac: IUser) => {
-    const newAccounts = accounts.filter((item) => item.email !== ac.email);
+    const newAccounts = accounts.filter((item) => item?.email !== ac?.email);
     updateAccounts(newAccounts);
   };
 
@@ -43,7 +43,7 @@ export default function AccountList({
       {accounts.map((ac) => {
         return (
           <AccountCard
-            key={ac.name}
+            key={ac?.name}
             user={ac}
             onSelect={onSelect}
             onDelete={handleDelete}
@@ -83,15 +83,15 @@ const AccountCard = ({
         onClick={() => onSelect(ac)}
       >
         <Avatar className="mr-4 h-10 w-10 rounded-lg">
-          <AvatarImage src={ac.image || ""} />
+          <AvatarImage src={ac?.image || ""} />
           <AvatarFallback>{ac?.name?.[0] || ""}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col items-start justify-between">
           <div className="text-base font-bold leading-4 text-title-color">
-            {ac.name}
+            {ac?.name}
           </div>
           <div className="text-base leading-4 text-content-color">
-            {ac.email}
+            {ac?.email}
           </div>
         </div>
       </div>

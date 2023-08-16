@@ -52,6 +52,7 @@ export default function TokenSwap() {
           <DetailItem title="Network">{network?.network_name}</DetailItem>
           <DetailItem title="KeyStore">
             <KeyStoreSelect
+              page="Token-swap"
               keyStores={selectedKeyStores}
               handleKeyStoreSelect={(e) => setSelectedKeyStore(e)}
             />

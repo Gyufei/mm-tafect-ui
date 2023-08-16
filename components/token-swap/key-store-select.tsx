@@ -17,7 +17,9 @@ import { NetworkContext } from "@/lib/providers/network-provider";
 export default function KeyStoreSelect({
   keyStores,
   handleKeyStoreSelect,
+  page
 }: {
+  page: string,
   keyStores: Array<IKeyStoreAccount>;
   handleKeyStoreSelect: (
     _keyStoreUpdate:
@@ -30,7 +32,7 @@ export default function KeyStoreSelect({
 
   const [openKeyStorePop, setKeyStorePop] = useState(false);
 
-  const keyStoreOptions = useKeyStoreAccounts(networkId);
+  const keyStoreOptions = useKeyStoreAccounts(networkId, page);
 
   useEffect(() => {
     if (!keyStores.length && keyStoreOptions.length) {

@@ -10,10 +10,13 @@ export const SystemEndPointPathMap = {
   userKeyStores: WithHost("/keystore/user"),
   addKeyStore: WithHost("/keystore/user/add"),
   deleteKeyStore: WithHost("/keystore/user/remove"),
+
   allPages: WithHost("/keystore/pages/all"),
   keyStorePages: WithHost("/keystore/pages"),
   keyStoreRemovePage: WithHost("/keystore/pages/remove"),
   keyStoreAddPage: WithHost("/keystore/pages/add"),
+
+  keyStoreByPage: WithHost("/keystore/list"),
 
   networks: WithHost("/setting/networks"),
   ops: WithHost("/setting/op"),

@@ -5,6 +5,7 @@ import { SystemEndPointPathMap } from "@/lib/end-point";
 import { redirect, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import useSWR from "swr";
+import KeyStoreLinks from "@/components/key-store/key-store-links";
 
 export default function KeyStore() {
   const pathname = usePathname();
@@ -19,5 +20,9 @@ export default function KeyStore() {
     }
   }, [keyStores, pathname]);
 
-  return <></>;
+  return (
+    <>
+      <KeyStoreLinks></KeyStoreLinks>
+    </>
+  );
 }

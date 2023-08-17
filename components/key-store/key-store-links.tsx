@@ -10,7 +10,7 @@ import fetcher from "@/lib/fetcher";
 import { SystemEndPointPathMap } from "@/lib/end-point";
 import { LoadKeyStoreDialog } from "./load-key-store-dialog";
 
-export default function KeyStoreLinks({ onDelete }: { onDelete: () => void }) {
+export default function KeyStoreLinks({ onDelete }: { onDelete?: () => void }) {
   const pathname = usePathname();
   const currentId = pathname.split("/")[2] || "";
 

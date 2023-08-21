@@ -31,7 +31,7 @@ export function useKeyStoreAccounts(networkId: string | null, _page: string) {
   >([]);
 
   useEffect(() => {
-    if (!keyStores?.length || !networkId) {
+    if (!keyStores?.length) {
       return;
     }
 
@@ -51,7 +51,7 @@ export function useKeyStoreAccounts(networkId: string | null, _page: string) {
     }
 
     getItemAccounts();
-  }, [keyStores, networkId]);
+  }, [keyStores]);
 
   return keyStoreAccounts;
 }

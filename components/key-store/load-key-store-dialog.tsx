@@ -79,6 +79,16 @@ export function LoadKeyStoreDialog({
       formValue.range = [];
     }
 
+    formValue.range = JSON.stringify(
+      formValue.range.map((item) => {
+        return {
+          ...item,
+          from_index: parseInt(item.from_index),
+          to_index: parseInt(item.to_index),
+        };
+      }),
+    ) as any;
+
     submitAction(formValue as any);
   };
 

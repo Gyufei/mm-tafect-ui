@@ -17,9 +17,8 @@ export const metadata: Metadata = {
   description: "mm-tafect-ui",
   twitter: {
     card: "summary_large_image",
-    title: "Precedent - Building blocks for your Next.js project",
-    description:
-      "Precedent is the all-in-one solution for your Next.js project. It includes a design system, authentication, analytics, and more.",
+    title: "mm-tafect",
+    description: "keystore manage tools",
     creator: "@steventey",
   },
   metadataBase: new URL("https://precedent.vercel.app/"),

@@ -69,7 +69,7 @@ export default function SwapHistory() {
 
     const parsed = taskRes.map((t: Record<string, any>) => {
       const data = JSON.parse(t.data);
-      const date = format(new Date(t.create_time), "YYY-MM-dd HH:mm");
+      const date = format(new Date(t.schedule * 1000), "YYY-MM-dd HH:mm");
 
       const opType = opList.find((op: Record<string, any>) => {
         return op.op_id === t.op;

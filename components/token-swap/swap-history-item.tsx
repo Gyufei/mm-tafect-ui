@@ -11,7 +11,6 @@ export default function SwapHistoryItem({ task }: { task: ITask }) {
   const isSwap = task.op === 1;
   const isTransfer = task.op === 2;
   const isApprove = task.op === 3;
-
   const taskTxData = task.data;
 
   const handleGoToExplorer = () => {
@@ -30,10 +29,12 @@ export default function SwapHistoryItem({ task }: { task: ITask }) {
       <div className="flex justify-between text-title-color">
         <div className="flex items-center text-lg font-medium">
           <TruncateText text={task.txHash} />
-          <ExternalLink
-            className="mb-1 ml-1 h-4 w-4 cursor-pointer text-primary"
-            onClick={handleGoToExplorer}
-          />
+          {task.txHash && (
+            <ExternalLink
+              className="mb-1 ml-1 h-4 w-4 cursor-pointer text-primary"
+              onClick={handleGoToExplorer}
+            />
+          )}
         </div>
         <div className="TruncateSingleLine max-w-[200px]">
           Gas:{" "}

@@ -17,9 +17,9 @@ import { NetworkContext } from "@/lib/providers/network-provider";
 export default function KeyStoreSelect({
   keyStores,
   handleKeyStoreSelect,
-  page
+  page,
 }: {
-  page: string,
+  page: string;
   keyStores: Array<IKeyStoreAccount>;
   handleKeyStoreSelect: (
     _keyStoreUpdate:

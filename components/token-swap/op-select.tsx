@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import useSWR from "swr";
 
 import {
@@ -29,6 +29,12 @@ export default function OpSelect({
       ? `${SystemEndPointPathMap.ops}?chain_id=${networkId}`
       : null;
   }, fetcher);
+
+  useEffect(() => {
+    if (opList?.length && !op) {
+      handleOpSelect(opList.find((op: Record<string, any>) => op.op_id === 1));
+    }
+  }, [opList, op]);
 
   const handleSelect = (opName: string) => {
     const op = opList.find((op: Record<string, any>) => op.op_name === opName);

@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { ArrowBigRight } from "lucide-react";
-import useSWR from "swr";
 
 import { IOp } from "@/lib/types/op";
 import { IToken } from "@/lib/types/token";
@@ -14,16 +13,15 @@ import TokenSelectAndInput, {
   ITokenNumDesc,
 } from "@/components/token-swap/token-select-and-input";
 import fetcher from "@/lib/fetcher";
-import OpAdvanceOptions, {
-  IAdvanceOptions,
-} from "@/components/token-swap/op-advance-options";
+import OpAdvanceOptions from "@/components/token-swap/op-advance-options";
 import { TestTxResult } from "./test-tx-result";
 import ActionTip, { IActionType } from "../shared/action-tip";
 import { useSession } from "next-auth/react";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import useSWRMutation from "swr/mutation";
-import { UNIT256_MAX } from "@/lib/constants";
+import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
 import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
+import { useAdvanceOptions } from "@/lib/hooks/use-advance-options";
 
 export default function Op({
   tokens,
@@ -41,47 +39,17 @@ export default function Op({
 
   const { data: session } = useSession();
   const [selectedOp, setSelectedOp] = useState<IOp | null>(null);
+
   const [queryAccount, setQueryAccount] = useState<string>("");
+  const [gasBalance, setGasBalance] = useState<number | null>(0);
 
   const [testTxDialogOpen, setTestTxDialogOpen] = useState<boolean>(false);
-  const [testTxResult, setTestTxResult] = useState<any>(null);
-
+  const [testResult, setTestResult] = useState<any>(null);
   const [sendTxTipShow, setSendTxTipShow] = useState<boolean>(false);
   const [sendTxResult, setSendTxResult] = useState<{
     type: IActionType;
     message: string;
   } | null>();
-
-  const { data: gasPrice } = useSWR(() => {
-    if (network?.chain_id) {
-      return `${userPathMap.gasPrice}?chain_id=${network?.chain_id}`;
-    } else {
-      return null;
-    }
-  }, fetcher);
-
-  const { data: nonceData } = useSWR(() => {
-    if (network?.chain_id && queryAccount) {
-      return `${userPathMap.nonceNum}?chain_id=${network?.chain_id}&account=${queryAccount}`;
-    } else {
-      return null;
-    }
-  }, fetcher);
-
-  useEffect(() => {
-    if (nonceData) {
-      setAdvanceOptions({ ...advanceOptions, nonce: Number(nonceData.nonce) });
-    }
-  }, [nonceData]);
-
-  useEffect(() => {
-    if (gasPrice) {
-      setAdvanceOptions({
-        ...advanceOptions,
-        gas: gasPrice.gas_price,
-      });
-    }
-  }, [gasPrice]);
 
   const [tokenIn, setTokenIn] = useState<ITokenNumDesc>({
     labelName: "Token0",
@@ -94,6 +62,11 @@ export default function Op({
     num: "",
   });
   const [isExactInput, setIsExactInput] = useState<boolean>(true);
+
+  const { advanceOptions, setAdvanceOptions } = useAdvanceOptions(
+    network?.chain_id || "",
+    queryAccount,
+  );
 
   const fetchEstimate = async (
     url: string,
@@ -213,16 +186,6 @@ export default function Op({
     setIsExactInput(true);
   };
 
-  const [advanceOptions, setAdvanceOptions] = useState<IAdvanceOptions>({
-    schedule: null,
-    timeout: 1800,
-    slippage: "0.02",
-    nonce: null,
-    gas: null,
-    fixed_gas: false,
-    no_check_gas: false,
-  });
-
   const getCommonParams = () => {
     const kStore = keyStores.find((ks) =>
       ks.accounts.some((a) => a.account === queryAccount),
@@ -282,26 +245,64 @@ export default function Op({
     return params;
   };
 
-  async function handleSign() {
-    let url, params;
-    if (selectedOp?.op_id === 3) {
-      url = userPathMap.signApprove;
-      params = getApproveParams();
-    } else if (selectedOp?.op_id === 2) {
-      url = userPathMap.signTransfer;
-      params = getTransferParams();
-    } else if (selectedOp?.op_id === 1) {
-      url = userPathMap.signSwap;
-      params = getSwapParams();
-    } else {
-      return;
+  function getTxParams() {
+    switch (selectedOp?.op_id) {
+      case 3:
+        return getApproveParams();
+        break;
+      case 2:
+        return getTransferParams();
+      case 1:
+        return getSwapParams();
+      default:
+        return null;
     }
+  }
 
+  function getSignUrl() {
+    switch (selectedOp?.op_id) {
+      case 3:
+        return userPathMap.signApprove;
+        break;
+      case 2:
+        return userPathMap.signTransfer;
+      case 1:
+        return userPathMap.signSwap;
+      default:
+        return null;
+    }
+  }
+
+  function getScheduleUrl() {
+    switch (selectedOp?.op_id) {
+      case 3:
+        return userPathMap.sendApprove;
+        break;
+      case 2:
+        return userPathMap.sendTransfer;
+      case 1:
+        return userPathMap.sendSwap;
+      default:
+        return null;
+    }
+  }
+
+  async function signAction() {
+    const url = getSignUrl();
+    const params = getTxParams();
+    if (!url || !params) return;
+
+    const res = await fetcher(url, {
+      method: "POST",
+      body: JSON.stringify(params),
+    });
+
+    return res;
+  }
+
+  async function handleSign() {
     try {
-      const res = await fetcher(url, {
-        method: "POST",
-        body: JSON.stringify(params),
-      });
+      const res = await signAction();
       handleShowTxResult(res);
     } catch (e: any) {
       toast({
@@ -311,30 +312,46 @@ export default function Op({
     }
   }
 
-  const handleShowTxResult = (res: Record<string, any>) => {
+  function handleShowTxResult(res: Record<string, any>) {
     if (res.gaslimit) {
-      res.gas = (Number(res.gaslimit) * Number(gasPrice.gas_price)) / 10 ** 18;
+      res.gas = (Number(res.gaslimit) * Number(advanceOptions.gas)) / 10 ** 18;
     }
-    setTestTxResult(res);
+    setTestResult(res);
     setTestTxDialogOpen(true);
-  };
+  }
 
-  async function handleSend() {
-    let url, params;
-    if (selectedOp?.op_id === 3) {
-      url = userPathMap.sendApprove;
-      params = getApproveParams();
-    } else if (selectedOp?.op_id === 2) {
-      url = userPathMap.sendTransfer;
-      params = getTransferParams();
-    } else if (selectedOp?.op_id === 1) {
-      url = userPathMap.sendSwap;
-      params = getSwapParams();
-    } else {
-      return "";
-    }
-
+  async function testTxBeforeSend() {
     try {
+      const res = await signAction();
+      if (!res || !res.gaslimit) {
+        throw new Error("gas insufficient");
+      }
+
+      const gasCost =
+        (Number(res.gaslimit) * Number(advanceOptions.gas)) / 10 ** 18;
+
+      const isGasToken = tokenIn.info?.address === GAS_TOKEN_ADDRESS;
+      const amountCost = isGasToken ? gasCost + Number(tokenIn.num) : gasCost;
+
+      if (Number(amountCost) > Number(gasBalance || 0)) {
+        throw new Error("gas insufficient");
+      }
+
+      return true;
+    } catch (e) {
+      setTestResult({
+        gasInsufficient: true,
+      });
+      setTestTxDialogOpen(true);
+      return null;
+    }
+  }
+
+  async function sendAction() {
+    try {
+      const url = getScheduleUrl();
+      const params = getTxParams();
+      if (!url || !params) return;
       await fetcher(url, {
         method: "POST",
         body: JSON.stringify(params),
@@ -346,12 +363,19 @@ export default function Op({
         message: `Your funds have been staked in the pool`,
       });
     } catch (e: any) {
-      setSendTxTipShow(true);
       setSendTxResult({
         type: "error",
         message: `${e.status}: ${e.info}`,
       });
+      setSendTxTipShow(true);
     }
+  }
+
+  async function handleSend() {
+    const testRes = await testTxBeforeSend();
+    if (!testRes) return;
+
+    await sendAction();
   }
 
   return (
@@ -369,6 +393,8 @@ export default function Op({
           account={queryAccount}
           handleAccountChange={(e: string) => setQueryAccount(e)}
           handleTokensChange={handleTokensChange}
+          gas={gasBalance}
+          setGas={setGasBalance}
         />
 
         <div className="mt-3 flex items-center justify-between px-3">
@@ -422,14 +448,15 @@ export default function Op({
 
       <TestTxResult
         open={testTxDialogOpen}
-        result={testTxResult}
+        message={testResult}
         onOpenChange={setTestTxDialogOpen}
+        sureAction={() => sendAction()}
       />
 
       <ActionTip
         type={sendTxResult?.type || "success"}
-        show={sendTxTipShow}
-        setShow={setSendTxTipShow}
+        open={sendTxTipShow}
+        onOpenChange={setSendTxTipShow}
         message={sendTxResult?.message || ""}
       />
     </>

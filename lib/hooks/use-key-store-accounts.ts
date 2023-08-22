@@ -30,20 +30,36 @@ export function useKeyStoreAccounts(networkId: string | null, _page: string) {
     Array<IKeyStoreAccount>
   >([]);
 
+  async function getKeyStoreAccounts(name: string) {
+    try {
+      const url = `${userPathMap.keyStoreAccounts}?keystore=${name}&chain_id=${networkId}`;
+      const res = await fetcher(url);
+      const accounts = (res?.[0]?.accounts as Array<string>) || [];
+      const count = res?.[0]?.count || 0;
+
+      return {
+        name,
+        accounts,
+        count,
+      };
+    } catch (e) {
+      return {
+        name,
+        accounts: [],
+        count: 0,
+      };
+    }
+  }
+
   useEffect(() => {
-    if (!keyStores?.length) {
+    if (!keyStores?.length || !networkId) {
       return;
     }
 
     async function getItemAccounts() {
       const ksAcs = await Promise.all(
-        keyStores.map(async (name: string) => {
-          const res = await fetcher(
-            `${userPathMap.keyStoreAccounts}?keystore=${name}&chain_id=${networkId}`,
-          );
-          const accounts = (res?.[0]?.accounts as Array<string>) || [];
-          const count = res?.[0]?.count;
-          return { name, accounts, count };
+        keyStores.map((name: string) => {
+          return getKeyStoreAccounts(name);
         }),
       );
 
@@ -51,7 +67,7 @@ export function useKeyStoreAccounts(networkId: string | null, _page: string) {
     }
 
     getItemAccounts();
-  }, [keyStores]);
+  }, [keyStores, networkId]);
 
   return keyStoreAccounts;
 }

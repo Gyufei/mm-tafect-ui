@@ -23,10 +23,14 @@ export default function QueryAccountBalance({
   account,
   handleAccountChange,
   handleTokensChange,
+  gas,
+  setGas,
 }: {
   account: string;
   handleAccountChange: (_acc: string) => void;
   handleTokensChange: (_ts: Array<IToken>) => void;
+  gas: number | null;
+  setGas: (_gas: number) => void;
 }) {
   const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
@@ -37,6 +41,7 @@ export default function QueryAccountBalance({
 
   const stableTokens = (tokens || []).filter((t: IToken) => t.is_stable_token);
   const [stableToken, setStableToken] = useState<IToken | null>(null);
+
   useEffect(() => {
     if (stableTokens.length > 0 && !stableToken) {
       const st = stableTokens.find((t) => t.symbol === "USDT") || null;
@@ -64,13 +69,12 @@ export default function QueryAccountBalance({
   const getAccountBalanceQuery = () => {
     const queryParams = new URLSearchParams();
 
-    if (network) {
-      queryParams.set("chain_id", network?.chain_id.toString());
+    if (!network || !account) {
+      return;
     }
 
-    if (account) {
-      queryParams.set("account", account);
-    }
+    queryParams.set("chain_id", network?.chain_id.toString());
+    queryParams.set("account", account);
 
     const queryTokens = [userToken?.address, stableToken?.address];
     queryParams.set("tokens", queryTokens.join(","));
@@ -83,13 +87,12 @@ export default function QueryAccountBalance({
   const getGasBalanceQuery = () => {
     const queryParams = new URLSearchParams();
 
-    if (network) {
-      queryParams.set("chain_id", network?.chain_id.toString());
+    if (!network || !account) {
+      return;
     }
 
-    if (account) {
-      queryParams.set("account", account);
-    }
+    queryParams.set("chain_id", network?.chain_id.toString());
+    queryParams.set("account", account);
 
     const query = queryParams.toString();
 
@@ -113,7 +116,12 @@ export default function QueryAccountBalance({
     `${userPathMap.accountTokenBalance}?${getGasBalanceQuery()}`,
     fetcher as any,
   );
-  const gasBalance = gasBalanceRes?.balance_of || 0;
+
+  useEffect(() => {
+    if (gasBalanceRes) {
+      setGas(gasBalanceRes?.balance_of || 0);
+    }
+  }, [gasBalanceRes]);
 
   const handleQuery = () => {
     triggerGasBalance();
@@ -151,7 +159,7 @@ export default function QueryAccountBalance({
       </div>
 
       <div className="mt-1 grid grid-cols-3 gap-x-3 px-3">
-        <SmallTokenCard name={gasToken?.symbol} num={gasBalance || 0} />
+        <SmallTokenCard name={gasToken?.symbol} num={gas || 0} />
         <SmallTokenCard name={userToken?.symbol} num={accountBalances[0]} />
         <div className="flex flex-col rounded-md border bg-custom-bg-white px-4 py-2">
           <Select

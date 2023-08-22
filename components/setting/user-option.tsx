@@ -1,8 +1,13 @@
-import { IUser } from "@/lib/types/user";
+"use client";
 import DetailItem from "../shared/detail-item";
 import EditEndPoint from "./edit-end-point";
 
-export default function UserOption({ user }: { user: IUser }) {
+import { UserManageContext } from "@/lib/providers/user-manage-provider";
+import { useContext } from "react";
+
+export default function UserOption() {
+  const { currentUser: user } = useContext(UserManageContext);
+
   return (
     <div className="flex flex-1 flex-col justify-stretch">
       <DetailItem title="Email Address">{user?.email || ""}</DetailItem>

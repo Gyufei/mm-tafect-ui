@@ -1,25 +1,31 @@
 /* eslint-disable no-undef */
 "use client";
 
-import { signOut } from "next-auth/react";
+import { signOutAction } from "./auth/auth-api";
+import { getUserActive } from "./auth/local-user-storage";
 
 export default async function fetcher(
   input: URL | RequestInfo,
   init?: RequestInit | undefined,
+  skipToken?: boolean,
 ) {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    signOut();
-    return null;
+  let newInit = init;
+  if (!skipToken) {
+    const token = getUserActive()?.token;
+    if (!token) {
+      signOutAction();
+      return null;
+    }
+
+    newInit = {
+      ...init,
+      headers: {
+        ...init?.headers,
+        Authorization: token,
+      },
+    };
   }
 
-  const newInit = {
-    ...init,
-    headers: {
-      ...init?.headers,
-      Authorization: token,
-    },
-  };
   const res = await fetch(input, newInit);
 
   if (!res.ok) {
@@ -28,8 +34,7 @@ export default async function fetcher(
     ) as any;
 
     if (res.status === 401) {
-      signOut();
-      window.localStorage.clear();
+      signOutAction();
       return null;
     }
 

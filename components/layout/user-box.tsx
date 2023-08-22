@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { signOut, useSession } from "next-auth/react";
-import { ChevronDown } from "lucide-react";
+import { useContext, useState } from "react";
+import { ChevronDown, LogOut } from "lucide-react";
+import Image from "next/image";
 
 import {
   Popover,
@@ -8,17 +8,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { IUser } from "@/lib/types/user";
+import { UserManageContext } from "@/lib/providers/user-manage-provider";
+import { userLogout } from "@/lib/auth/local-user-storage";
 
 export function UserBox() {
-  const { data: session } = useSession();
-  const currentUser: IUser = session?.user as IUser;
+  const { allUsers, currentUser } = useContext(UserManageContext);
 
   const [openPopover, setOpenPopover] = useState(false);
 
-  function handleSignOut() {
-    signOut();
-    window.localStorage.clear();
+  function handleSignOut(name: string) {
+    userLogout(name);
   }
 
   return (
@@ -46,14 +45,40 @@ export function UserBox() {
             />
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-[160px] p-1" align="start">
+        <PopoverContent className="mr-4 w-[220px] px-0 py-2" align="start">
           <div className="rounded-md bg-white">
-            <button
-              onClick={() => handleSignOut()}
-              className="flex w-full items-center justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100 active:bg-gray-200"
-            >
-              Sign Out
-            </button>
+            {allUsers?.map((user) => {
+              const isActive = user.name !== currentUser?.name;
+
+              return (
+                <div
+                  key={user.name}
+                  className="flex items-center justify-between space-x-2 px-2 py-1 transition-all duration-75  hover:bg-custom-bg-white active:bg-custom-bg-white"
+                >
+                  <div className="flex items-center">
+                    {isActive && (
+                      <Image
+                        alt="check"
+                        src="/icons/cur-check.svg"
+                        width={24}
+                        height={24}
+                      />
+                    )}
+                    <Avatar className="mr-3 h-8 w-8 rounded">
+                      <AvatarImage src={currentUser?.image || ""} />
+                      <AvatarFallback>{user?.name?.[0] || ""}</AvatarFallback>
+                    </Avatar>
+                    <span>{user?.name}</span>
+                  </div>
+                  {!isActive && (
+                    <LogOut
+                      className="h-4 w-4 cursor-pointer text-[#999]"
+                      onClick={() => handleSignOut(user.name)}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </PopoverContent>
       </Popover>

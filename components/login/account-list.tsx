@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 
-import { IUser } from "@/lib/types/user";
+import { IUser } from "@/lib/auth/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useSwipeable } from "react-swipeable";

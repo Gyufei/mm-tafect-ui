@@ -1,27 +1,33 @@
 "use client";
 
-import { useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { redirect, usePathname, useSearchParams } from "next/navigation";
+import { useContext, useEffect } from "react";
+import { redirect, usePathname } from "next/navigation";
+import { UserManageContext } from "@/lib/providers/user-manage-provider";
 
-export default function AuthRedirect() {
-  const { status } = useSession();
+const loginPath = "/login";
+const Matcher = ["/dashboard", "/key-store", "/token-swap", "/setting"];
+
+export default function AuthRedirect({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { currentUser, status } = useContext(UserManageContext);
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-  const loginPath = "/login";
 
   useEffect(() => {
-    if (status === "loading") return;
+    if (status !== "success") return;
 
-    if (status === "authenticated") {
-      if (pathname === loginPath || pathname === "/") {
-        redirect(callbackUrl);
+    if (!currentUser) {
+      if (pathname === "/" || Matcher.find((m) => pathname.includes(m))) {
+        redirect(loginPath);
       }
-
-      return;
+    } else {
+      if (pathname === "/") {
+        redirect("/dashboard");
+      }
     }
-  }, [status, pathname, callbackUrl]);
+  }, [currentUser, pathname]);
 
-  return null;
+  return <>{children}</>;
 }

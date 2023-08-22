@@ -1,16 +1,16 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
-import { getServerSession } from "next-auth/next";
 
 import "./globals.css";
 import { chesna, inter } from "./fonts";
 
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
-import SessionWrapProvider from "@/lib/providers/session-provider";
+import UserManageProvider from "@/lib/providers/user-manage-provider";
 import SWRConfigProvider from "@/lib/providers/swr-config-provider";
 import MuiPickerProvider from "@/lib/providers/mui-picker-provider";
+import AuthRedirect from "@/components/shared/auth-redirect";
 
 export const metadata: Metadata = {
   title: "mm-tafect-ui",
@@ -30,8 +30,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
-
   return (
     <html
       lang="en"
@@ -45,11 +43,13 @@ export default async function RootLayout({
             </div>
           }
         >
-          <SessionWrapProvider session={session}>
-            <SWRConfigProvider>
-              <MuiPickerProvider>{children}</MuiPickerProvider>
-            </SWRConfigProvider>
-          </SessionWrapProvider>
+          <UserManageProvider>
+            <AuthRedirect>
+              <SWRConfigProvider>
+                <MuiPickerProvider>{children}</MuiPickerProvider>
+              </SWRConfigProvider>
+            </AuthRedirect>
+          </UserManageProvider>
         </Suspense>
         <Analytics />
         <Toaster />

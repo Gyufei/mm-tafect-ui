@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { signIn } from "next-auth/react";
-
-import { IUser } from "@/lib/types/user";
+import { IUser } from "@/lib/auth/user";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -23,6 +21,8 @@ import LoginFailTip from "./login-fail-tip";
 import SessionTip from "./session-tip";
 import LinkToAccountList from "./link-to-account-list";
 import md5 from "js-md5";
+import { signInAction } from "@/lib/auth/auth-api";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -36,6 +36,7 @@ export default function LoginForm({
   account: IUser | null;
   showAccountCb: () => void;
 }) {
+  const router = useRouter();
   const [showLoginFailTip] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -52,15 +53,16 @@ export default function LoginForm({
     }
   }, [account]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     const { email, password } = values;
     const mPassword = md5(password);
 
-    signIn("credentials", {
-      email,
+    await signInAction({
       username: email,
       password: mPassword,
     });
+
+    router.push("/dashboard");
   }
 
   const FormHead = () => {

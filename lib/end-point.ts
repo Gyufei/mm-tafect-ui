@@ -4,6 +4,7 @@ function WithHost(path: string) {
 
 export const SystemEndPointPathMap = {
   login: WithHost("/user/login"),
+  logout: WithHost("/user/logout"),
   changePassword: WithHost("/user/change_password"),
   endPoint: WithHost("/user/end_point"),
 

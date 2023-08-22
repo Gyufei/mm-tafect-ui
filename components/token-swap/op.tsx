@@ -16,12 +16,12 @@ import fetcher from "@/lib/fetcher";
 import OpAdvanceOptions from "@/components/token-swap/op-advance-options";
 import { TestTxResult } from "./test-tx-result";
 import ActionTip, { IActionType } from "../shared/action-tip";
-import { useSession } from "next-auth/react";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import useSWRMutation from "swr/mutation";
 import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
 import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 import { useAdvanceOptions } from "@/lib/hooks/use-advance-options";
+import { UserManageContext } from "@/lib/providers/user-manage-provider";
 
 export default function Op({
   tokens,
@@ -34,10 +34,10 @@ export default function Op({
   handleTokensChange: (_ts: Array<IToken>) => void;
   children?: React.ReactNode;
 }) {
+  const { currentUser } = useContext(UserManageContext);
   const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
 
-  const { data: session } = useSession();
   const [selectedOp, setSelectedOp] = useState<IOp | null>(null);
 
   const [queryAccount, setQueryAccount] = useState<string>("");
@@ -197,7 +197,7 @@ export default function Op({
     const token = tokenIn.info?.address || "";
 
     return {
-      user_name: session?.user?.email,
+      user_name: currentUser?.email,
       chain_id,
       account,
       token,
@@ -423,7 +423,7 @@ export default function Op({
       </div>
 
       <div
-        className="mt-5 flex items-center gap-x-3 border-t bg-white px-3 py-2"
+        className="mt-3 flex items-center gap-x-3 border-t bg-white px-3 py-2"
         style={{
           boxShadow:
             "inset -1px 0px 0px 0px #D6D6D6,inset 0px 1px 0px 0px #D6D6D6",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { IUser } from "@/lib/types/user";
+import { IUser } from "@/lib/auth/user";
 
 import LoginForm from "@/components/login/login-form";
 import AccountList from "@/components/login/account-list";

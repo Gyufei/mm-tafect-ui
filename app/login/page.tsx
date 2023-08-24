@@ -1,21 +1,33 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { IUser } from "@/lib/auth/user";
 
 import LoginForm from "@/components/login/login-form";
 import AccountList from "@/components/login/account-list";
-import AuthRedirect from "@/components/shared/auth-redirect";
+import { UserManageContext } from "@/lib/providers/user-manage-provider";
 
 export default function Login() {
+  const { currentUser } = useContext(UserManageContext);
   const [showAccountList, setShowAccountList] = useState(false);
+  const [showCurrentLoginFlag, setShowCurrentLoginFlag] = useState(true);
 
   const [currentSelectedAccount, setCurrentSelectedAccount] =
-    useState<IUser | null>(null);
+    useState<IUser | null>(currentUser);
+
+  useEffect(() => {
+    setCurrentSelectedAccount(currentUser);
+  }, [currentUser]);
 
   const handleSelectAccount = useCallback((account: IUser) => {
     setCurrentSelectedAccount(account);
+    setShowCurrentLoginFlag(true);
     setShowAccountList(false);
+  }, []);
+
+  const handleAddAccount = useCallback(() => {
+    setShowAccountList(false);
+    setShowCurrentLoginFlag(false);
   }, []);
 
   const handleShowAccountList = useCallback(() => {
@@ -24,12 +36,12 @@ export default function Login() {
 
   return (
     <div className="flex w-full grow flex-col items-start md:max-w-md">
-      <AuthRedirect />
       {showAccountList ? (
-        <AccountList onSelect={handleSelectAccount} />
+        <AccountList onSelect={handleSelectAccount} onAdd={handleAddAccount} />
       ) : (
         <LoginForm
-          account={currentSelectedAccount}
+          user={currentSelectedAccount}
+          showCurrentLogin={showCurrentLoginFlag}
           showAccountCb={handleShowAccountList}
         />
       )}

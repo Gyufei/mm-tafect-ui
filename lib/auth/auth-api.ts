@@ -36,12 +36,16 @@ export async function signInAction(credentials: {
     };
 
     addOrUpdateUser(user);
+
+    return true;
   } catch (e: any) {
     toast({
       variant: "destructive",
       title: `Api: login`,
       description: `${e.status}: ${e.info}`,
     });
+
+    return false;
   }
 }
 

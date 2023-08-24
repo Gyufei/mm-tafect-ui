@@ -1,37 +1,28 @@
-import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { useContext, useState } from "react";
+import { Plus, Trash2 } from "lucide-react";
 
 import { IUser } from "@/lib/auth/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useSwipeable } from "react-swipeable";
+import { UserManageContext } from "@/lib/providers/user-manage-provider";
+import { removeUser } from "@/lib/auth/local-user-storage";
 
 export default function AccountList({
+  onAdd,
   onSelect,
 }: {
+  onAdd: () => void;
   onSelect: (ac: IUser) => void;
 }) {
-  const [accounts, updateAccounts] = useState<Array<IUser>>([
-    {
-      name: "xiaoming",
-      email: "xiaoming@163.com",
-      image: null,
-    },
-    {
-      name: "ipistr-eth",
-      email: "ipistr-eth@ipilabs.com",
-      image: null,
-    },
-    {
-      name: "ipistr-bnb",
-      email: "ipistr-bnb@ipilabs.com",
-      image: null,
-    },
-  ]);
+  const { allUsers } = useContext(UserManageContext);
 
   const handleDelete = (ac: IUser) => {
-    const newAccounts = accounts.filter((item) => item?.email !== ac?.email);
-    updateAccounts(newAccounts);
+    removeUser(ac.name);
+  };
+
+  const handleAdd = () => {
+    onAdd();
   };
 
   return (
@@ -40,7 +31,7 @@ export default function AccountList({
         Pick up one account
       </div>
 
-      {accounts.map((ac) => {
+      {allUsers.map((ac) => {
         return (
           <AccountCard
             key={ac?.name}
@@ -50,6 +41,13 @@ export default function AccountList({
           />
         );
       })}
+
+      <div
+        onClick={() => handleAdd()}
+        className="ml-4 mr-10 flex min-w-full cursor-pointer justify-center rounded border border-border-color bg-white p-4 hover:bg-slate-50 md:w-[378px] md:min-w-[auto]"
+      >
+        <Plus></Plus>
+      </div>
     </div>
   );
 }

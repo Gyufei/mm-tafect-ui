@@ -30,14 +30,17 @@ const formSchema = z.object({
 });
 
 export default function LoginForm({
-  account,
+  user,
   showAccountCb,
+  showCurrentLogin,
 }: {
-  account: IUser | null;
+  user: IUser | null;
   showAccountCb: () => void;
+  showCurrentLogin?: boolean;
 }) {
   const router = useRouter();
-  const [showLoginFailTip] = useState(false);
+  const [showLoginFailTip, setShowLoginFailTip] = useState(false);
+  const showCurrent = showCurrentLogin && user?.name;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,19 +51,24 @@ export default function LoginForm({
   });
 
   useEffect(() => {
-    if (account?.name) {
-      form.setValue("email", account.email || "");
+    if (showCurrent) {
+      form.setValue("email", user.email || "");
     }
-  }, [account]);
+  }, [user]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { email, password } = values;
     const mPassword = md5(password);
 
-    await signInAction({
+    const res = await signInAction({
       username: email,
       password: mPassword,
     });
+
+    if (!res) {
+      setShowLoginFailTip(true);
+      return;
+    }
 
     router.push("/dashboard");
   }
@@ -68,24 +76,23 @@ export default function LoginForm({
   const FormHead = () => {
     return (
       <>
-        {account?.name ? (
+        {showCurrent ? (
           <>
             <div className="mb-5 flex justify-start">
               <Avatar className="mr-4 h-16 w-16 rounded-lg">
-                <AvatarImage src={account.image || ""} />
-                <AvatarFallback>{account?.name?.[0] || ""}</AvatarFallback>
+                <AvatarImage src={user?.image || ""} />
+                <AvatarFallback>{user?.name?.[0] || ""}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col items-start justify-around">
                 <div className="text-lg font-bold text-title-color">
-                  Sign in to {account.name}
+                  Sign in to {user?.name}
                 </div>
-                <div className="LabelText">{account.email}</div>
+                <div className="LabelText">{user?.email}</div>
               </div>
             </div>
           </>
         ) : (
           <>
-            <LinkToAccountList onShow={showAccountCb} />
             <div className="mb-4 text-lg font-bold text-title-color">
               Sign in to your Tafect account
             </div>
@@ -98,11 +105,14 @@ export default function LoginForm({
   return (
     <div className="flex w-full grow flex-col items-stretch px-4 pt-20 md:max-w-md md:pt-[24vh]">
       <div className="relative flex w-full flex-col">
-        {account?.name && <SessionTip className="hidden md:block" />}
+        <LinkToAccountList onShow={showAccountCb} />
+        {showCurrentLogin && (
+          <SessionTip user={user} className="hidden md:block" />
+        )}
         <FormHead />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="md:w-[420px]">
-            {!account?.name && (
+            {!showCurrent && (
               <FormField
                 name="email"
                 control={form.control}
@@ -145,7 +155,7 @@ export default function LoginForm({
             </div>
           </form>
         </Form>
-        {account?.name && <SessionTip className="md:hidden" />}
+        {showCurrent && <SessionTip user={user} className="md:hidden" />}
         {showLoginFailTip && <LoginFailTip />}
       </div>
     </div>

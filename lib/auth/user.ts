@@ -4,5 +4,5 @@ export interface IUser {
   token: string;
   expires: number;
   active: boolean;
-  image?: string;
+  image?: string | null;
 }

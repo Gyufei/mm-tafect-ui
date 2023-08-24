@@ -48,7 +48,7 @@ export function UserBox() {
         <PopoverContent className="mr-4 w-[220px] px-0 py-2" align="start">
           <div className="rounded-md bg-white">
             {allUsers?.map((user) => {
-              const isActive = user.name !== currentUser?.name;
+              const isActive = user.name === currentUser?.name;
 
               return (
                 <div
@@ -57,12 +57,14 @@ export function UserBox() {
                 >
                   <div className="flex items-center">
                     {isActive && (
-                      <Image
-                        alt="check"
-                        src="/icons/cur-check.svg"
-                        width={24}
-                        height={24}
-                      />
+                      <div className="w-6">
+                        <Image
+                          alt="check"
+                          src="/icons/cur-check.svg"
+                          width={24}
+                          height={24}
+                        />
+                      </div>
                     )}
                     <Avatar className="mr-3 h-8 w-8 rounded">
                       <AvatarImage src={currentUser?.image || ""} />

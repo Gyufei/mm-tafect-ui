@@ -32,15 +32,15 @@ const formSchema = z.object({
 export default function LoginForm({
   user,
   showAccountCb,
-  showCurrentLogin,
+  showWithUser,
 }: {
   user: IUser | null;
   showAccountCb: () => void;
-  showCurrentLogin?: boolean;
+  showWithUser?: boolean;
 }) {
   const router = useRouter();
   const [showLoginFailTip, setShowLoginFailTip] = useState(false);
-  const showCurrent = showCurrentLogin && user?.name;
+  const showUserForLogin = showWithUser && user?.name;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,7 +51,7 @@ export default function LoginForm({
   });
 
   useEffect(() => {
-    if (showCurrent) {
+    if (showUserForLogin) {
       form.setValue("email", user.email || "");
     }
   }, [user]);
@@ -76,7 +76,7 @@ export default function LoginForm({
   const FormHead = () => {
     return (
       <>
-        {showCurrent ? (
+        {showUserForLogin ? (
           <>
             <div className="mb-5 flex justify-start">
               <Avatar className="mr-4 h-16 w-16 rounded-lg">
@@ -106,13 +106,11 @@ export default function LoginForm({
     <div className="flex w-full grow flex-col items-stretch px-4 pt-20 md:max-w-md md:pt-[24vh]">
       <div className="relative flex w-full flex-col">
         <LinkToAccountList onShow={showAccountCb} />
-        {showCurrentLogin && (
-          <SessionTip user={user} className="hidden md:block" />
-        )}
+        {showWithUser && <SessionTip user={user} className="hidden md:block" />}
         <FormHead />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="md:w-[420px]">
-            {!showCurrent && (
+            {!showUserForLogin && (
               <FormField
                 name="email"
                 control={form.control}
@@ -155,7 +153,7 @@ export default function LoginForm({
             </div>
           </form>
         </Form>
-        {showCurrent && <SessionTip user={user} className="md:hidden" />}
+        {showUserForLogin && <SessionTip user={user} className="md:hidden" />}
         {showLoginFailTip && <LoginFailTip />}
       </div>
     </div>

@@ -10,7 +10,7 @@ import { UserManageContext } from "@/lib/providers/user-manage-provider";
 export default function Login() {
   const { currentUser } = useContext(UserManageContext);
   const [showAccountList, setShowAccountList] = useState(false);
-  const [showCurrentLoginFlag, setShowCurrentLoginFlag] = useState(true);
+  const [showWithUserFlag, setShowWithUser] = useState(true);
 
   const [currentSelectedAccount, setCurrentSelectedAccount] =
     useState<IUser | null>(currentUser);
@@ -21,13 +21,13 @@ export default function Login() {
 
   const handleSelectAccount = useCallback((account: IUser) => {
     setCurrentSelectedAccount(account);
-    setShowCurrentLoginFlag(true);
+    setShowWithUser(true);
     setShowAccountList(false);
   }, []);
 
   const handleAddAccount = useCallback(() => {
     setShowAccountList(false);
-    setShowCurrentLoginFlag(false);
+    setShowWithUser(false);
   }, []);
 
   const handleShowAccountList = useCallback(() => {
@@ -41,7 +41,7 @@ export default function Login() {
       ) : (
         <LoginForm
           user={currentSelectedAccount}
-          showCurrentLogin={showCurrentLoginFlag}
+          showWithUser={showWithUserFlag}
           showAccountCb={handleShowAccountList}
         />
       )}

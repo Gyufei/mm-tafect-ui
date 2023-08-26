@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserManageContext } from "@/lib/providers/user-manage-provider";
-import { userLogout } from "@/lib/auth/local-user-storage";
+import { setUserActive, userLogout } from "@/lib/auth/local-user-storage";
+import { IUser } from "@/lib/auth/user";
 
 export function UserBox() {
   const { allUsers, currentUser } = useContext(UserManageContext);
@@ -18,6 +19,11 @@ export function UserBox() {
 
   function handleSignOut(name: string) {
     userLogout(name);
+  }
+
+  function handleChangeUser(user: IUser) {
+    if (user?.name === currentUser?.name) return;
+    setUserActive(user?.name);
   }
 
   return (
@@ -53,19 +59,20 @@ export function UserBox() {
               return (
                 <div
                   key={user.name}
-                  className="flex items-center justify-between space-x-2 px-2 py-1 transition-all duration-75  hover:bg-custom-bg-white active:bg-custom-bg-white"
+                  className="flex cursor-pointer items-center justify-between space-x-2 px-2 py-1 transition-all duration-75  hover:bg-custom-bg-white active:bg-custom-bg-white"
+                  onClick={() => handleChangeUser(user)}
                 >
                   <div className="flex items-center">
-                    {isActive && (
-                      <div className="w-6">
+                    <div className="w-6">
+                      {isActive && (
                         <Image
                           alt="check"
                           src="/icons/cur-check.svg"
                           width={24}
                           height={24}
                         />
-                      </div>
-                    )}
+                      )}
+                    </div>
                     <Avatar className="mr-3 h-8 w-8 rounded">
                       <AvatarImage src={currentUser?.image || ""} />
                       <AvatarFallback>{user?.name?.[0] || ""}</AvatarFallback>

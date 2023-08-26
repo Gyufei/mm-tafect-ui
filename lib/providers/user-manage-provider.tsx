@@ -47,6 +47,7 @@ export default function UserManageProvider({
 
   return (
     <UserManageContext.Provider
+      key={currentUser?.name}
       value={{
         allUsers,
         currentUser,

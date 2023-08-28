@@ -32,8 +32,8 @@ export const UserEndPointPathMap = {
   signTransfer: "/tokenswap/transfer/sign",
   signApprove: "/tokenswap/approve/sign",
   signSwap: "/tokenswap/swap/sign",
-  sendTransfer: "/tokenswap/approve/send",
-  sendApprove: "/tokenswap/transfer/send",
+  sendTransfer: "/tokenswap/transfer/send",
+  sendApprove: "/tokenswap/approve/send",
   sendSwap: "/tokenswap/swap/send",
   swapHistory: "/tokenswap/history",
 

@@ -83,6 +83,9 @@ export default function KeyStoreSelect({
               Available KeyStores
             </div>
             <div className="flex flex-wrap">
+              { !keyStoreOptions.length && (
+                <div>No Available KeyStores</div>
+              )}
               {keyStoreOptions.map((option) => (
                 <div
                   key={option.name}

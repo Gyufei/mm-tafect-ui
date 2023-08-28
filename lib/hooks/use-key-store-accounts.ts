@@ -17,12 +17,12 @@ interface IKeyStoreAccountItem {
   tx: number;
 }
 
-export function useKeyStoreAccounts(networkId: string | null, _page: string) {
+export function useKeyStoreAccounts(networkId: string | null, page: string) {
   const { userPathMap } = useContext(UserEndPointContext);
 
   const { data: keyStores } = useSWR(
-    SystemEndPointPathMap.userKeyStores,
-    // `${SystemEndPointPathMap.keyStoreByPage}?page=${page}`,
+    // SystemEndPointPathMap.userKeyStores,
+    `${SystemEndPointPathMap.keyStoreByPage}?page_name=${page}`,
     fetcher,
   );
 

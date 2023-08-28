@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { ArrowBigRight } from "lucide-react";
 
-import { IOp } from "@/lib/types/op";
 import { IToken } from "@/lib/types/token";
 import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
 
@@ -22,6 +21,9 @@ import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
 import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 import { useAdvanceOptions } from "@/lib/hooks/use-advance-options";
 import { UserManageContext } from "@/lib/providers/user-manage-provider";
+import { replaceStrNum } from "@/lib/hooks/use-str-num";
+import { Input } from "../ui/input";
+import { useOp } from "@/lib/hooks/use-op";
 
 export default function Op({
   tokens,
@@ -38,7 +40,15 @@ export default function Op({
   const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
 
-  const [selectedOp, setSelectedOp] = useState<IOp | null>(null);
+  const {
+    op: selectedOp,
+    setOp: setSelectedOp,
+    opSignUrl,
+    opSendUrl,
+    isApproveOp,
+    isTransferOp,
+    isSwapOp,
+  } = useOp();
 
   const [queryAccount, setQueryAccount] = useState<string>("");
   const [gasBalance, setGasBalance] = useState<number | null>(0);
@@ -51,6 +61,11 @@ export default function Op({
     message: string;
   } | null>();
 
+  const [tokenApprove, setTokenApprove] = useState<ITokenNumDesc>({
+    labelName: "Token",
+    info: null,
+    num: UNIT256_MAX,
+  });
   const [tokenIn, setTokenIn] = useState<ITokenNumDesc>({
     labelName: "Token0",
     info: null,
@@ -62,6 +77,9 @@ export default function Op({
     num: "",
   });
   const [isExactInput, setIsExactInput] = useState<boolean>(true);
+
+  const [toAddress, setToAddress] = useState<string>("");
+  const [transferAmount, setTransferAmount] = useState<string>("");
 
   const { advanceOptions, setAdvanceOptions } = useAdvanceOptions(
     network?.chain_id || "",
@@ -98,24 +116,6 @@ export default function Op({
 
     return res?.amount;
   };
-
-  useEffect(() => {
-    if (!selectedOp?.op_detail?.swap_router) return;
-
-    if (tokenIn.info && tokenOut.info && (tokenIn.num || tokenOut.num)) {
-      triggerEstimate({
-        inP: tokenIn,
-        outP: tokenOut,
-        exactInput: isExactInput,
-      }).then((result) => {
-        if (isExactInput) {
-          setTokenOut({ ...tokenOut, num: String(result || 0) });
-        } else {
-          setTokenIn({ ...tokenIn, num: String(result || 0) });
-        }
-      });
-    }
-  }, [selectedOp?.op_detail?.swap_router]);
 
   const { trigger: triggerEstimate } = useSWRMutation(
     `${userPathMap.estimateToken}`,
@@ -186,6 +186,11 @@ export default function Op({
     setIsExactInput(true);
   };
 
+  const handleTransferAmountChange = (e: string) => {
+    const reNum = replaceStrNum(e);
+    setTransferAmount(reNum);
+  };
+
   const getCommonParams = () => {
     const kStore = keyStores.find((ks) =>
       ks.accounts.some((a) => a.account === queryAccount),
@@ -194,13 +199,11 @@ export default function Op({
     const chain_id = network?.chain_id || "";
     const keystore = kStore?.name || "";
     const account = queryAccount;
-    const token = tokenIn.info?.address || "";
 
     return {
       user_name: currentUser?.email,
       chain_id,
       account,
-      token,
       keystore,
       ...advanceOptions,
     };
@@ -210,22 +213,33 @@ export default function Op({
     const commonParams = getCommonParams();
     const params = {
       ...commonParams,
+      token: tokenApprove.info?.address || "",
       amount: UNIT256_MAX,
       spender: selectedOp?.op_detail?.swap_router || "",
     };
 
+    if (!params.token || !params.amount) return null;
     return params;
   };
 
   const getTransferParams = () => {
     const commonParams = getCommonParams();
+
+    // find chain real currency token
+    const token = tokens.find(
+      (t) =>
+        t.symbol === network?.currency_symbol &&
+        t.address !== GAS_TOKEN_ADDRESS,
+    );
+
     const params = {
       ...commonParams,
-      amount:
-        tokenIn.num || UNIT256_MAX,
-      recipient: commonParams.account,
+      token: token?.address || "",
+      amount: transferAmount || UNIT256_MAX,
+      recipient: toAddress,
     };
 
+    if (!params.token || !params.amount || !params.recipient) return null;
     return params;
   };
 
@@ -233,7 +247,7 @@ export default function Op({
     const commonParams = getCommonParams();
     const params = {
       ...commonParams,
-      recipient: commonParams.account,
+      recipient: toAddress,
       token_in: tokenIn.info?.address || "",
       token_out: tokenOut.info?.address || "",
       amount: isExactInput ? tokenIn.num : tokenOut.num,
@@ -241,54 +255,28 @@ export default function Op({
       is_exact_input: isExactInput,
     };
 
+    if (
+      !params.recipient ||
+      !params.token_in ||
+      !params.token_out ||
+      !params.amount
+    ) {
+      return null;
+    }
     return params;
   };
 
   function getTxParams() {
-    switch (selectedOp?.op_id) {
-      case 3:
-        return getApproveParams();
-      case 2:
-        return getTransferParams();
-      case 1:
-        return getSwapParams();
-      default:
-        return null;
-    }
-  }
-
-  function getSignUrl() {
-    switch (selectedOp?.op_id) {
-      case 3:
-        return userPathMap.signApprove;
-      case 2:
-        return userPathMap.signTransfer;
-      case 1:
-        return userPathMap.signSwap;
-      default:
-        return null;
-    }
-  }
-
-  function getScheduleUrl() {
-    switch (selectedOp?.op_id) {
-      case 3:
-        return userPathMap.sendApprove;
-      case 2:
-        return userPathMap.sendTransfer;
-      case 1:
-        return userPathMap.sendSwap;
-      default:
-        return null;
-    }
+    if (isApproveOp) return getApproveParams();
+    if (isTransferOp) return getTransferParams();
+    if (isSwapOp) return getSwapParams();
   }
 
   async function signAction() {
-    const url = getSignUrl();
     const params = getTxParams();
-    if (!url || !params) return;
+    if (!opSignUrl || !params) return;
 
-    const res = await fetcher(url, {
+    const res = await fetcher(opSignUrl, {
       method: "POST",
       body: JSON.stringify(params),
     });
@@ -345,10 +333,9 @@ export default function Op({
 
   async function sendAction() {
     try {
-      const url = getScheduleUrl();
       const params = getTxParams();
-      if (!url || !params) return;
-      await fetcher(url, {
+      if (!opSendUrl || !params) return;
+      await fetcher(opSendUrl, {
         method: "POST",
         body: JSON.stringify(params),
       });
@@ -393,24 +380,60 @@ export default function Op({
           setGas={setGasBalance}
         />
 
-        <div className="mt-3 flex items-center justify-between px-3">
-          <TokenSelectAndInput
-            tokens={tokens}
-            tokenParams={tokenIn}
-            handleTokenParamsChange={(tP) => handleTokenInChange(tP)}
-          />
-          <ArrowBigRight
-            className="mx-1 mt-1 h-5 w-5 text-[#7d8998]"
-            style={{
-              transform: "translateY(10px)",
-            }}
-          />
-          <TokenSelectAndInput
-            tokens={tokens}
-            tokenParams={tokenOut}
-            handleTokenParamsChange={(tP) => handleTokenOutChange(tP)}
-          />
-        </div>
+        {isApproveOp && (
+          <div className="mt-3 flex items-center justify-between px-3">
+            <TokenSelectAndInput
+              tokens={tokens}
+              tokenParams={tokenApprove}
+              handleTokenParamsChange={setTokenApprove}
+            />
+          </div>
+        )}
+
+        {isSwapOp && (
+          <div className="mt-3 flex items-center justify-between px-3">
+            <TokenSelectAndInput
+              tokens={tokens}
+              tokenParams={tokenIn}
+              handleTokenParamsChange={(tP) => handleTokenInChange(tP)}
+            />
+            <ArrowBigRight
+              className="mx-1 mt-1 h-5 w-5 text-[#7d8998]"
+              style={{
+                transform: "translateY(10px)",
+              }}
+            />
+            <TokenSelectAndInput
+              tokens={tokens}
+              tokenParams={tokenOut}
+              handleTokenParamsChange={(tP) => handleTokenOutChange(tP)}
+            />
+          </div>
+        )}
+
+        {isTransferOp && (
+          <div className="col mt-3 flex flex-col px-3">
+            <div className="LabelText mb-1">Transfer Amount</div>
+            <Input
+              value={transferAmount}
+              onChange={(e) => handleTransferAmountChange(e.target.value)}
+              className="rounded-md border-border-color"
+              placeholder="0"
+            />
+          </div>
+        )}
+
+        {!isApproveOp && (
+          <div className="col mt-3 flex flex-col px-3">
+            <div className="LabelText mb-1">ToAddress</div>
+            <Input
+              value={toAddress}
+              onChange={(e: any) => setToAddress(e.target.value)}
+              className="mr-3 border-border-color bg-white"
+              placeholder="0x11111111111"
+            />
+          </div>
+        )}
 
         <OpAdvanceOptions
           options={advanceOptions}
@@ -419,7 +442,7 @@ export default function Op({
       </div>
 
       <div
-        className="mt-3 h-[60px] flex items-center gap-x-3 border-t bg-white px-3 py-2"
+        className="mt-3 flex h-[60px] items-center gap-x-3 border-t bg-white px-3 py-2"
         style={{
           boxShadow:
             "inset -1px 0px 0px 0px #D6D6D6,inset 0px 1px 0px 0px #D6D6D6",

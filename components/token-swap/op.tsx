@@ -210,7 +210,7 @@ export default function Op({
     const commonParams = getCommonParams();
     const params = {
       ...commonParams,
-      amount: tokenIn.num || UNIT256_MAX,
+      amount: UNIT256_MAX,
       spender: selectedOp?.op_detail?.swap_router || "",
     };
 
@@ -222,8 +222,7 @@ export default function Op({
     const params = {
       ...commonParams,
       amount:
-        tokenIn.num ||
-        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        tokenIn.num || UNIT256_MAX,
       recipient: commonParams.account,
     };
 

@@ -1,7 +1,7 @@
 import { useContext, useMemo, useState } from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
-import { setHours, setMinutes, setSeconds, format } from "date-fns";
+import { setHours, setMinutes, setSeconds, format, addDays, subDays } from "date-fns";
 import { DatePicker } from "@mui/x-date-pickers";
 
 import { Button } from "@/components/ui/button";
@@ -34,8 +34,8 @@ export default function SwapHistory() {
     min: Date | null;
     max: Date | null;
   }>({
-    min: null,
-    max: null,
+    min: subDays(new Date(), 2),
+    max: addDays(new Date(), 5),
   });
 
   const handleMinDateChange = (d: Date | null) => {

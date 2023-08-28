@@ -249,7 +249,6 @@ export default function Op({
     switch (selectedOp?.op_id) {
       case 3:
         return getApproveParams();
-        break;
       case 2:
         return getTransferParams();
       case 1:
@@ -263,7 +262,6 @@ export default function Op({
     switch (selectedOp?.op_id) {
       case 3:
         return userPathMap.signApprove;
-        break;
       case 2:
         return userPathMap.signTransfer;
       case 1:
@@ -277,7 +275,6 @@ export default function Op({
     switch (selectedOp?.op_id) {
       case 3:
         return userPathMap.sendApprove;
-        break;
       case 2:
         return userPathMap.sendTransfer;
       case 1:

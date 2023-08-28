@@ -1,7 +1,14 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
-import { setHours, setMinutes, setSeconds, format, addDays, subDays } from "date-fns";
+import {
+  setHours,
+  setMinutes,
+  setSeconds,
+  format,
+  addDays,
+  subDays,
+} from "date-fns";
 import { DatePicker } from "@mui/x-date-pickers";
 
 import { Button } from "@/components/ui/button";
@@ -64,45 +71,60 @@ export default function SwapHistory() {
   };
 
   const fetchTasks = async (url: string): Promise<Array<ITask> | undefined> => {
-    const taskRes = await fetcher(url);
+    if (!networkId) return undefined;
+    const taskRes: Array<Record<string, any>> = await fetcher(url);
     if (!taskRes) return undefined;
 
-    const parsed = taskRes.map((t: Record<string, any>) => {
-      const data = JSON.parse(t.data);
-      const date = format(new Date(t.schedule * 1000), "YYY-MM-dd HH:mm");
+    const parsed = taskRes
+      .sort((a: Record<string, any>, b: Record<string, any>) => {
+        const getTime = (t: Record<string, any>) => {
+          return new Date(t.schedule * 1000).getTime();
+        };
 
-      const opType = opList.find((op: Record<string, any>) => {
-        return op.op_id === t.op;
-      }).op_name;
+        return getTime(b) - getTime(a);
+      })
+      .map((t: Record<string, any>) => {
+        const data = JSON.parse(t.data);
+        const date = format(new Date(t.schedule * 1000), "YYY-MM-dd HH:mm");
 
-      if (t.op === 1) {
-        data.tokenInName = tokens.find(
-          (tk) => tk.address === data.token_in,
-        )?.symbol;
-        data.tokenOutName = tokens.find(
-          (tk) => tk.address === data.token_out,
-        )?.symbol;
-      }
+        const opType = opList.find((op: Record<string, any>) => {
+          return op.op_id === t.op;
+        }).op_name;
 
-      if (t.op === 3) {
-        data.tokenName =
-          tokens.find((tk) => tk.address === data.token)?.symbol || "";
-      }
+        if (t.op === 1) {
+          data.tokenInName = tokens.find(
+            (tk) => tk.address === data.token_in,
+          )?.symbol;
+          data.tokenOutName = tokens.find(
+            (tk) => tk.address === data.token_out,
+          )?.symbol;
+        }
 
-      return {
-        id: t.id,
-        account: t.account,
-        status: t.status,
-        txHash: t.tx_hash,
-        op: t.op,
-        opName: opType,
-        date,
-        data,
-      };
-    });
+        if (t.op === 3) {
+          data.tokenName =
+            tokens.find((tk) => tk.address === data.token)?.symbol || "";
+        }
+
+        return {
+          id: t.id,
+          account: t.account,
+          status: t.status,
+          txHash: t.tx_hash,
+          op: t.op,
+          opName: opType,
+          date,
+          data,
+        };
+      });
 
     return parsed;
   };
+
+  useEffect(() => {
+    if (networkId && opList?.length) {
+      filterTrigger();
+    }
+  }, [networkId, opList?.length]);
 
   const {
     data: tasks,

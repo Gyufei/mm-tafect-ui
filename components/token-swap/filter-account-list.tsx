@@ -96,6 +96,10 @@ export default function FilterAccountList({
       return;
     }
 
+    if (!keyStores.length) {
+      return;
+    }
+
     filterTrigger();
   }
 

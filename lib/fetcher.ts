@@ -1,8 +1,7 @@
 /* eslint-disable no-undef */
 "use client";
 
-import { signOutAction } from "./auth/auth-api";
-import { getUserActive } from "./auth/local-user-storage";
+import { activeUserLogout, getUserActive } from "./auth/local-user-storage";
 
 export default async function fetcher(
   input: URL | RequestInfo,
@@ -13,7 +12,7 @@ export default async function fetcher(
   if (!skipToken) {
     const token = getUserActive()?.token;
     if (!token) {
-      signOutAction();
+      activeUserLogout();
       return null;
     }
 
@@ -34,7 +33,7 @@ export default async function fetcher(
     ) as any;
 
     if (res.status === 401) {
-      signOutAction();
+      activeUserLogout();
       return null;
     }
 

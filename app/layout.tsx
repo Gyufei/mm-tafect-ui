@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 
 import "./globals.css";
-import { chesna, inter } from "./fonts";
+import { chesna } from "./fonts";
 
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
@@ -33,7 +33,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(chesna.variable, inter.variable, "h-full w-full")}
+      className={cn(chesna.variable, "h-full w-full")}
     >
       <body className="h-screen w-full overflow-x-hidden overflow-y-hidden md:overflow-x-auto">
         <Suspense

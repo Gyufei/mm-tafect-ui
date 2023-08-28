@@ -71,10 +71,6 @@ module.exports = {
           to: { height: 0 },
         },
       },
-      fontFamily: {
-        display: ["var(--font-chesna)", "system-ui", "sans-serif"],
-        default: ["var(--font-inter)", "system-ui", "sans-serif"],
-      },
       animation: {
         "fade-up": "fade-up 0.5s",
         "fade-down": "fade-down 0.5s",

@@ -3,7 +3,6 @@ import { SystemEndPointPathMap } from "../end-point";
 import { toast } from "@/components/ui/use-toast";
 import { IUser } from "./user";
 import {
-  activeUserLogout,
   addOrUpdateUser,
   removeOldStorage,
 } from "./local-user-storage";
@@ -46,17 +45,5 @@ export async function signInAction(credentials: {
     });
 
     return false;
-  }
-}
-
-export async function signOutAction() {
-  try {
-    await fetcher(SystemEndPointPathMap.logout, {
-      method: "POST",
-    });
-  } catch (e: any) {
-    console.error(e);
-  } finally {
-    activeUserLogout();
   }
 }

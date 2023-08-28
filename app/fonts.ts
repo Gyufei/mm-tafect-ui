@@ -1,5 +1,4 @@
 import localFont from "next/font/local";
-import { Inter } from "next/font/google";
 
 export const chesna = localFont({
   src: [
@@ -30,9 +29,5 @@ export const chesna = localFont({
     },
   ],
   variable: "--font-chesna",
-});
-
-export const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+  fallback: ["system-ui", "sans-serif"],
 });

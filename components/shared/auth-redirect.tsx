@@ -27,7 +27,7 @@ export default function AuthRedirect({
         redirect("/dashboard");
       }
     }
-  }, [currentUser, pathname]);
+  }, [currentUser, pathname, status]);
 
   return <>{children}</>;
 }

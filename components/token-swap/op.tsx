@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { ArrowBigRight } from "lucide-react";
 
 import { IToken } from "@/lib/types/token";

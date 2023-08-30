@@ -4,25 +4,23 @@ import { useEffect } from "react";
 export type IActionType = "success" | "warning" | "error";
 
 export default function ActionTip({
-  open,
   type,
   message,
-  onOpenChange,
+  handleClose,
 }: {
-  open: boolean;
   type: IActionType;
-  message: string;
-  onOpenChange: (_s: boolean) => void;
+  message: string | null;
+  handleClose: () => void;
 }) {
   useEffect(() => {
-    if (open) {
+    if (message) {
       const d = setTimeout(() => {
-        onOpenChange(false);
+        handleClose();
       }, 5000);
 
       return () => clearTimeout(d);
     }
-  }, [open]);
+  }, [message]);
 
   const colorMap = {
     success: {
@@ -44,7 +42,7 @@ export default function ActionTip({
 
   return (
     <>
-      {open ? (
+      {message ? (
         <div
           className="fixed bottom-6 flex items-center gap-x-2 rounded-md border px-5 py-3"
           style={{

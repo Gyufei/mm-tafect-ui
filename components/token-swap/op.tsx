@@ -1,5 +1,4 @@
 import { useContext, useState } from "react";
-import { ArrowBigRight } from "lucide-react";
 
 import { IToken } from "@/lib/types/token";
 import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
@@ -8,22 +7,20 @@ import QueryAccountBalance from "@/components/token-swap/query-account-balance";
 import OpSelect from "@/components/token-swap/op-select";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import TokenSelectAndInput, {
-  ITokenNumDesc,
-} from "@/components/token-swap/token-select-and-input";
+import { ITokenNumDesc } from "@/components/token-swap/token-select-and-input";
 import fetcher from "@/lib/fetcher";
 import OpAdvanceOptions from "@/components/token-swap/op-advance-options";
 import { TestTxResult } from "./test-tx-result";
 import ActionTip, { IActionType } from "../shared/action-tip";
 import { NetworkContext } from "@/lib/providers/network-provider";
-import useSWRMutation from "swr/mutation";
 import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
-import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 import { useAdvanceOptions } from "@/lib/hooks/use-advance-options";
 import { UserManageContext } from "@/lib/providers/user-manage-provider";
 import { replaceStrNum } from "@/lib/hooks/use-str-num";
 import { Input } from "../ui/input";
 import { useOp } from "@/lib/hooks/use-op";
+import SelectSwapToken from "./select-swap-token";
+import { useTokenAllowance } from "@/lib/hooks/use-token-allowance";
 
 export default function Op({
   tokens,
@@ -37,7 +34,6 @@ export default function Op({
   children?: React.ReactNode;
 }) {
   const { currentUser } = useContext(UserManageContext);
-  const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
 
   const {
@@ -55,28 +51,24 @@ export default function Op({
 
   const [testTxDialogOpen, setTestTxDialogOpen] = useState<boolean>(false);
   const [testResult, setTestResult] = useState<any>(null);
-  const [sendTxTipShow, setSendTxTipShow] = useState<boolean>(false);
   const [sendTxResult, setSendTxResult] = useState<{
     type: IActionType;
     message: string;
   } | null>();
 
-  const [tokenApprove, setTokenApprove] = useState<ITokenNumDesc>({
-    labelName: "Token",
-    info: null,
-    num: UNIT256_MAX,
-  });
-  const [tokenIn, setTokenIn] = useState<ITokenNumDesc>({
-    labelName: "Token0",
-    info: null,
+  const [token0, setToken0] = useState<ITokenNumDesc>({
+    token: null,
     num: "",
+    allowance: "",
   });
-  const [tokenOut, setTokenOut] = useState<ITokenNumDesc>({
-    labelName: "Token1",
-    info: null,
+  const [token1, setToken1] = useState<ITokenNumDesc>({
+    token: null,
     num: "",
+    allowance: "",
   });
-  const [isExactInput, setIsExactInput] = useState<boolean>(true);
+
+  const shouldApproveToken0 = token0.token && token0.allowance === "0";
+  const shouldApproveToken1 = token1.token && token1.allowance === "0";
 
   const [toAddress, setToAddress] = useState<string>("");
   const [transferAmount, setTransferAmount] = useState<string>("");
@@ -85,106 +77,6 @@ export default function Op({
     network?.chain_id || "",
     queryAccount,
   );
-
-  const fetchEstimate = async (
-    url: string,
-    {
-      arg,
-    }: {
-      arg: {
-        inP: ITokenNumDesc;
-        outP: ITokenNumDesc;
-        exactInput: boolean;
-      };
-    },
-  ) => {
-    if (!selectedOp?.op_detail?.swap_router) return null;
-
-    const { inP, outP, exactInput } = arg;
-    const amount = Number(exactInput ? inP.num : outP.num);
-
-    const query = new URLSearchParams();
-    query.set("chain_id", network?.chain_id || "");
-    query.set("token_in", inP.info?.address || "");
-    query.set("token_out", outP.info?.address || "");
-    query.set("token_amount", String(amount) || "");
-    query.set("is_exact_input", exactInput ? "true" : "false");
-    query.set("swap_router_address", selectedOp?.op_detail?.swap_router || "");
-
-    const queryStr = query.toString();
-    const res = await fetcher(`${url}?${queryStr}`);
-
-    return res?.amount;
-  };
-
-  const { trigger: triggerEstimate } = useSWRMutation(
-    `${userPathMap.estimateToken}`,
-    fetchEstimate,
-  );
-
-  const handleTokenInChange = async (inParams: ITokenNumDesc) => {
-    const preVal = JSON.parse(JSON.stringify(tokenIn));
-    setTokenIn(inParams);
-
-    const isSameToken = inParams.info?.address === tokenOut.info?.address;
-    if (isSameToken) {
-      setTokenOut({ ...tokenOut, num: inParams.num });
-      return;
-    }
-
-    const isSameVal =
-      inParams.info?.address === preVal.info?.address &&
-      Number(inParams.num) === Number(preVal.num);
-    if (isSameVal) return;
-
-    if (Number(inParams.num) === 0) {
-      setTokenOut({ ...tokenOut, num: "" });
-      return;
-    }
-
-    if (inParams.info && inParams.num && tokenOut.info) {
-      const result = await triggerEstimate({
-        inP: inParams,
-        outP: tokenOut,
-        exactInput: true,
-      });
-      setTokenOut({ ...tokenOut, num: String(result || "") });
-    }
-
-    setIsExactInput(true);
-  };
-
-  const handleTokenOutChange = async (outParams: ITokenNumDesc) => {
-    const preVal = JSON.parse(JSON.stringify(tokenOut));
-    setTokenOut(outParams);
-
-    const isSameToken = outParams.info?.address === tokenIn.info?.address;
-    if (isSameToken) {
-      setTokenIn({ ...tokenIn, num: outParams.num });
-      return;
-    }
-
-    const isSameVal =
-      outParams.info?.address === preVal.info?.address &&
-      Number(outParams.num) === Number(preVal.num);
-    if (isSameVal) return;
-
-    if (Number(outParams.num) === 0) {
-      setTokenIn({ ...tokenIn, num: "" });
-      return;
-    }
-
-    if (outParams.info && outParams.num && tokenIn.info) {
-      const result = await triggerEstimate({
-        inP: tokenIn,
-        outP: outParams,
-        exactInput: false,
-      });
-      setTokenIn({ ...tokenIn, num: String(result || "") });
-    }
-
-    setIsExactInput(true);
-  };
 
   const handleTransferAmountChange = (e: string) => {
     const reNum = replaceStrNum(e);
@@ -209,21 +101,9 @@ export default function Op({
     };
   };
 
-  const getApproveParams = () => {
-    const commonParams = getCommonParams();
-    const params = {
-      ...commonParams,
-      token: tokenApprove.info?.address || "",
-      amount: UNIT256_MAX,
-      spender: selectedOp?.op_detail?.swap_router || "",
-    };
-
-    if (!params.token || !params.amount) return null;
-    return params;
-  };
-
   const getTransferParams = () => {
     const commonParams = getCommonParams();
+    if (!commonParams) return null;
 
     // find chain real currency token
     const token = tokens.find(
@@ -245,14 +125,16 @@ export default function Op({
 
   const getSwapParams = () => {
     const commonParams = getCommonParams();
+    if (!commonParams) return null;
+
     const params = {
       ...commonParams,
       recipient: toAddress,
-      token_in: tokenIn.info?.address || "",
-      token_out: tokenOut.info?.address || "",
-      amount: isExactInput ? tokenIn.num : tokenOut.num,
+      token_in: token0.token?.address || "",
+      token_out: token1.token?.address || "",
+      amount: token0.num,
       swap_router_address: selectedOp?.op_detail?.swap_router || "",
-      is_exact_input: isExactInput,
+      is_exact_input: true,
     };
 
     if (
@@ -267,9 +149,76 @@ export default function Op({
   };
 
   function getTxParams() {
-    if (isApproveOp) return getApproveParams();
     if (isTransferOp) return getTransferParams();
     if (isSwapOp) return getSwapParams();
+  }
+
+  const getApproveParams = (tokenAddr: string) => {
+    const commonParams = getCommonParams();
+    if (!commonParams) return null;
+
+    const params = {
+      ...commonParams,
+      token: tokenAddr || "",
+      amount: UNIT256_MAX,
+      spender: selectedOp?.op_detail?.swap_router || "",
+    };
+
+    if (!params.token || !params.amount) return null;
+    return params;
+  };
+
+  async function approveAction(tokenAddr: string) {
+    const params = getApproveParams(tokenAddr);
+    if (!opSignUrl || !params) return;
+
+    await fetcher(opSignUrl, {
+      method: "POST",
+      body: JSON.stringify(params),
+    });
+
+    const allowance = await triggerAllowance({
+      tokenAddr,
+    });
+
+    return allowance;
+  }
+
+  const { triggerAllowance } = useTokenAllowance(
+    selectedOp?.op_detail?.swap_router || "",
+    queryAccount,
+  );
+
+  async function handleApprove() {
+    try {
+      if (shouldApproveToken0) {
+        const allowance = await approveAction(token0.token?.address || "");
+
+        setToken0({
+          ...token0,
+          allowance,
+        });
+      }
+
+      if (shouldApproveToken1) {
+        const allowance = await approveAction(token1.token?.address || "");
+
+        setToken1({
+          ...token1,
+          allowance,
+        });
+      }
+
+      setSendTxResult({
+        type: "success",
+        message: `Approve Success`,
+      });
+    } catch (e: any) {
+      setSendTxResult({
+        type: "error",
+        message: `${e.status}: ${e.info}`,
+      });
+    }
   }
 
   async function signAction() {
@@ -314,8 +263,8 @@ export default function Op({
       const gasCost =
         (Number(res.gaslimit) * Number(advanceOptions.gas)) / 10 ** 18;
 
-      const isGasToken = tokenIn.info?.address === GAS_TOKEN_ADDRESS;
-      const amountCost = isGasToken ? gasCost + Number(tokenIn.num) : gasCost;
+      const isGasToken = token0.token?.address === GAS_TOKEN_ADDRESS;
+      const amountCost = isGasToken ? gasCost + Number(token0.num) : gasCost;
 
       if (Number(amountCost) > Number(gasBalance || 0)) {
         throw new Error("gas insufficient");
@@ -335,12 +284,12 @@ export default function Op({
     try {
       const params = getTxParams();
       if (!opSendUrl || !params) return;
+
       await fetcher(opSendUrl, {
         method: "POST",
         body: JSON.stringify(params),
       });
 
-      setSendTxTipShow(true);
       setSendTxResult({
         type: "success",
         message: `Your funds have been staked in the pool`,
@@ -350,7 +299,6 @@ export default function Op({
         type: "error",
         message: `${e.status}: ${e.info}`,
       });
-      setSendTxTipShow(true);
     }
   }
 
@@ -380,35 +328,16 @@ export default function Op({
           setGas={setGasBalance}
         />
 
-        {isApproveOp && (
-          <div className="mt-3 flex items-center justify-between px-3">
-            <TokenSelectAndInput
-              tokens={tokens}
-              tokenParams={tokenApprove}
-              handleTokenParamsChange={setTokenApprove}
-            />
-          </div>
-        )}
-
         {isSwapOp && (
-          <div className="mt-3 flex items-center justify-between px-3">
-            <TokenSelectAndInput
-              tokens={tokens}
-              tokenParams={tokenIn}
-              handleTokenParamsChange={(tP) => handleTokenInChange(tP)}
-            />
-            <ArrowBigRight
-              className="mx-1 mt-1 h-5 w-5 text-[#7d8998]"
-              style={{
-                transform: "translateY(10px)",
-              }}
-            />
-            <TokenSelectAndInput
-              tokens={tokens}
-              tokenParams={tokenOut}
-              handleTokenParamsChange={(tP) => handleTokenOutChange(tP)}
-            />
-          </div>
+          <SelectSwapToken
+            account={queryAccount}
+            tokens={tokens}
+            token0={token0}
+            token1={token1}
+            setToken0={setToken0}
+            setToken1={setToken1}
+            swapRouter={selectedOp?.op_detail?.swap_router || ""}
+          />
         )}
 
         {isTransferOp && (
@@ -456,6 +385,15 @@ export default function Op({
         >
           Test Tx
         </Button>
+        {(shouldApproveToken0 || shouldApproveToken1) && (
+          <Button
+            variant="outline"
+            className="h-10 w-32 rounded-md border border-primary text-primary"
+            onClick={() => handleApprove()}
+          >
+            Approve
+          </Button>
+        )}
         <Button
           variant="outline"
           onClick={() => handleSend()}
@@ -474,9 +412,8 @@ export default function Op({
 
       <ActionTip
         type={sendTxResult?.type || "success"}
-        open={sendTxTipShow}
-        onOpenChange={setSendTxTipShow}
-        message={sendTxResult?.message || ""}
+        handleClose={() => setSendTxResult(null)}
+        message={sendTxResult?.message || null}
       />
     </>
   );

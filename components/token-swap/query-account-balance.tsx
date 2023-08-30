@@ -170,7 +170,7 @@ export default function QueryAccountBalance({
               style={{
                 boxShadow: "none !important",
               }}
-              className="LabelText h-[20px] max-w-[60px] border-0 bg-transparent p-0 shadow-none outline-none"
+              className="LabelText h-[20px] max-w-[60px] border-0 bg-transparent p-0 shadow-none outline-none focus:shadow-none"
             >
               <SelectValue />
             </SelectTrigger>

@@ -39,6 +39,7 @@ export const UserEndPointPathMap = {
 
   accountTokensBalance: "/web3/batch_token_balanceof",
   accountTokenBalance: "/web3/balanceof",
+  accountTokenAllowance: "/web3/token_allowance",
   nonceNum: "/web3/nonce",
   gasPrice: "/web3/gas_price",
 };

@@ -6,39 +6,39 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
 export interface ITokenNumDesc {
-  labelName: string;
-  info: IToken | null;
+  token: IToken | null;
   num: string;
+  allowance: string | null;
 }
 
 export default function TokenSelectAndInput({
+  label,
   tokens,
-  tokenParams,
-  handleTokenParamsChange,
+  token,
+  tokenNum,
+  handleTokenChange,
+  handleTokenNumChange,
 }: {
+  label: string;
   tokens: Array<IToken>;
-  tokenParams: ITokenNumDesc;
-  handleTokenParamsChange: (_t: ITokenNumDesc) => void;
+  token: IToken | null;
+  tokenNum: string;
+  handleTokenChange: (_t: IToken | null) => void;
+  handleTokenNumChange: (_t: string) => void;
 }) {
   const handleTokenSelect = (token: IToken | null) => {
-    handleTokenParamsChange({
-      ...tokenParams,
-      info: token,
-    });
+    handleTokenChange(token);
   };
 
-  const [num, setNum] = useState(tokenParams.num);
+  const [num, setNum] = useState(tokenNum);
   const [debouncedNum] = useDebounce(num, 500);
 
   useEffect(() => {
-    setNum(tokenParams.num);
-  }, [tokenParams.num]);
+    setNum(tokenNum);
+  }, [tokenNum]);
 
   useEffect(() => {
-    handleTokenParamsChange({
-      ...tokenParams,
-      num: debouncedNum,
-    });
+    handleTokenNumChange(debouncedNum);
   }, [debouncedNum]);
 
   const handleNumChange = (e: string) => {
@@ -48,10 +48,10 @@ export default function TokenSelectAndInput({
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="LabelText mb-1">{tokenParams.labelName}</div>
+      <div className="LabelText mb-1">{label}</div>
       <TokenSelect
         tokens={tokens}
-        token={tokenParams.info}
+        token={token}
         handleTokenSelect={(e) => handleTokenSelect(e)}
       />
       <div className="ml-2 h-3 border-l border-border-color" />

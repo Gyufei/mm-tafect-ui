@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { uniqBy } from "lodash";
 
@@ -25,7 +25,10 @@ export function useKeyStoreAccounts(networkId: string | null, page: string) {
     `${SystemEndPointPathMap.keyStoreByPage}?page_name=${page}`,
     fetcher,
   );
-  const keyStores = uniqBy(keyStoreRes, "name") as Array<string>;
+  const keyStores = useMemo(
+    () => uniqBy(keyStoreRes, "name") as Array<string>,
+    [keyStoreRes],
+  );
 
   const [keyStoreAccounts, setKeyStoreAccounts] = useState<
     Array<IKeyStoreAccount>

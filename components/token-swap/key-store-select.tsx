@@ -83,13 +83,11 @@ export default function KeyStoreSelect({
               Available KeyStores
             </div>
             <div className="flex flex-wrap">
-              { !keyStoreOptions.length && (
-                <div>No Available KeyStores</div>
-              )}
+              {!keyStoreOptions.length && <div>No Available KeyStores</div>}
               {keyStoreOptions.map((option) => (
                 <div
                   key={option.name}
-                  className="flex w-[160px] cursor-pointer items-center"
+                  className="flex min-w-[160px] cursor-pointer items-center"
                 >
                   <Checkbox
                     id={option.name}

@@ -18,7 +18,7 @@ export default function SwapHistoryItem({ task }: { task: ITask }) {
   };
 
   return (
-    <div className="flex flex-col gap-y-2 rounded-md border border-border-color bg-custom-bg-white p-3">
+    <div className="flex flex-col gap-y-2 rounded-md border border-border-color bg-custom-bg-white p-3 first:mt-4">
       <div className="flex justify-between text-content-color">
         <div>{task.date}</div>
         <div>

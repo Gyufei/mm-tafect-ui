@@ -63,3 +63,7 @@ html {
     @apply overflow-hidden text-ellipsis whitespace-nowrap;
   }
 }
+
+.MuiInputBase-input {
+  font-family: var(--font-chesna);
+}

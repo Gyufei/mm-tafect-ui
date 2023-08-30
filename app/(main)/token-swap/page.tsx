@@ -45,7 +45,7 @@ export default function TokenSwap() {
     <>
       <div
         data-state={showSlidePage === "Filter Account"}
-        className="absolute top-[-69px] z-10  h-screen w-full rounded-t-3xl border-[#dadada] bg-[#fafafa] data-[state=false]:hidden data-[state=true]:animate-in data-[state=false]:animate-out data-[state=false]:slide-out-to-bottom data-[state=true]:slide-in-from-bottom md:static md:h-full md:w-auto md:rounded-none md:border-r md:data-[state=false]:block"
+        className="border-[#dadada absolute top-[-69px]  z-10 h-screen w-full rounded-t-3xl border-r-0 bg-[#fafafa] data-[state=false]:hidden data-[state=true]:animate-in data-[state=false]:animate-out data-[state=false]:slide-out-to-bottom data-[state=true]:slide-in-from-bottom md:static md:h-full md:w-auto md:rounded-none md:border-r md:data-[state=false]:block"
       >
         <SwiperHandlerBox />
         <div className="flex flex-col px-4 pb-4 md:pt-4">
@@ -65,7 +65,7 @@ export default function TokenSwap() {
         ></FilterAccountList>
       </div>
 
-      <div className="flex h-full flex-col justify-between border-r border-r-[#dadada]">
+      <div className="flex h-[calc(100vh-70px)] flex-col justify-between overflow-y-auto border-r border-r-[#dadada] md:h-full">
         <Op
           tokens={tokenOptions}
           keyStores={selectedKeyStores}

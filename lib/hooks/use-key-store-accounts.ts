@@ -1,5 +1,6 @@
-import useSWR from "swr";
 import { useContext, useEffect, useState } from "react";
+import useSWR from "swr";
+import { uniqBy } from "lodash";
 
 import fetcher from "@/lib/fetcher";
 import { SystemEndPointPathMap } from "../end-point";
@@ -20,21 +21,21 @@ interface IKeyStoreAccountItem {
 export function useKeyStoreAccounts(networkId: string | null, page: string) {
   const { userPathMap } = useContext(UserEndPointContext);
 
-  const { data: keyStores } = useSWR(
-    // SystemEndPointPathMap.userKeyStores,
+  const { data: keyStoreRes } = useSWR(
     `${SystemEndPointPathMap.keyStoreByPage}?page_name=${page}`,
     fetcher,
   );
+  const keyStores = uniqBy(keyStoreRes, "name") as Array<string>;
 
   const [keyStoreAccounts, setKeyStoreAccounts] = useState<
     Array<IKeyStoreAccount>
   >([]);
 
-  async function getKeyStoreAccounts(name: string) {
+  async function getKeyStoreAccounts(name: string): Promise<IKeyStoreAccount> {
     try {
       const url = `${userPathMap.keyStoreAccounts}?keystore=${name}&chain_id=${networkId}`;
       const res = await fetcher(url);
-      const accounts = (res?.[0]?.accounts as Array<string>) || [];
+      const accounts = (res?.[0]?.accounts as Array<any>) || [];
       const count = res?.[0]?.count || 0;
 
       return {

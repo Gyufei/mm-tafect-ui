@@ -12,6 +12,7 @@ import UnlockIcon from "@/components/icons/unlock";
 import LockIcon from "@/components/icons/lock";
 import NoCheckIcon from "@/components/icons/noCheck";
 import { replaceStrNum, replaceStrNumNoDecimal } from "@/lib/hooks/use-str-num";
+import { subMinutes } from "date-fns";
 
 export interface IAdvanceOptions {
   schedule: Date | null;
@@ -48,6 +49,8 @@ export default function OpAdvanceOptions({
       [key]: value,
     });
   }
+
+  const pastTime = subMinutes(new Date(), 10);
 
   return (
     <AdvanceCollapsible>
@@ -124,9 +127,8 @@ export default function OpAdvanceOptions({
             className="flex h-10 cursor-pointer items-center justify-center rounded-md border px-[11px] hover:bg-custom-bg-white"
           >
             <NoCheckIcon
-              className="text-primary"
               style={{
-                color: options.no_check_gas ? "#999" : "",
+                color: options.no_check_gas ? "#0572ec" : "#999",
               }}
             />
           </button>
@@ -138,7 +140,7 @@ export default function OpAdvanceOptions({
             <DateTimePicker
               ampm={false}
               closeOnSelect={true}
-              disablePast={true}
+              minDateTime={pastTime}
               timeSteps={{ hours: 1, minutes: 1 }}
               slotProps={{ textField: { size: "small", fullWidth: true } }}
               value={

@@ -385,7 +385,7 @@ export default function Op({
         >
           Test Tx
         </Button>
-        {(shouldApproveToken0 || shouldApproveToken1) && (
+        {isSwapOp && (shouldApproveToken0 || shouldApproveToken1) && (
           <Button
             variant="outline"
             className="h-10 w-32 rounded-md border border-primary text-primary"

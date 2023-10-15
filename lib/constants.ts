@@ -21,3 +21,5 @@ export const GAS_TOKEN_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
 export const UNIT256_MAX =
   "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+
+export const UNIT32_MAX = "4294967295";

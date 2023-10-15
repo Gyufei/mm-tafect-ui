@@ -36,7 +36,7 @@ export default function NetworkProvider({
   useEffect(() => {
     if (networks && userWeb3Info?.chain_id) {
       const curNet = networks.find(
-        (n) => n.chain_id === String(userWeb3Info?.chain_id),
+        (n) => String(n.chain_id) === String(userWeb3Info?.chain_id),
       );
       setNetwork(curNet || null);
     }

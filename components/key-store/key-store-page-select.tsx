@@ -7,13 +7,13 @@ import { SystemEndPointPathMap } from "@/lib/end-point";
 export const KeyStorePageSelect = ({
   keyStoreName,
 }: {
-  keyStoreName: string;
+  keyStoreName: string | null;
 }) => {
   const { data: pages } = useSWR(SystemEndPointPathMap.allPages, fetcher);
-  const { data: currentPage, mutate: pageMutate } = useSWR(
-    `${SystemEndPointPathMap.keyStorePages}?keystore=${keyStoreName}`,
-    fetcher,
-  );
+  const { data: currentPage, mutate: pageMutate } = useSWR(() => {
+    if (!keyStoreName) return null;
+    return `${SystemEndPointPathMap.keyStorePages}?keystore=${keyStoreName}`;
+  }, fetcher);
 
   async function handleCheckPage(pageName: string) {
     if (currentPage?.includes(pageName)) {

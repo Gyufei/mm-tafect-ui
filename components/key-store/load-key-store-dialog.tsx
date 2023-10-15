@@ -13,6 +13,7 @@ import { replaceStrNum } from "@/lib/hooks/use-str-num";
 import fetcher from "@/lib/fetcher";
 import { SystemEndPointPathMap } from "@/lib/end-point";
 import { toast } from "../ui/use-toast";
+import { UNIT32_MAX } from "@/lib/constants";
 
 const EmptyRow = {
   root_account: "",
@@ -83,8 +84,8 @@ export function LoadKeyStoreDialog({
       formValue.range.map((item) => {
         return {
           ...item,
-          from_index: parseInt(item.from_index),
-          to_index: parseInt(item.to_index),
+          from_index: item.from_index ? parseInt(item.from_index) : "0",
+          to_index: item.to_index ? parseInt(item.to_index) : UNIT32_MAX,
         };
       }),
     ) as any;
@@ -150,7 +151,6 @@ export function LoadKeyStoreDialog({
                             const num = replaceStrNum(e.target.value);
                             setValue(`range.${index}.from_index`, num);
                           },
-                          required: true,
                         })}
                         placeholder="0"
                       />
@@ -161,9 +161,8 @@ export function LoadKeyStoreDialog({
                             const num = replaceStrNum(e.target.value);
                             setValue(`range.${index}.to_index`, num);
                           },
-                          required: true,
                         })}
-                        placeholder="0"
+                        placeholder="-"
                       />
                     </div>
                     <Button

@@ -25,6 +25,7 @@ export function useKeyStoreAccounts(networkId: string | null, page: string) {
     `${SystemEndPointPathMap.keyStoreByPage}?page_name=${page}`,
     fetcher,
   );
+
   const keyStores = useMemo(
     () => uniqBy(keyStoreRes, "name") as Array<string>,
     [keyStoreRes],

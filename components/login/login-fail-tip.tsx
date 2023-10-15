@@ -6,8 +6,10 @@ export default function LoginFailTip() {
         and try again.
       </div>
       <div>
-        If you were invited to 1password by someone else , they can
-        <div className="cursor-pointer text-primary">recover your account</div>
+        If you were invited to mm-tafact by someone else , they can
+        <div className="inline-block cursor-pointer text-primary">
+          recover your account
+        </div>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ export const SystemEndPointPathMap = {
   changePassword: WithHost("/user/change_password"),
   endPoint: WithHost("/user/end_point"),
 
+  allKeyStores: WithHost("/keystore/all"),
   userKeyStores: WithHost("/keystore/user"),
   addKeyStore: WithHost("/keystore/user/add"),
   deleteKeyStore: WithHost("/keystore/user/remove"),

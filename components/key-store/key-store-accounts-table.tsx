@@ -57,7 +57,7 @@ export default function KeyStoreAccountsTable({
         />
       </div>
       <Table className="table-fixed">
-        <TableHeader className="h-10 bg-white text-content-color">
+        <TableHeader className="sticky top-0 h-10 bg-white text-content-color">
           <TableRow className="border-b border-shadow-color">
             <TableHead className="w-[30px] text-center font-normal md:w-[100px]">
               #

@@ -12,6 +12,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import TruncateText from "../shared/trunc-text";
+import { has } from "lodash";
 
 export default function KeyStoreLinks({
   keyStores,
@@ -40,24 +41,27 @@ export default function KeyStoreLinks({
   const [mapIsOpen, setMapIsOpen] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const newMap = {} as any;
-    keyStores.forEach((ks: IKeyStore) => {
-      newMap[ks.id] = false;
+    setMapIsOpen((m: Record<string, boolean>) => {
+      keyStores.forEach((ks: IKeyStore) => {
+        if (has(m, ks.keystore_name)) return;
+        m[ks.keystore_name] = false;
+      });
+
+      return m;
     });
-    setMapIsOpen(newMap);
   }, [keyStores]);
 
-  const onOpenChange = (id: string) => {
+  const onOpenChange = (name: string) => {
     setMapIsOpen((prev) => {
       for (const key in prev) {
-        if (key !== id) {
+        if (key !== name) {
           prev[key] = false;
         }
       }
 
       return {
         ...prev,
-        [id]: !prev[id],
+        [name]: !prev[name],
       };
     });
   };
@@ -78,9 +82,9 @@ export default function KeyStoreLinks({
         <div className="flex gap-x-3 md:flex-col md:self-stretch md:pt-3">
           {(keyStores || []).map((ks: IKeyStore) => (
             <Collapsible
-              open={mapIsOpen[ks.id]}
-              onOpenChange={() => onOpenChange(String(ks.id))}
-              key={ks.id}
+              open={mapIsOpen[ks.keystore_name]}
+              onOpenChange={() => onOpenChange(String(ks.keystore_name))}
+              key={ks.keystore_name}
             >
               <div
                 data-state={

@@ -20,6 +20,9 @@ import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 import DeleteKeyStoreDialog from "@/components/key-store/delete-key-store-dialog";
 import { IKeyStore, IKeyStoreRange } from "@/lib/types/keystore";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
+import useSWRMutation from "swr/mutation";
+import { useUserKeystores } from "@/lib/hooks/use-user-keystores";
 
 export default function KeyStoreItem() {
   const { userPathMap } = useContext(UserEndPointContext);
@@ -34,37 +37,20 @@ export default function KeyStoreItem() {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
-  const { data: allKeyStores, mutate: refetchAllKeyStores } = useSWR(
-    SystemEndPointPathMap.allKeyStores,
-    fetcher,
-  );
-  const { data: useKeyStoreNames, mutate: refetchKeyStores } = useSWR(
-    SystemEndPointPathMap.userKeyStores,
-    fetcher,
-  );
-  const userKeyStores = useMemo<Array<IKeyStore>>(() => {
-    if (!allKeyStores) return [];
-
-    return allKeyStores
-      .filter((k: IKeyStore) => {
-        return useKeyStoreNames?.includes(k.keystore_name);
-      })
-      .map((k: Record<string, any>) => {
-        return {
-          ...k,
-          range: JSON.parse(k.range || "[]"),
-        };
-      });
-  }, [allKeyStores, useKeyStoreNames]);
+  const { data: userKeyStores, mutate: refetchKeyStores } = useUserKeystores();
 
   useEffect(() => {
-    if (userKeyStores?.[0] && !selectedKeyStore) {
+    if (!userKeyStores.length) {
+      setSelectedKeyStore(null);
+    }
+
+    if (userKeyStores.length && !selectedKeyStore) {
       setSelectedKeyStore(userKeyStores[0]);
     }
 
     if (selectedKeyStore) {
       const newKs = userKeyStores.find(
-        (k: IKeyStore) => k.id === selectedKeyStore.id,
+        (k: IKeyStore) => k.keystore_name === selectedKeyStore.keystore_name,
       );
       if (newKs) setSelectedKeyStore(newKs);
     }
@@ -86,7 +72,7 @@ export default function KeyStoreItem() {
   }, fetcher);
 
   const accounts: Array<IAccountGas> = useMemo(() => {
-    if (!keyStoreAccountsData) return [];
+    if (!keyStoreAccountsData || !selectedKeyStore) return [];
 
     let targetAcc = [];
     if (selectedKeyStore && !selectedRange) {
@@ -121,6 +107,23 @@ export default function KeyStoreItem() {
     (aG: Record<string, any>) => aG.gas > 0,
   ).length;
 
+  const submitFetcher = async (url: string, { arg }: { arg: IKeyStore }) => {
+    const res = await fetcher(url, {
+      method: "POST",
+      body: JSON.stringify(arg),
+    });
+
+    toast({
+      description: "Update KeyStore Success",
+    });
+    return res;
+  };
+
+  const { trigger: submitAction } = useSWRMutation(
+    SystemEndPointPathMap.addKeyStore,
+    submitFetcher as any,
+  );
+
   const [edit, setEdit] = useState<"from" | "to" | null>(null);
 
   const [fromValue, setFromValue] = useState<number | null>(null);
@@ -147,21 +150,21 @@ export default function KeyStoreItem() {
   const onFromBlur = () => {
     if (!fromValue) {
       setFromValue(selectedRange?.from_index || null);
+      setEdit(null);
       return;
     }
 
-    setEdit(null);
-    refetchAllKeyStores();
+    updateKeyStoreRange();
   };
 
   const onToBlur = () => {
     if (!toValue) {
       setToValue(selectedRange?.to_index || null);
+      setEdit(null);
       return;
     }
 
-    setEdit(null);
-    refetchAllKeyStores();
+    updateKeyStoreRange();
   };
 
   const onFromChange = (val: string) => {
@@ -170,6 +173,35 @@ export default function KeyStoreItem() {
 
   const onToChange = (val: string) => {
     setToValue(parseInt(val) || null);
+  };
+
+  const updateKeyStoreRange = async () => {
+    if (!selectedKeyStore) return;
+
+    const res = await submitAction({
+      keystore_name: selectedKeyStore.keystore_name,
+      range: JSON.stringify([
+        ...selectedKeyStore.range.filter(
+          (r: IKeyStoreRange) => r.root_account !== selectedRange?.root_account,
+        ),
+        {
+          root_account: selectedRange?.root_account,
+          from_index: String(fromValue || 0),
+          to_index: String(toValue || 0),
+        },
+      ]),
+    } as any);
+
+    if (res) {
+      refetchKeyStores();
+      setEdit(null);
+    }
+  };
+
+  const onDelete = () => {
+    refetchKeyStores();
+    setSelectedKeyStore(null);
+    setSelectedRange(null);
   };
 
   return (
@@ -259,15 +291,17 @@ export default function KeyStoreItem() {
           </div>
 
           <div className="hidden w-full justify-end pr-2 md:flex">
-            <Trash2
-              onClick={() => setDeleteDialogOpen(true)}
-              className="h-5 w-5 cursor-pointer hover:text-[#ec5b55]"
-            />
+            {!selectedRange && (
+              <Trash2
+                onClick={() => setDeleteDialogOpen(true)}
+                className="h-5 w-5 cursor-pointer hover:text-[#ec5b55]"
+              />
+            )}
             <DeleteKeyStoreDialog
               open={deleteDialogOpen}
               keyStoreName={selectedKeyStore?.keystore_name || null}
               onOpenChange={setDeleteDialogOpen}
-              onDeleted={refetchKeyStores}
+              onDeleted={onDelete}
             />
           </div>
         </div>

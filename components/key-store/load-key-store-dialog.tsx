@@ -85,7 +85,9 @@ export function LoadKeyStoreDialog({
         return {
           ...item,
           from_index: item.from_index ? parseInt(item.from_index) : "0",
-          to_index: item.to_index ? parseInt(item.to_index) : UNIT32_MAX,
+          to_index: item.to_index
+            ? parseInt(item.to_index)
+            : parseInt(UNIT32_MAX),
         };
       }),
     ) as any;

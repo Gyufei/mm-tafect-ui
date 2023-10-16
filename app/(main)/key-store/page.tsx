@@ -70,7 +70,7 @@ export default function KeyStoreItem() {
     }
   }, [userKeyStores, selectedKeyStore, selectedRange]);
 
-  const { data: keyStoreAccountsData } = useSWR(() => {
+  const { data: keyStoreAccountsData, mutate: refreshAccount } = useSWR(() => {
     if (userKeyStores.length && selectedKeyStore && network?.chain_id) {
       return `${userPathMap.keyStoreAccounts}?keystore=${selectedKeyStore.keystore_name}&chain_id=${network?.chain_id}`;
     } else {
@@ -133,20 +133,20 @@ export default function KeyStoreItem() {
 
   const [edit, setEdit] = useState<"from" | "to" | null>(null);
 
-  const [fromValue, setFromValue] = useState<number | null>(null);
-  const [toValue, setToValue] = useState<number | null>(null);
+  const [fromValue, setFromValue] = useState<string | null>(null);
+  const [toValue, setToValue] = useState<string | null>(null);
   const fromRef = useRef<HTMLInputElement>(null);
   const toRef = useRef<HTMLInputElement>(null);
 
   const onEdit = (type: "from" | "to") => {
     if (type === "from") {
-      setFromValue(selectedRange?.from_index || null);
+      setFromValue(String(selectedRange?.from_index) || null);
       fromRef.current?.select();
       fromRef.current?.focus();
     }
 
     if (type === "to") {
-      setToValue(selectedRange?.to_index || null);
+      setToValue(String(selectedRange?.to_index) || null);
       toRef.current?.select();
       toRef.current?.focus();
     }
@@ -156,7 +156,7 @@ export default function KeyStoreItem() {
 
   const onFromBlur = () => {
     if (!fromValue) {
-      setFromValue(selectedRange?.from_index || null);
+      setFromValue(String(selectedRange?.from_index) || null);
       setEdit(null);
       return;
     }
@@ -166,7 +166,7 @@ export default function KeyStoreItem() {
 
   const onToBlur = () => {
     if (!toValue) {
-      setToValue(selectedRange?.to_index || null);
+      setToValue(String(selectedRange?.to_index) || null);
       setEdit(null);
       return;
     }
@@ -175,11 +175,11 @@ export default function KeyStoreItem() {
   };
 
   const onFromChange = (val: string) => {
-    setFromValue(parseInt(val) || null);
+    setFromValue(val || null);
   };
 
   const onToChange = (val: string) => {
-    setToValue(parseInt(val) || null);
+    setToValue(val || null);
   };
 
   const updateKeyStoreRange = async () => {
@@ -193,14 +193,15 @@ export default function KeyStoreItem() {
         ),
         {
           root_account: selectedRange?.root_account,
-          from_index: String(fromValue || 0),
-          to_index: String(toValue || 0),
+          from_index: parseInt(fromValue || "0"),
+          to_index: parseInt(toValue || "0"),
         },
       ]),
     } as any);
 
     if (res) {
       refetchKeyStores();
+      refreshAccount();
       setEdit(null);
     }
   };

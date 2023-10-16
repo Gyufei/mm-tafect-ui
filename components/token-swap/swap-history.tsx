@@ -1,4 +1,11 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from "react";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import {
@@ -24,7 +31,7 @@ import fetcher from "@/lib/fetcher";
 import { TokenContext } from "@/lib/providers/token-provider";
 import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 
-export default function SwapHistory() {
+const SwapHistory = forwardRef((props: any, ref: any) => {
   const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
   const networkId = network?.chain_id || null;
@@ -158,6 +165,10 @@ export default function SwapHistory() {
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    handleSearch,
+  }));
+
   return (
     <>
       <div
@@ -216,4 +227,7 @@ export default function SwapHistory() {
       </div>
     </>
   );
-}
+});
+
+SwapHistory.displayName = "SwapHistory";
+export default SwapHistory;

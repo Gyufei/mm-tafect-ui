@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useSwipeable } from "react-swipeable";
 
 import DetailItem from "@/components/shared/detail-item";
@@ -41,6 +41,12 @@ export default function TokenSwap() {
     );
   };
 
+  const historySearchRef = useRef({});
+
+  const afterAction = () => {
+    (historySearchRef.current as any)?.handleSearch();
+  };
+
   return (
     <>
       <div
@@ -70,6 +76,7 @@ export default function TokenSwap() {
           tokens={tokenOptions}
           keyStores={selectedKeyStores}
           handleTokensChange={setTokenOptions}
+          afterAction={afterAction}
         >
           <MobileFoldBtn
             pages={foldPages}
@@ -85,7 +92,7 @@ export default function TokenSwap() {
         className="absolute top-[-69px] z-10 h-screen w-full rounded-t-3xl border-[#dadada] bg-[#fafafa] data-[state=false]:hidden md:static md:h-full md:w-auto md:rounded-none md:border-r md:data-[state=false]:block"
       >
         <SwiperHandlerBox />
-        <SwapHistory />
+        <SwapHistory ref={historySearchRef} />
       </div>
     </>
   );

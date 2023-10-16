@@ -27,11 +27,13 @@ export default function Op({
   keyStores,
   handleTokensChange,
   children,
+  afterAction,
 }: {
   tokens: Array<IToken>;
   keyStores: Array<IKeyStoreAccount>;
   handleTokensChange: (_ts: Array<IToken>) => void;
   children?: React.ReactNode;
+  afterAction: () => void;
 }) {
   const { currentUser } = useContext(UserManageContext);
   const { network } = useContext(NetworkContext);
@@ -190,6 +192,9 @@ export default function Op({
   );
 
   async function handleApprove() {
+    afterAction();
+    return;
+
     try {
       if (shouldApproveToken0) {
         const allowance = await approveAction(token0.token?.address || "");
@@ -213,6 +218,7 @@ export default function Op({
         type: "success",
         message: `Approve Success`,
       });
+      afterAction();
     } catch (e: any) {
       setSendTxResult({
         type: "error",
@@ -237,6 +243,7 @@ export default function Op({
     try {
       const res = await signAction();
       handleShowTxResult(res);
+      afterAction();
     } catch (e: any) {
       toast({
         variant: "destructive",
@@ -294,6 +301,7 @@ export default function Op({
         type: "success",
         message: `Your funds have been staked in the pool`,
       });
+      afterAction();
     } catch (e: any) {
       setSendTxResult({
         type: "error",

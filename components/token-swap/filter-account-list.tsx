@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import useSWRMutation from "swr/mutation";
 
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ export default function FilterAccountList({
   const [token, setToken] = useState<IToken | null>(null);
   const [tokenMin, setTokenMin] = useStrNum("");
   const [tokenMax, setTokenMax] = useStrNum("");
-
+  
   useEffect(() => {
     setToken(null);
     filterResultReset();

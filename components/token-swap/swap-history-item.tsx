@@ -26,14 +26,21 @@ export default function SwapHistoryItem({ task }: { task: ITask }) {
           {isApprove ? `(${taskTxData.tokenName})` : null}
         </div>
       </div>
+
       <div className="flex justify-between text-title-color">
         <div className="flex items-center text-lg font-medium">
-          <TruncateText text={task.txHash} />
-          {task.txHash && (
-            <ExternalLink
-              className="mb-1 ml-1 h-4 w-4 cursor-pointer text-primary"
-              onClick={handleGoToExplorer}
-            />
+          {isTransfer ? (
+            <TruncateText text={task.data.account} />
+          ) : (
+            <>
+              <TruncateText text={task.txHash} />
+              {task.txHash && (
+                <ExternalLink
+                  className="mb-1 ml-1 h-4 w-4 cursor-pointer text-primary"
+                  onClick={handleGoToExplorer}
+                />
+              )}
+            </>
           )}
         </div>
         <div className="TruncateSingleLine max-w-[200px]">
@@ -41,6 +48,7 @@ export default function SwapHistoryItem({ task }: { task: ITask }) {
           {toNonExponential((Number(taskTxData?.gas) || 0) / 10 ** 9) + " Gwei"}
         </div>
       </div>
+
       {isTransfer ? (
         <div className="flex justify-between text-content-color">
           <div>
@@ -51,6 +59,7 @@ export default function SwapHistoryItem({ task }: { task: ITask }) {
           </div>
         </div>
       ) : null}
+
       {isSwap ? (
         <div className="flex justify-between text-content-color">
           <div>
@@ -63,6 +72,7 @@ export default function SwapHistoryItem({ task }: { task: ITask }) {
           </div>
         </div>
       ) : null}
+
       <div className="flex justify-between">
         <SwapHistoryItemStatus status={task.status} />
         {!isApprove && <div>Nonce: {taskTxData?.nonce}</div>}

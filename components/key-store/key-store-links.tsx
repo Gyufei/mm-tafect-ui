@@ -13,6 +13,7 @@ import {
 } from "../ui/collapsible";
 import TruncateText from "../shared/trunc-text";
 import { has } from "lodash";
+import { UNIT32_MAX } from "@/lib/constants";
 
 export default function KeyStoreLinks({
   keyStores,
@@ -133,7 +134,10 @@ export default function KeyStoreLinks({
                     className="ml-8 cursor-pointer border px-3 py-[8px] text-content-color data-[state=active]:border-[#d7d9df] data-[state=active]:bg-[#e9eaee] data-[state=active]:text-[#000] md:mb-3 md:rounded-e-none md:rounded-s md:border-r-0 md:border-transparent md:py-[10px]"
                   >
                     <TruncateText text={r.root_account} /> ({r.from_index || 0},
-                    {r.to_index || ""})
+                    {r.to_index && String(r.to_index) !== UNIT32_MAX
+                      ? r.to_index
+                      : ""}
+                    )
                   </div>
                 ))}
               </CollapsibleContent>

@@ -39,13 +39,20 @@ export default function KeyStoreItem() {
 
   const { data: userKeyStores, mutate: refetchKeyStores } = useUserKeystores();
 
+  const firstRenderSetSelect = useRef(false);
+
   useEffect(() => {
     if (!userKeyStores.length) {
       setSelectedKeyStore(null);
     }
 
-    if (userKeyStores.length && !selectedKeyStore) {
+    if (
+      userKeyStores.length &&
+      !selectedKeyStore &&
+      !firstRenderSetSelect.current
+    ) {
       setSelectedKeyStore(userKeyStores[0]);
+      firstRenderSetSelect.current = true;
     }
 
     if (selectedKeyStore) {
@@ -64,7 +71,7 @@ export default function KeyStoreItem() {
   }, [userKeyStores, selectedKeyStore, selectedRange]);
 
   const { data: keyStoreAccountsData } = useSWR(() => {
-    if (selectedKeyStore && network?.chain_id) {
+    if (userKeyStores.length && selectedKeyStore && network?.chain_id) {
       return `${userPathMap.keyStoreAccounts}?keystore=${selectedKeyStore.keystore_name}&chain_id=${network?.chain_id}`;
     } else {
       return null;
@@ -72,7 +79,7 @@ export default function KeyStoreItem() {
   }, fetcher);
 
   const accounts: Array<IAccountGas> = useMemo(() => {
-    if (!keyStoreAccountsData || !selectedKeyStore) return [];
+    if (!userKeyStores || !keyStoreAccountsData || !selectedKeyStore) return [];
 
     let targetAcc = [];
     if (selectedKeyStore && !selectedRange) {
@@ -94,7 +101,7 @@ export default function KeyStoreItem() {
     }
 
     return sortBy(targetAcc, "gas").reverse();
-  }, [keyStoreAccountsData, selectedKeyStore, selectedRange]);
+  }, [userKeyStores, keyStoreAccountsData, selectedKeyStore, selectedRange]);
 
   const accountCount: number = accounts.length;
 
@@ -199,9 +206,9 @@ export default function KeyStoreItem() {
   };
 
   const onDelete = () => {
-    refetchKeyStores();
     setSelectedKeyStore(null);
     setSelectedRange(null);
+    refetchKeyStores();
   };
 
   return (

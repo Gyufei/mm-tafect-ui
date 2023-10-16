@@ -10,6 +10,7 @@ export const KeyStorePageSelect = ({
   keyStoreName: string | null;
 }) => {
   const { data: pages } = useSWR(SystemEndPointPathMap.allPages, fetcher);
+
   const { data: currentPage, mutate: pageMutate } = useSWR(() => {
     if (!keyStoreName) return null;
     return `${SystemEndPointPathMap.keyStorePages}?keystore=${keyStoreName}`;

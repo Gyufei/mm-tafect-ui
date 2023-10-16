@@ -193,8 +193,10 @@ export default function KeyStoreItem() {
         ),
         {
           root_account: selectedRange?.root_account,
-          from_index: parseInt(fromValue || "0"),
-          to_index: parseInt(toValue || "0"),
+          from_index: fromValue
+            ? parseInt(fromValue)
+            : selectedRange?.from_index,
+          to_index: toValue ? parseInt(toValue) : selectedRange?.to_index,
         },
       ]),
     } as any);
@@ -314,7 +316,10 @@ export default function KeyStoreItem() {
           </div>
         </div>
 
-        <KeyStoreAccountsTable accounts={accounts} />
+        <KeyStoreAccountsTable
+          accounts={accounts}
+          startIndex={selectedRange ? selectedRange.from_index : 0}
+        />
       </div>
     </>
   );

@@ -21,8 +21,10 @@ export interface IAccountGas {
 }
 
 export default function KeyStoreAccountsTable({
+  startIndex,
   accounts,
 }: {
+  startIndex: number;
   accounts: Array<IAccountGas>;
 }) {
   const [filterText, setFilterText] = useState<string>("");
@@ -75,7 +77,9 @@ export default function KeyStoreAccountsTable({
                 key={aG.account}
                 className="h-[56px] border-b border-shadow-color"
               >
-                <TableCell className="text-center">{index}</TableCell>
+                <TableCell className="text-center">
+                  {startIndex + index}
+                </TableCell>
                 <TableCell>
                   <TruncateText text={aG.account} showCopy={true} />
                 </TableCell>

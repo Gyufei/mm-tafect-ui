@@ -192,9 +192,6 @@ export default function Op({
   );
 
   async function handleApprove() {
-    afterAction();
-    return;
-
     try {
       if (shouldApproveToken0) {
         const allowance = await approveAction(token0.token?.address || "");

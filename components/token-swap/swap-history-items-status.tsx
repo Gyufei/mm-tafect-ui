@@ -72,14 +72,12 @@ export default function SwapHistoryItemStatus({
           !isHover ? colorVars.border : "rgba(212, 44, 31, 0.8)"
         }`,
       }}
+      onMouseOver={() => setIsHover(true)}
+      onMouseOut={() => setIsHover(false)}
       onClick={onCancelQueue}
-      className="cursor-pointer rounded-full px-3 text-sm hover:text-white"
+      className="w-[100px] cursor-pointer rounded-full text-sm hover:text-white"
     >
-      <div
-        onMouseEnter={() => setIsHover(true)}
-        onMouseLeave={() => setIsHover(false)}
-        className="flex items-center"
-      >
+      <div className="flex items-center justify-center">
         {isHover ? "dequeue" : text}
       </div>
     </div>

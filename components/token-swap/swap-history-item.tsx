@@ -24,6 +24,7 @@ export default function SwapHistoryItem({
   const isTransfer = task.op === 2;
   const isApprove = task.op === 3;
   const taskTxData = task.data;
+  console.log(isTransfer);
 
   const handleGoToExplorer = () => {
     window.open(`${network?.block_explorer_url}/tx/${task.txHash}`);
@@ -57,27 +58,21 @@ export default function SwapHistoryItem({
     <div className="flex flex-col gap-y-2 rounded-md border border-border-color bg-custom-bg-white p-3 first:mt-4">
       <div className="flex justify-between text-content-color">
         <div>{task.date}</div>
-        <div>
+        <div className="flex items-center">
           [{isSwap ? `Swap ${task.opName}` : task.opName}]
           {isApprove ? `(${taskTxData.tokenName})` : null}
+          {task.txHash && (
+            <ExternalLink
+              className="mb-1 ml-1 h-4 w-4 cursor-pointer text-primary"
+              onClick={handleGoToExplorer}
+            />
+          )}
         </div>
       </div>
 
       <div className="flex justify-between text-title-color">
         <div className="flex items-center text-lg font-medium">
-          {isTransfer ? (
-            <TruncateText text={task.data.account} />
-          ) : (
-            <>
-              <TruncateText text={task.txHash} />
-              {task.txHash && (
-                <ExternalLink
-                  className="mb-1 ml-1 h-4 w-4 cursor-pointer text-primary"
-                  onClick={handleGoToExplorer}
-                />
-              )}
-            </>
-          )}
+          <TruncateText text={task.data.account} />
         </div>
         <div className="TruncateSingleLine max-w-[200px]">
           Gas:{" "}
@@ -85,10 +80,14 @@ export default function SwapHistoryItem({
         </div>
       </div>
 
-      {isTransfer ? (
+      {!isApprove ? (
         <div className="flex justify-between text-content-color">
           <div>
+            {/* {taskTxData?.recipient !== taskTxData?.account && (
+              <> */}
             Recipient: <TruncateText text={taskTxData?.recipient || ""} />
+            {/* </>
+            )} */}
           </div>
           <div className="TruncateSingleLine max-w-[200px]">
             Value: {taskTxData?.amount}

@@ -1,13 +1,5 @@
-import { X } from "lucide-react";
-
 import { StatusEnum } from "@/lib/types/task";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 export default function SwapHistoryItemStatus({
   status,
@@ -52,11 +44,6 @@ export default function SwapHistoryItemStatus({
       bg: "#3388FF",
       border: "#73B2FF",
     },
-    [StatusEnum.dequeue]: {
-      color: "#FFF",
-      bg: "rgba(212, 44, 31, 0.8)",
-      border: "rgba(212, 44, 31, 0.8)",
-    },
   };
 
   const colorVars = colorMap[status];
@@ -69,7 +56,34 @@ export default function SwapHistoryItemStatus({
     return t;
   }, [status]);
 
-  return (
+  const isPreQueue = useMemo(
+    () => status === StatusEnum["pre-queue"],
+    [status],
+  );
+
+  const [isHover, setIsHover] = useState(false);
+
+  return isPreQueue ? (
+    <div
+      style={{
+        color: !isHover ? colorVars.color : "#fff",
+        backgroundColor: !isHover ? colorVars.bg : "rgba(212, 44, 31, 0.8)",
+        border: `1px solid ${
+          !isHover ? colorVars.border : "rgba(212, 44, 31, 0.8)"
+        }`,
+      }}
+      onClick={onCancelQueue}
+      className="cursor-pointer rounded-full px-3 text-sm hover:text-white"
+    >
+      <div
+        onMouseEnter={() => setIsHover(true)}
+        onMouseLeave={() => setIsHover(false)}
+        className="flex items-center"
+      >
+        {isHover ? "dequeue" : text}
+      </div>
+    </div>
+  ) : (
     <div
       style={{
         color: colorVars.color,
@@ -78,24 +92,7 @@ export default function SwapHistoryItemStatus({
       }}
       className="rounded-full bg-[#e9eaee] px-3 text-sm"
     >
-      <div className="flex items-center">
-        {text}
-        {text === "pre-queue" && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <X
-                  onClick={onCancelQueue}
-                  className="ml-2 h-3 w-3 cursor-pointer"
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-sm text-content-color">Dequeue</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-      </div>
+      <div className="flex items-center">{text}</div>
     </div>
   );
 }

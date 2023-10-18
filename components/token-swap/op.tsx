@@ -127,6 +127,7 @@ export default function Op({
 
   const getSwapParams = () => {
     const commonParams = getCommonParams();
+    console.log('comm', commonParams)
     if (!commonParams) return null;
 
     const params = {
@@ -138,6 +139,7 @@ export default function Op({
       swap_router_address: selectedOp?.op_detail?.swap_router || "",
       is_exact_input: true,
     };
+    console.log('1-here', params);
 
     if (
       !params.recipient ||
@@ -147,6 +149,8 @@ export default function Op({
     ) {
       return null;
     }
+    
+    console.log('here', params);
     return params;
   };
 
@@ -239,6 +243,7 @@ export default function Op({
   async function handleSign() {
     try {
       const res = await signAction();
+      if (!res) return;
       handleShowTxResult(res);
       afterAction();
     } catch (e: any) {
@@ -313,6 +318,9 @@ export default function Op({
 
     await sendAction();
   }
+  
+  console.log('token0', token0)
+  console.log('token1', token1)
 
   return (
     <>

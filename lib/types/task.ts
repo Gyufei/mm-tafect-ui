@@ -6,7 +6,6 @@ export enum StatusEnum {
   failed,
   cancel,
   replace,
-  dequeue,
 }
 
 export interface ITask {

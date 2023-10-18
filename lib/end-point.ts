@@ -37,6 +37,7 @@ export const UserEndPointPathMap = {
   sendApprove: "/tokenswap/approve/send",
   sendSwap: "/tokenswap/swap/send",
   swapHistory: "/tokenswap/history",
+  cancelTask: "/tokenswap/cancel",
 
   accountTokensBalance: "/web3/batch_token_balanceof",
   accountTokenBalance: "/web3/balanceof",

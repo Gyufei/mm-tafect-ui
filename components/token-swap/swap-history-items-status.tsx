@@ -1,9 +1,19 @@
+import { X } from "lucide-react";
+
 import { StatusEnum } from "@/lib/types/task";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function SwapHistoryItemStatus({
   status,
+  onCancelQueue,
 }: {
   status: StatusEnum;
+  onCancelQueue?: () => void;
 }) {
   const colorMap = {
     [StatusEnum["pre-queue"]]: {
@@ -41,6 +51,11 @@ export default function SwapHistoryItemStatus({
       bg: "#3388FF",
       border: "#73B2FF",
     },
+    [StatusEnum.dequeue]: {
+      color: "#FFF",
+      bg: "rgba(212, 44, 31, 0.8)",
+      border: "rgba(212, 44, 31, 0.8)",
+    },
   };
 
   const colorVars = colorMap[status];
@@ -54,7 +69,24 @@ export default function SwapHistoryItemStatus({
       }}
       className="rounded-full bg-[#e9eaee] px-3 text-sm"
     >
-      {StatusEnum[status]}
+      <div className="flex items-center">
+        {StatusEnum[status]}
+        {StatusEnum[status] === "pre-queue" && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <X
+                  onClick={onCancelQueue}
+                  className="ml-2 h-3 w-3 cursor-pointer"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-sm text-content-color">Dequeue</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
     </div>
   );
 }

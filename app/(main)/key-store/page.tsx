@@ -251,7 +251,6 @@ export default function KeyStoreItem() {
                   <div className="flex items-center gap-x-3">
                     {edit === "from" ? (
                       <Input
-                        // data-state={errorMsg ? "error" : ""}
                         ref={fromRef}
                         type="text"
                         value={fromValue || ""}

@@ -1,13 +1,25 @@
+import { useContext } from "react";
+import { ExternalLink } from "lucide-react";
+
 import { ITask } from "@/lib/types/task";
 import TruncateText from "@/components/shared/trunc-text";
 import SwapHistoryItemStatus from "./swap-history-items-status";
-import { ExternalLink } from "lucide-react";
-import { useContext } from "react";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import { toNonExponential } from "@/lib/utils";
+import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
+import fetcher from "@/lib/fetcher";
+import useSWRMutation from "swr/mutation";
 
-export default function SwapHistoryItem({ task }: { task: ITask }) {
+export default function SwapHistoryItem({
+  task,
+  onCancel,
+}: {
+  task: ITask;
+  onCancel: () => void;
+}) {
   const { network } = useContext(NetworkContext);
+  const { userPathMap } = useContext(UserEndPointContext);
+
   const isSwap = task.op === 1;
   const isTransfer = task.op === 2;
   const isApprove = task.op === 3;
@@ -15,6 +27,30 @@ export default function SwapHistoryItem({ task }: { task: ITask }) {
 
   const handleGoToExplorer = () => {
     window.open(`${network?.block_explorer_url}/tx/${task.txHash}`);
+  };
+
+  const cancelFetcher = async () => {
+    if (!task.id) return null;
+
+    const res = await fetcher(
+      `${userPathMap.cancelTask}?record_id=${task.id}`,
+      {
+        method: "POST",
+        body: "",
+      },
+    );
+
+    onCancel();
+    return res;
+  };
+
+  const { trigger: cancelAction } = useSWRMutation(
+    "Cancel Task",
+    cancelFetcher,
+  );
+
+  const handleCancelQueue = () => {
+    cancelAction();
   };
 
   return (
@@ -74,7 +110,10 @@ export default function SwapHistoryItem({ task }: { task: ITask }) {
       ) : null}
 
       <div className="flex justify-between">
-        <SwapHistoryItemStatus status={task.status} />
+        <SwapHistoryItemStatus
+          status={task.status}
+          onCancelQueue={handleCancelQueue}
+        />
         {!isApprove && <div>Nonce: {taskTxData?.nonce}</div>}
       </div>
     </div>

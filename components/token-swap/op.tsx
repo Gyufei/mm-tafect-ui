@@ -385,7 +385,7 @@ export default function Op({
         {children}
         <Button
           variant="outline"
-          className="h-10 w-32 rounded-md border border-primary text-primary"
+          className="h-10 w-32 rounded-md border border-primary text-primary  hover:bg-primary hover:text-white"
           onClick={() => handleSign()}
         >
           Test Tx
@@ -393,7 +393,7 @@ export default function Op({
         {isSwapOp && (shouldApproveToken0 || shouldApproveToken1) && (
           <Button
             variant="outline"
-            className="h-10 w-32 rounded-md border border-primary text-primary"
+            className="h-10 w-32 rounded-md border border-primary text-primary  hover:bg-primary hover:text-white"
             onClick={() => handleApprove()}
           >
             Approve
@@ -402,7 +402,7 @@ export default function Op({
         <Button
           variant="outline"
           onClick={() => handleSend()}
-          className="h-10 w-32 rounded-md border border-primary text-primary"
+          className="h-10 w-32 rounded-md border border-primary text-primary hover:bg-primary hover:text-white"
         >
           Schedule
         </Button>

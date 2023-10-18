@@ -218,7 +218,11 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
         <div className="flex h-[calc(100vh-190px)] flex-col justify-stretch gap-y-3 overflow-y-auto px-3 pb-2 md:h-[calc(100vh-245px)]">
           {filteredTasks?.length ? (
             filteredTasks.map((task) => (
-              <SwapHistoryItem key={task.id} task={task} />
+              <SwapHistoryItem
+                key={task.id}
+                task={task}
+                onCancel={handleSearch}
+              />
             ))
           ) : Array.isArray(tasks) ? (
             <Empty />

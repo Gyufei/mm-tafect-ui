@@ -131,7 +131,7 @@ export default function KeyStoreLinks({
                     }
                     onClick={() => onSelectedRootAccount(r, ks)}
                     key={r.root_account}
-                    className="ml-8 cursor-pointer border px-3 py-[8px] text-content-color data-[state=active]:border-[#d7d9df] data-[state=active]:bg-[#e9eaee] data-[state=active]:text-[#000] md:mb-3 md:rounded-e-none md:rounded-s md:border-r-0 md:border-transparent md:py-[10px]"
+                    className="ml-8 mt-2 cursor-pointer rounded-lg border px-3 py-[8px] text-content-color data-[state=active]:border-[#d7d9df] data-[state=active]:bg-[#e9eaee] data-[state=active]:text-[#000] md:mb-3 md:mt-0 md:rounded-none md:rounded-e-none md:rounded-s md:border-r-0 md:border-transparent md:py-[10px]"
                   >
                     <TruncateText text={r.root_account} /> ({r.from_index || 0},
                     {r.to_index && String(r.to_index) !== UNIT32_MAX

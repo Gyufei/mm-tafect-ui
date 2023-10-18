@@ -7,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useMemo } from "react";
 
 export default function SwapHistoryItemStatus({
   status,
@@ -60,6 +61,14 @@ export default function SwapHistoryItemStatus({
 
   const colorVars = colorMap[status];
 
+  const text = useMemo(() => {
+    const t = StatusEnum[status];
+
+    if (t === "cancel") return "canceled";
+
+    return t;
+  }, [status]);
+
   return (
     <div
       style={{
@@ -70,8 +79,8 @@ export default function SwapHistoryItemStatus({
       className="rounded-full bg-[#e9eaee] px-3 text-sm"
     >
       <div className="flex items-center">
-        {StatusEnum[status]}
-        {StatusEnum[status] === "pre-queue" && (
+        {text}
+        {text === "pre-queue" && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

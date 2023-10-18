@@ -25,7 +25,6 @@ export function useTokenSwap(
     amount: string,
     exactInput: boolean,
   ) => {
-    const targetToken = exactInput ? token1 : token0;
     const setTokenAction = exactInput ? setToken1 : setToken0;
 
     try {
@@ -35,9 +34,9 @@ export function useTokenSwap(
         amount,
         exactInput: true,
       });
-      setTokenAction({ ...targetToken, num: String(result || "") });
+      setTokenAction((t: any) => ({ ...t, num: String(result || "") }));
     } catch (e) {
-      setTokenAction({ ...targetToken, num: "" });
+      setTokenAction((t: any) => ({ ...t, num: "" }));
     }
   };
 
@@ -151,6 +150,7 @@ export function useTokenSwap(
   };
 
   const handleToken1Change = async (t: IToken | null) => {
+    console.log("handleToken1Change", t);
     const allowance = await triggerAllowance({
       tokenAddr: t?.address,
     });
@@ -197,6 +197,7 @@ export function useTokenSwap(
       return;
     }
   };
+  console.log(token1, "token1");
 
   const handleToken1NumChange = (n: string) => {
     if (n === token1.num) return;

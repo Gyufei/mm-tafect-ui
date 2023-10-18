@@ -127,7 +127,6 @@ export default function Op({
 
   const getSwapParams = () => {
     const commonParams = getCommonParams();
-    console.log('comm', commonParams)
     if (!commonParams) return null;
 
     const params = {
@@ -139,9 +138,9 @@ export default function Op({
       swap_router_address: selectedOp?.op_detail?.swap_router || "",
       is_exact_input: true,
     };
-    console.log('1-here', params);
 
     if (
+      !params.keystore ||
       !params.recipient ||
       !params.token_in ||
       !params.token_out ||
@@ -149,8 +148,8 @@ export default function Op({
     ) {
       return null;
     }
-    
-    console.log('here', params);
+
+    console.log("here", params);
     return params;
   };
 
@@ -318,9 +317,6 @@ export default function Op({
 
     await sendAction();
   }
-  
-  console.log('token0', token0)
-  console.log('token1', token1)
 
   return (
     <>

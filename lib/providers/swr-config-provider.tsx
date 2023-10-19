@@ -15,7 +15,7 @@ export default function SWRConfigProvider({
           toast({
             variant: "destructive",
             title: `Api: ${key}`,
-            description: `${error.status}: ${error.info}`,
+            description: `${error.status || ""}: ${error.info || ""}`,
           });
         },
       }}

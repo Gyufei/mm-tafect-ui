@@ -150,7 +150,6 @@ export function useTokenSwap(
   };
 
   const handleToken1Change = async (t: IToken | null) => {
-    console.log("handleToken1Change", t);
     const allowance = await triggerAllowance({
       tokenAddr: t?.address,
     });
@@ -197,7 +196,6 @@ export function useTokenSwap(
       return;
     }
   };
-  console.log(token1, "token1");
 
   const handleToken1NumChange = (n: string) => {
     if (n === token1.num) return;

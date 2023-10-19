@@ -21,10 +21,9 @@ export default function SwapHistoryItem({
   const { userPathMap } = useContext(UserEndPointContext);
 
   const isSwap = task.op === 1;
-  const isTransfer = task.op === 2;
+  // const isTransfer = task.op === 2;
   const isApprove = task.op === 3;
   const taskTxData = task.data;
-  console.log(isTransfer);
 
   const handleGoToExplorer = () => {
     window.open(`${network?.block_explorer_url}/tx/${task.txHash}`);
@@ -83,11 +82,11 @@ export default function SwapHistoryItem({
       {!isApprove ? (
         <div className="flex justify-between text-content-color">
           <div>
-            {/* {taskTxData?.recipient !== taskTxData?.account && (
-              <> */}
-            Recipient: <TruncateText text={taskTxData?.recipient || ""} />
-            {/* </>
-            )} */}
+            {taskTxData?.recipient !== taskTxData?.account && (
+              <>
+                Recipient: <TruncateText text={taskTxData?.recipient || ""} />
+              </>
+            )}
           </div>
           <div className="TruncateSingleLine max-w-[200px]">
             Value: {taskTxData?.amount}

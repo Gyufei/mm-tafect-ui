@@ -1,11 +1,9 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import useSWRMutation from "swr/mutation";
 
-import { IToken } from "@/lib/types/token";
 import { cn } from "@/lib/utils";
 import fetcher from "@/lib/fetcher";
 import { NetworkContext } from "@/lib/providers/network-provider";
-import { GAS_TOKEN_ADDRESS } from "@/lib/constants";
 
 import { Input } from "../ui/input";
 
@@ -22,32 +20,23 @@ import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 export default function QueryAccountBalance({
   account,
   handleAccountChange,
-  handleTokensChange,
   gas,
   setGas,
 }: {
   account: string;
   handleAccountChange: (_acc: string) => void;
-  handleTokensChange: (_ts: Array<IToken>) => void;
   gas: number | null;
   setGas: (_gas: number) => void;
 }) {
   const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
-  const { token: userToken, tokens } = useContext(TokenContext);
-
-  const gasToken =
-    (tokens || []).find((t: IToken) => t.address === GAS_TOKEN_ADDRESS) || null;
-
-  const stableTokens = (tokens || []).filter((t: IToken) => t.is_stable_token);
-  const [stableToken, setStableToken] = useState<IToken | null>(null);
-
-  useEffect(() => {
-    if (stableTokens.length > 0 && !stableToken) {
-      const st = stableTokens.find((t) => t.symbol === "USDT") || null;
-      setStableToken(st);
-    }
-  }, [stableTokens]);
+  const {
+    token: userToken,
+    currencyToken,
+    stableTokens,
+    stableToken,
+    setStableToken,
+  } = useContext(TokenContext);
 
   const handleStableTokenSelect = (add: string) => {
     const selected = stableTokens.find(
@@ -57,14 +46,10 @@ export default function QueryAccountBalance({
   };
 
   useEffect(() => {
-    if (gasToken && userToken && stableToken) {
-      handleTokensChange([gasToken, userToken, stableToken]);
-
-      if (account) {
-        triggerAccountBalance();
-      }
+    if (currencyToken && userToken && stableToken && account) {
+      triggerAccountBalance();
     }
-  }, [gasToken, userToken, stableToken]);
+  }, [currencyToken, userToken, stableToken]);
 
   const getAccountBalanceQuery = () => {
     const queryParams = new URLSearchParams();
@@ -159,7 +144,7 @@ export default function QueryAccountBalance({
       </div>
 
       <div className="mt-1 grid grid-cols-3 gap-x-3 px-3">
-        <SmallTokenCard name={gasToken?.symbol} num={gas || 0} />
+        <SmallTokenCard name={currencyToken?.symbol} num={gas || 0} />
         <SmallTokenCard name={userToken?.symbol} num={accountBalances[0]} />
         <div className="flex flex-col rounded-md border bg-custom-bg-white px-4 py-2">
           <Select

@@ -8,7 +8,6 @@ import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
 
 import FilterAccountList from "@/components/token-swap/filter-account-list";
 import KeyStoreSelect from "@/components/token-swap/key-store-select";
-import { IToken } from "@/lib/types/token";
 import Op from "@/components/token-swap/op";
 import SwapHistory from "@/components/token-swap/swap-history";
 import { NetworkContext } from "@/lib/providers/network-provider";
@@ -17,7 +16,6 @@ import MobileFoldBtn from "@/components/token-swap/mobile-fold-btn";
 export default function TokenSwap() {
   const { network } = useContext(NetworkContext);
 
-  const [tokenOptions, setTokenOptions] = useState<Array<IToken>>([]);
   const [selectedKeyStores, setSelectedKeyStore] = useState<
     Array<IKeyStoreAccount>
   >([]);
@@ -65,19 +63,11 @@ export default function TokenSwap() {
           </DetailItem>
         </div>
 
-        <FilterAccountList
-          tokens={tokenOptions}
-          keyStores={selectedKeyStores}
-        ></FilterAccountList>
+        <FilterAccountList keyStores={selectedKeyStores}></FilterAccountList>
       </div>
 
       <div className="flex h-[calc(100vh-70px)] flex-col justify-between overflow-y-auto border-r border-r-[#dadada] md:h-full">
-        <Op
-          tokens={tokenOptions}
-          keyStores={selectedKeyStores}
-          handleTokensChange={setTokenOptions}
-          afterAction={afterAction}
-        >
+        <Op keyStores={selectedKeyStores} afterAction={afterAction}>
           <MobileFoldBtn
             pages={foldPages}
             onChange={(e) =>

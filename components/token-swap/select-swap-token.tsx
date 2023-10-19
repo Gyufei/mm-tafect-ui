@@ -1,25 +1,44 @@
 import { ArrowBigRight } from "lucide-react";
-import { IToken } from "@/lib/types/token";
 import TokenSelectAndInput, { ITokenNumDesc } from "./token-select-and-input";
 import { useTokenSwap } from "@/lib/hooks/use-token-swap";
+import { useContext, useMemo } from "react";
+import { TokenContext } from "@/lib/providers/token-provider";
 
 export default function SelectSwapToken({
-  tokens,
   token0,
   token1,
   setToken0,
   setToken1,
   swapRouter,
-  account
+  account,
 }: {
   account: string;
   swapRouter: string;
-  tokens: Array<IToken>;
   token0: ITokenNumDesc;
   token1: ITokenNumDesc;
   setToken0: (_t: ITokenNumDesc) => void;
   setToken1: (_t: ITokenNumDesc) => void;
 }) {
+  const {
+    token: userToken,
+    currencyToken,
+    stableToken,
+  } = useContext(TokenContext);
+
+  const tokens = useMemo(() => {
+    const ts = [];
+    if (currencyToken) {
+      ts.push(currencyToken);
+    }
+    if (userToken) {
+      ts.push(userToken);
+    }
+    if (stableToken) {
+      ts.push(stableToken);
+    }
+    return ts;
+  }, [userToken, currencyToken, stableToken]);
+
   const {
     handleToken0Change,
     handleToken0NumChange,

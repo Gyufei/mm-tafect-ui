@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import useSWRMutation from "swr/mutation";
 
 import { Button } from "@/components/ui/button";
@@ -15,18 +15,31 @@ import LoadingIcon from "../shared/loading-icon";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
 import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
+import { uniqBy } from "lodash";
+import { TokenContext } from "@/lib/providers/token-provider";
 
 export default function FilterAccountList({
-  tokens,
   keyStores,
 }: {
-  tokens: Array<IToken>;
   keyStores: Array<IKeyStoreAccount>;
 }) {
   const { network } = useContext(NetworkContext);
-  const { userPathMap } = useContext(UserEndPointContext);
-
   const networkId = network?.chain_id;
+  const { userPathMap } = useContext(UserEndPointContext);
+  const { token: userToken, gasToken, stableToken } = useContext(TokenContext);
+  const tokens = useMemo(() => {
+    const ts = [];
+    if (gasToken) {
+      ts.push(gasToken);
+    }
+    if (userToken) {
+      ts.push(userToken);
+    }
+    if (stableToken) {
+      ts.push(stableToken);
+    }
+    return ts;
+  }, [userToken, gasToken, stableToken]);
 
   const [token, setToken] = useState<IToken | null>(null);
   const [tokenMin, setTokenMin] = useStrNum("");
@@ -44,7 +57,6 @@ export default function FilterAccountList({
     filterResultReset();
   }
 
-  const gasToken = tokens.find((t) => t.address === GAS_TOKEN_ADDRESS);
   const isFilterGasToken = token?.address === GAS_TOKEN_ADDRESS;
 
   const {
@@ -56,6 +68,16 @@ export default function FilterAccountList({
     `${userPathMap.filterAccount}?${getFilterQuery()}`,
     fetcher as any,
   );
+
+  const uniqAccounts = useMemo<Array<Record<string, any>>>(() => {
+    if (!Array.isArray(accounts)) {
+      return [];
+    }
+    const newAccount = uniqBy(accounts, "account");
+
+    return newAccount;
+    return newAccount;
+  }, [accounts]);
 
   function getFilterQuery() {
     const queryParams = new URLSearchParams();
@@ -145,33 +167,32 @@ export default function FilterAccountList({
             height: "calc(100vh - 430px)",
           }}
         >
-          {Array.isArray(accounts) &&
-            accounts.map((acc, index) => (
-              <div
-                key={acc.account}
-                className="flex h-[73px] items-center justify-between border-b p-4"
-              >
-                <div className="self-start pl-2 pr-5 text-lg leading-none text-content-color">
-                  {index + 1}
+          {uniqAccounts.map((acc, index) => (
+            <div
+              key={acc.account}
+              className="flex h-[73px] items-center justify-between border-b p-4"
+            >
+              <div className="self-start pl-2 pr-5 text-lg leading-none text-content-color">
+                {index + 1}
+              </div>
+              <div className="flex flex-1 flex-col">
+                <div className="text-lg font-medium text-title-color">
+                  <TruncateText text={acc.account} />
                 </div>
-                <div className="flex flex-1 flex-col">
-                  <div className="text-lg font-medium text-title-color">
-                    <TruncateText text={acc.account} />
+                <div className="LabelText flex">
+                  <div className="mr-6">
+                    {gasToken?.symbol} {acc.gas_token_amount}
                   </div>
-                  <div className="LabelText flex">
-                    <div className="mr-6">
-                      {gasToken?.symbol} {acc.gas_token_amount}
-                    </div>
 
-                    {!isFilterGasToken && (
-                      <div>
-                        {token?.symbol} {acc.quote_token_amount}
-                      </div>
-                    )}
-                  </div>
+                  {!isFilterGasToken && (
+                    <div>
+                      {token?.symbol} {acc.quote_token_amount}
+                    </div>
+                  )}
                 </div>
               </div>
-            ))}
+            </div>
+          ))}
         </ScrollArea>
       </div>
     </div>

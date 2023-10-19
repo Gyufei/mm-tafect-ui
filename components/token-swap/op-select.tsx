@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import useSWR from "swr";
 
 import {
@@ -30,6 +30,11 @@ export default function OpSelect({
       : null;
   }, fetcher);
 
+  const displayOpList = useMemo(() => {
+    if (!opList?.length) return [];
+    return opList.filter((op: Record<string, any>) => op.op_id !== 3);
+  }, [opList]);
+
   useEffect(() => {
     if (opList?.length && !op) {
       handleOpSelect(opList.find((op: Record<string, any>) => op.op_id === 1));
@@ -47,7 +52,7 @@ export default function OpSelect({
         <SelectValue placeholder="Select OP" />
       </SelectTrigger>
       <SelectContent>
-        {(opList || []).map((op: Record<string, string>) => (
+        {(displayOpList || []).map((op: Record<string, string>) => (
           <SelectItem key={op.op_name} value={op.op_name}>
             {op.op_name}
           </SelectItem>

@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
 
-import { IToken } from "@/lib/types/token";
 import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
 
 import QueryAccountBalance from "@/components/token-swap/query-account-balance";
@@ -21,22 +20,21 @@ import { Input } from "../ui/input";
 import { useOp } from "@/lib/hooks/use-op";
 import SelectSwapToken from "./select-swap-token";
 import { useTokenAllowance } from "@/lib/hooks/use-token-allowance";
+import { TokenContext } from "@/lib/providers/token-provider";
+import { Loader2 } from "lucide-react";
 
 export default function Op({
-  tokens,
   keyStores,
-  handleTokensChange,
   children,
   afterAction,
 }: {
-  tokens: Array<IToken>;
   keyStores: Array<IKeyStoreAccount>;
-  handleTokensChange: (_ts: Array<IToken>) => void;
   children?: React.ReactNode;
   afterAction: () => void;
 }) {
   const { currentUser } = useContext(UserManageContext);
   const { network } = useContext(NetworkContext);
+  const { gasToken } = useContext(TokenContext);
 
   const {
     op: selectedOp,
@@ -107,16 +105,9 @@ export default function Op({
     const commonParams = getCommonParams();
     if (!commonParams) return null;
 
-    // find chain real currency token
-    const token = tokens.find(
-      (t) =>
-        t.symbol === network?.currency_symbol &&
-        t.address !== GAS_TOKEN_ADDRESS,
-    );
-
     const params = {
       ...commonParams,
-      token: token?.address || "",
+      token: gasToken?.address || "",
       amount: transferAmount || UNIT256_MAX,
       recipient: toAddress,
     };
@@ -149,7 +140,6 @@ export default function Op({
       return null;
     }
 
-    console.log("here", params);
     return params;
   };
 
@@ -194,7 +184,9 @@ export default function Op({
     queryAccount,
   );
 
+  const [approveLoading, setApproveLoading] = useState<boolean>(false);
   async function handleApprove() {
+    setApproveLoading(true);
     try {
       if (shouldApproveToken0) {
         const allowance = await approveAction(token0.token?.address || "");
@@ -214,16 +206,19 @@ export default function Op({
         });
       }
 
+      setApproveLoading(false);
       setSendTxResult({
         type: "success",
         message: `Approve Success`,
       });
+
       afterAction();
     } catch (e: any) {
       setSendTxResult({
         type: "error",
         message: `${e.status}: ${e.info}`,
       });
+      setApproveLoading(false);
     }
   }
 
@@ -239,9 +234,12 @@ export default function Op({
     return res;
   }
 
+  const [testLoading, setTestLoading] = useState<boolean>(false);
   async function handleSign() {
     try {
+      setTestLoading(true);
       const res = await signAction();
+      setTestLoading(false);
       if (!res) return;
       handleShowTxResult(res);
       afterAction();
@@ -250,6 +248,7 @@ export default function Op({
         variant: "destructive",
         description: e.info,
       });
+      setTestLoading(false);
     }
   }
 
@@ -308,14 +307,18 @@ export default function Op({
         type: "error",
         message: `${e.status}: ${e.info}`,
       });
+      setSendLoading(false);
     }
   }
 
+  const [sendLoading, setSendLoading] = useState<boolean>(false);
   async function handleSend() {
+    setSendLoading(true);
     const testRes = await testTxBeforeSend();
     if (!testRes) return;
 
     await sendAction();
+    setSendLoading(false);
   }
 
   return (
@@ -332,7 +335,6 @@ export default function Op({
         <QueryAccountBalance
           account={queryAccount}
           handleAccountChange={(e: string) => setQueryAccount(e)}
-          handleTokensChange={handleTokensChange}
           gas={gasBalance}
           setGas={setGasBalance}
         />
@@ -340,7 +342,6 @@ export default function Op({
         {isSwapOp && (
           <SelectSwapToken
             account={queryAccount}
-            tokens={tokens}
             token0={token0}
             token1={token1}
             setToken0={setToken0}
@@ -388,27 +389,41 @@ export default function Op({
       >
         {children}
         <Button
+          disabled={testLoading}
           variant="outline"
           className="h-10 w-32 rounded-md border border-primary text-primary  hover:bg-primary hover:text-white"
           onClick={() => handleSign()}
         >
-          Test Tx
+          <div className="flex items-center">
+            <span>Test Tx</span>
+            {testLoading && <Loader2 className="ml-1 h-4 w-4 animate-spin" />}
+          </div>
         </Button>
         {isSwapOp && (shouldApproveToken0 || shouldApproveToken1) && (
           <Button
+            disabled={approveLoading}
             variant="outline"
             className="h-10 w-32 rounded-md border border-primary text-primary  hover:bg-primary hover:text-white"
             onClick={() => handleApprove()}
           >
-            Approve
+            <div className="flex items-center">
+              <span>Approve</span>
+              {approveLoading && (
+                <Loader2 className="ml-1 h-4 w-4 animate-spin" />
+              )}
+            </div>
           </Button>
         )}
         <Button
+          disabled={sendLoading}
           variant="outline"
           onClick={() => handleSend()}
           className="h-10 w-32 rounded-md border border-primary text-primary hover:bg-primary hover:text-white"
         >
-          Schedule
+          <div className="flex items-center">
+            <span>Schedule</span>
+            {sendLoading && <Loader2 className="ml-1 h-4 w-4 animate-spin" />}
+          </div>
         </Button>
       </div>
 

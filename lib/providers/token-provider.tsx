@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 
 import fetcher from "@/lib/fetcher";
@@ -8,15 +8,26 @@ import { IToken } from "@/lib/types/token";
 import { NetworkContext } from "./network-provider";
 import { uniqBy } from "lodash";
 import { UserEndPointContext } from "./user-end-point-provider";
+import { GAS_TOKEN_ADDRESS } from "../constants";
 
 interface ITokenContext {
   tokens: Array<IToken>;
   token: IToken | null;
+  gasToken: IToken | null;
+  currencyToken: IToken | null;
+  stableTokens: Array<IToken>;
+  stableToken: IToken | null;
+  setStableToken: (_t: IToken | null) => void;
 }
 
 export const TokenContext = createContext<ITokenContext>({
   token: null,
   tokens: [],
+  gasToken: null,
+  currencyToken: null,
+  stableTokens: [],
+  stableToken: null,
+  setStableToken: () => {},
 });
 
 export default function TokenProvider({
@@ -25,16 +36,13 @@ export default function TokenProvider({
   children: React.ReactNode;
 }) {
   const { userPathMap } = useContext(UserEndPointContext);
-
-  const [token, setToken] = useState<IToken | null>(null);
+  const { network } = useContext(NetworkContext);
+  const networkId = network?.chain_id || null;
 
   const { data: userWeb3Info } = useSWR(
     () => userPathMap.web3Info || null,
     fetcher,
   );
-
-  const { network } = useContext(NetworkContext);
-  const networkId = network?.chain_id || null;
 
   const tokenFetcher = async (url: string): Promise<Array<IToken>> => {
     if (!networkId) return [];
@@ -49,20 +57,61 @@ export default function TokenProvider({
     tokenFetcher,
   );
 
-  useEffect(() => {
+  const token = useMemo(() => {
     if (tokens && userWeb3Info?.token_address) {
       const curToken = tokens.find(
         (t) => t.address === userWeb3Info?.token_address,
       );
-      setToken(curToken || null);
+      return curToken || null;
     }
+    return null;
   }, [tokens, userWeb3Info]);
+
+  const currencySymbol =
+    network?.currency_symbol === "SEP" ? "ETH" : network?.currency_symbol;
+
+  const gasToken = useMemo(() => {
+    return (
+      (tokens || []).find(
+        (t: IToken) =>
+          t.symbol === currencySymbol && t.address === GAS_TOKEN_ADDRESS,
+      ) || null
+    );
+  }, [tokens, currencySymbol]);
+
+  const stableTokens = useMemo(
+    () => (tokens || []).filter((t: IToken) => t.is_stable_token),
+    [tokens],
+  );
+
+  const [stableToken, setStableToken] = useState<IToken | null>(null);
+
+  const currencyToken = useMemo(() => {
+    return (
+      (tokens || []).find(
+        (t: IToken) =>
+          t.symbol === currencySymbol && t.address !== GAS_TOKEN_ADDRESS,
+      ) || null
+    );
+  }, [tokens, currencySymbol]);
+
+  useEffect(() => {
+    if (stableTokens.length > 0 && !stableToken) {
+      const st = stableTokens.find((t) => t.symbol === "USDT") || null;
+      setStableToken(st);
+    }
+  }, [stableTokens, stableToken]);
 
   return (
     <TokenContext.Provider
       value={{
-        token,
         tokens: tokens || [],
+        token,
+        gasToken,
+        currencyToken,
+        stableTokens: stableTokens || [],
+        stableToken,
+        setStableToken,
       }}
     >
       {children}

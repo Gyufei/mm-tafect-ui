@@ -109,6 +109,10 @@ export default function QueryAccountBalance({
   }, [gasBalanceRes]);
 
   const handleQuery = () => {
+    if (!account) {
+      return;
+    }
+
     triggerGasBalance();
     triggerAccountBalance();
   };

@@ -1,10 +1,10 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import useSWR from "swr";
-import { uniqBy } from "lodash";
+import { useContext, useEffect, useState } from "react";
 
 import fetcher from "@/lib/fetcher";
-import { SystemEndPointPathMap } from "../end-point";
 import { UserEndPointContext } from "../providers/user-end-point-provider";
+import { IAccountGas } from "@/components/key-store/key-store-accounts-table";
+import { usePageKeystores } from "./use-page-keystores";
+import { IKeyStore } from "../types/keystore";
 
 export interface IKeyStoreAccount {
   name: string;
@@ -21,15 +21,7 @@ interface IKeyStoreAccountItem {
 export function useKeyStoreAccounts(networkId: string | null, page: string) {
   const { userPathMap } = useContext(UserEndPointContext);
 
-  const { data: keyStoreRes } = useSWR(
-    `${SystemEndPointPathMap.keyStoreByPage}?page_name=${page}`,
-    fetcher,
-  );
-
-  const keyStores = useMemo(
-    () => uniqBy(keyStoreRes, "name") as Array<string>,
-    [keyStoreRes],
-  );
+  const { data: keyStores } = usePageKeystores(page);
 
   const [keyStoreAccounts, setKeyStoreAccounts] = useState<
     Array<IKeyStoreAccount>
@@ -39,13 +31,23 @@ export function useKeyStoreAccounts(networkId: string | null, page: string) {
     try {
       const url = `${userPathMap.keyStoreAccounts}?keystore=${name}&chain_id=${networkId}`;
       const res = await fetcher(url);
-      const accounts = (res?.[0]?.accounts as Array<any>) || [];
-      const count = res?.[0]?.count || 0;
+
+      const ks = keyStores.find((k) => k.keystore_name === name);
+      if (!ks) throw new Error("keystore not found");
+
+      const rangeNum = ks.range?.length || res.length;
+      const accountRange = res.slice(0, rangeNum);
+      const targetAcc = accountRange.reduce(
+        (acc: Array<IAccountGas>, k: Record<string, any>) => {
+          return acc.concat(k.accounts);
+        },
+        [],
+      );
 
       return {
         name,
-        accounts,
-        count,
+        accounts: targetAcc,
+        count: targetAcc.length,
       };
     } catch (e) {
       return {
@@ -63,8 +65,8 @@ export function useKeyStoreAccounts(networkId: string | null, page: string) {
 
     async function getItemAccounts() {
       const ksAcs = await Promise.all(
-        keyStores.map((name: string) => {
-          return getKeyStoreAccounts(name);
+        keyStores.map((ks: IKeyStore) => {
+          return getKeyStoreAccounts(ks.keystore_name);
         }),
       );
 

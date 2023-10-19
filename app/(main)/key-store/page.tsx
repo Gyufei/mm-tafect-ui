@@ -83,7 +83,10 @@ export default function KeyStoreItem() {
 
     let targetAcc = [];
     if (selectedKeyStore && !selectedRange) {
-      targetAcc = keyStoreAccountsData.reduce(
+      const rangeNum =
+        selectedKeyStore.range?.length || keyStoreAccountsData.length;
+      const accountRange = keyStoreAccountsData.slice(0, rangeNum);
+      targetAcc = accountRange.reduce(
         (acc: Array<IAccountGas>, k: Record<string, any>) => {
           return acc.concat(k.accounts);
         },

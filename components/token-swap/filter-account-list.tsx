@@ -73,7 +73,22 @@ export default function FilterAccountList({
     if (!Array.isArray(accounts)) {
       return [];
     }
-    const newAccount = uniqBy(accounts, "account");
+
+    const filteredAccounts = accounts.filter((acc) => {
+      const allAccounts = keyStores.reduce((acs, ks) => {
+        return [...acs, ...ks.accounts];
+      }, [] as Array<any>);
+
+      for (const ksAcc of allAccounts) {
+        if (ksAcc.account === acc.account) {
+          return true;
+        }
+      }
+
+      return false;
+    });
+
+    const newAccount = uniqBy(filteredAccounts, "account");
 
     return newAccount;
     return newAccount;

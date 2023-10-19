@@ -98,6 +98,7 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
           return op.op_id === t.op;
         }).op_name;
 
+        console.log(data);
         if (t.op === 1) {
           data.tokenInName = tokens.find(
             (tk) => tk.address === data.token_in,
@@ -128,10 +129,10 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
   };
 
   useEffect(() => {
-    if (networkId && opList?.length) {
+    if (networkId && opList?.length && tokens?.length) {
       filterTrigger();
     }
-  }, [networkId, opList?.length]);
+  }, [networkId, opList?.length, tokens.length]);
 
   const {
     data: tasks,

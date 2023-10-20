@@ -45,7 +45,7 @@ export default function OpAdvanceOptions({
     }
 
     if (key === "gas") {
-      value = value ? Number(replaceStrNumNoDecimal(value)) * 10 ** 9 : null;
+      value = value ? Number(replaceStrNum(value)) * 10 ** 9 : null;
     }
 
     onChange({

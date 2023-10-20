@@ -6,7 +6,6 @@ import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import { IToken } from "../types/token";
 import { ITokenNumDesc } from "@/components/token-swap/token-select-and-input";
-import { useTokenAllowance } from "./use-token-allowance";
 
 export function useTokenSwap(
   account: string,
@@ -77,13 +76,8 @@ export function useTokenSwap(
     fetchEstimate,
   );
 
-  const { triggerAllowance } = useTokenAllowance(swapRouter, account);
-
   const handleToken0Change = async (t: IToken | null) => {
-    const allowance = await triggerAllowance({
-      tokenAddr: t?.address,
-    });
-    setToken0({ ...token0, token: t, allowance });
+    setToken0({ ...token0, token: t });
 
     if (!t) return;
     if (!token0.num && !token1.num) return;
@@ -150,11 +144,7 @@ export function useTokenSwap(
   };
 
   const handleToken1Change = async (t: IToken | null) => {
-    const allowance = await triggerAllowance({
-      tokenAddr: t?.address,
-    });
-
-    setToken1({ ...token1, token: t, allowance });
+    setToken1({ ...token1, token: t });
 
     if (!t) return;
     if (!token0.num && !token1.num) return;

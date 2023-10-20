@@ -1,26 +1,20 @@
 import { useContext } from "react";
-import useSWRMutation from "swr/mutation";
+import useSWR from "swr";
+
 import { UserEndPointContext } from "../providers/user-end-point-provider";
 import { NetworkContext } from "../providers/network-provider";
 import fetcher from "../fetcher";
 
-export function useTokenAllowance(swapRouter: string, account: string) {
+export function useTokenAllowance(
+  tokenAddr: string | null,
+  swapRouter: string,
+  account: string,
+) {
   const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
 
-  const fetchAllowance = async (
-    url: string,
-    {
-      arg,
-    }: {
-      arg: {
-        tokenAddr: string | undefined;
-      };
-    },
-  ) => {
-    if (!swapRouter) return null;
-
-    const { tokenAddr } = arg;
+  const res = useSWR(() => {
+    console.log(tokenAddr, account, swapRouter);
     if (!tokenAddr || !account || !swapRouter) return null;
 
     const query = new URLSearchParams();
@@ -30,20 +24,12 @@ export function useTokenAllowance(swapRouter: string, account: string) {
     query.set("spender", swapRouter || "");
 
     const queryStr = query.toString();
-    try {
-      const res = await fetcher(`${url}?${queryStr}`);
-      return res?.allowance;
-    } catch (e) {
-      return null;
-    }
-  };
 
-  const { trigger: triggerAllowance } = useSWRMutation(
-    `${userPathMap.accountTokenAllowance}`,
-    fetchAllowance,
-  );
+    return `${userPathMap.accountTokenAllowance}?${queryStr}`;
+  }, fetcher);
 
   return {
-    triggerAllowance,
+    ...res,
+    data: res?.data?.allowance,
   };
 }

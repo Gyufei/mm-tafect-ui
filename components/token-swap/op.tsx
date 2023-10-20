@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
 
@@ -172,39 +172,54 @@ export default function Op({
       method: "POST",
       body: JSON.stringify(params),
     });
-
-    const allowance = await triggerAllowance({
-      tokenAddr,
-    });
-
-    return allowance;
   }
 
-  const { triggerAllowance } = useTokenAllowance(
-    selectedOp?.op_detail?.swap_router || "",
-    queryAccount,
-  );
+  const { data: token0Allowance, mutate: trigger0Allowance } =
+    useTokenAllowance(
+      token0.token?.address || null,
+      selectedOp?.op_detail?.swap_router || "",
+      queryAccount,
+    );
+
+  useEffect(() => {
+    if (token0Allowance) {
+      setToken0({
+        ...token0,
+        allowance: token0Allowance,
+      });
+    }
+  }, [token0Allowance]);
+
+  const { data: token1Allowance, mutate: trigger1Allowance } =
+    useTokenAllowance(
+      token1.token?.address || null,
+      selectedOp?.op_detail?.swap_router || "",
+      queryAccount,
+    );
+
+  useEffect(() => {
+    if (token1Allowance) {
+      setToken1({
+        ...token1,
+        allowance: token1Allowance,
+      });
+    }
+  }, [token1Allowance]);
 
   const [approveLoading, setApproveLoading] = useState<boolean>(false);
   async function handleApprove() {
     setApproveLoading(true);
     try {
       if (shouldApproveToken0) {
-        const allowance = await approveAction(token0.token?.address || "");
+        await approveAction(token0.token?.address || "");
 
-        setToken0({
-          ...token0,
-          allowance,
-        });
+        trigger0Allowance();
       }
 
       if (shouldApproveToken1) {
-        const allowance = await approveAction(token1.token?.address || "");
+        await approveAction(token1.token?.address || "");
 
-        setToken1({
-          ...token1,
-          allowance,
-        });
+        trigger1Allowance();
       }
 
       setApproveLoading(false);

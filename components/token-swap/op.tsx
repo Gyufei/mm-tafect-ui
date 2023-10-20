@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
 
@@ -68,8 +68,15 @@ export default function Op({
     allowance: "",
   });
 
-  const shouldApproveToken0 = token0.token && token0.allowance === "0";
-  const shouldApproveToken1 = token1.token && token1.allowance === "0";
+  const shouldApproveToken0 = useMemo(() => {
+    if (token0.token?.address === GAS_TOKEN_ADDRESS) return false;
+    return token0.token && token0.allowance === "0";
+  }, [token0]);
+
+  const shouldApproveToken1 = useMemo(() => {
+    if (token1.token?.address === GAS_TOKEN_ADDRESS) return false;
+    return token1.token && token1.allowance === "0";
+  }, [token1]);
 
   const [toAddress, setToAddress] = useState<string>("");
   const [transferAmount, setTransferAmount] = useState<string>("");

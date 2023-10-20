@@ -32,7 +32,7 @@ export default function QueryAccountBalance({
   const { network } = useContext(NetworkContext);
   const {
     token: userToken,
-    currencyToken,
+    gasToken,
     stableTokens,
     stableToken,
     setStableToken,
@@ -46,10 +46,10 @@ export default function QueryAccountBalance({
   };
 
   useEffect(() => {
-    if (currencyToken && userToken && stableToken && account) {
+    if (gasToken && userToken && stableToken && account) {
       triggerAccountBalance();
     }
-  }, [currencyToken, userToken, stableToken]);
+  }, [gasToken, userToken, stableToken, account]);
 
   const getAccountBalanceQuery = () => {
     const queryParams = new URLSearchParams();
@@ -148,7 +148,7 @@ export default function QueryAccountBalance({
       </div>
 
       <div className="mt-1 grid grid-cols-3 gap-x-3 px-3">
-        <SmallTokenCard name={currencyToken?.symbol} num={gas || 0} />
+        <SmallTokenCard name={gasToken?.symbol} num={gas || 0} />
         <SmallTokenCard name={userToken?.symbol} num={accountBalances[0]} />
         <div className="flex flex-col rounded-md border bg-custom-bg-white px-4 py-2">
           <Select

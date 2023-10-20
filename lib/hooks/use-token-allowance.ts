@@ -14,7 +14,6 @@ export function useTokenAllowance(
   const { network } = useContext(NetworkContext);
 
   const res = useSWR(() => {
-    console.log(tokenAddr, account, swapRouter);
     if (!tokenAddr || !account || !swapRouter) return null;
 
     const query = new URLSearchParams();

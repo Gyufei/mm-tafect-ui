@@ -19,16 +19,12 @@ export default function SelectSwapToken({
   setToken0: (_t: ITokenNumDesc) => void;
   setToken1: (_t: ITokenNumDesc) => void;
 }) {
-  const {
-    token: userToken,
-    currencyToken,
-    stableToken,
-  } = useContext(TokenContext);
+  const { token: userToken, gasToken, stableToken } = useContext(TokenContext);
 
   const tokens = useMemo(() => {
     const ts = [];
-    if (currencyToken) {
-      ts.push(currencyToken);
+    if (gasToken) {
+      ts.push(gasToken);
     }
     if (userToken) {
       ts.push(userToken);
@@ -37,7 +33,7 @@ export default function SelectSwapToken({
       ts.push(stableToken);
     }
     return ts;
-  }, [userToken, currencyToken, stableToken]);
+  }, [userToken, gasToken, stableToken]);
 
   const {
     handleToken0Change,

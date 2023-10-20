@@ -31,6 +31,7 @@ export const UserEndPointPathMap = {
   filterAccount: "/tokenswap/filter_account",
   estimateToken: "/tokenswap/estimate_token_amount",
   signTransfer: "/tokenswap/transfer/sign",
+
   signApprove: "/tokenswap/approve/sign",
   signSwap: "/tokenswap/swap/sign",
   sendTransfer: "/tokenswap/transfer/send",

@@ -44,6 +44,10 @@ export default function OpAdvanceOptions({
       value = (new Date(value).getTime() / 1000).toFixed();
     }
 
+    if (key === "gas") {
+      value = value ? Number(replaceStrNumNoDecimal(value)) * 10 ** 9 : null;
+    }
+
     onChange({
       ...options,
       [key]: value,

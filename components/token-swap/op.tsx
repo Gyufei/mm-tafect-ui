@@ -44,6 +44,7 @@ export default function Op({
     isApproveOp,
     isTransferOp,
     isSwapOp,
+    opApproveSendUrl,
   } = useOp();
 
   const [queryAccount, setQueryAccount] = useState<string>("");
@@ -165,9 +166,9 @@ export default function Op({
 
   async function approveAction(tokenAddr: string) {
     const params = getApproveParams(tokenAddr);
-    if (!opSignUrl || !params) return;
+    if (!opApproveSendUrl || !params) return;
 
-    await fetcher(opSignUrl, {
+    await fetcher(opApproveSendUrl, {
       method: "POST",
       body: JSON.stringify(params),
     });

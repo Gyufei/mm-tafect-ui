@@ -12,6 +12,10 @@ export function useOp() {
 
   const opSignUrl = useMemo(() => getSignUrl(), [op]);
   const opSendUrl = useMemo(() => getSendUrl(), [op]);
+  const opApproveSendUrl = useMemo(
+    () => userPathMap.sendApprove,
+    [userPathMap],
+  );
 
   function getSignUrl() {
     if (isApproveOp) return userPathMap.signApprove;
@@ -30,6 +34,7 @@ export function useOp() {
     setOp,
     opSignUrl,
     opSendUrl,
+    opApproveSendUrl,
     isApproveOp,
     isTransferOp,
     isSwapOp,

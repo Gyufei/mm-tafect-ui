@@ -22,6 +22,7 @@ import SelectSwapToken from "./select-swap-token";
 import { useTokenAllowance } from "@/lib/hooks/use-token-allowance";
 import { TokenContext } from "@/lib/providers/token-provider";
 import { Loader2 } from "lucide-react";
+import useSwapAddressStore from "@/lib/state";
 
 export default function Op({
   keyStores,
@@ -47,7 +48,12 @@ export default function Op({
     opApproveSendUrl,
   } = useOp();
 
-  const [queryAccount, setQueryAccount] = useState<string>("");
+  const fromAddress = useSwapAddressStore((state) => state.fromAddress);
+  const toAddress = useSwapAddressStore((state) => state.toAddress);
+  const setToAddress = useSwapAddressStore(
+    (state) => state.action.setToAddress,
+  );
+
   const [gasBalance, setGasBalance] = useState<number | null>(0);
 
   const [testTxDialogOpen, setTestTxDialogOpen] = useState<boolean>(false);
@@ -78,12 +84,11 @@ export default function Op({
     return token1.token && token1.allowance === "0";
   }, [token1]);
 
-  const [toAddress, setToAddress] = useState<string>("");
   const [transferAmount, setTransferAmount] = useState<string>("");
 
   const { advanceOptions, setAdvanceOptions } = useAdvanceOptions(
     network?.chain_id || "",
-    queryAccount,
+    fromAddress,
   );
 
   const handleTransferAmountChange = (e: string) => {
@@ -93,12 +98,12 @@ export default function Op({
 
   const getCommonParams = () => {
     const kStore = keyStores.find((ks) =>
-      ks.accounts.some((a) => a.account === queryAccount),
+      ks.accounts.some((a) => a.account === fromAddress),
     );
 
     const chain_id = network?.chain_id || "";
     const keystore = kStore?.name || "";
-    const account = queryAccount;
+    const account = fromAddress;
 
     return {
       user_name: currentUser?.email,
@@ -106,6 +111,7 @@ export default function Op({
       account,
       keystore,
       ...advanceOptions,
+      gas: advanceOptions.gas ? Number(advanceOptions.gas) * 10 ** 9 : null,
     };
   };
 
@@ -185,7 +191,7 @@ export default function Op({
     useTokenAllowance(
       token0.token?.address || null,
       selectedOp?.op_detail?.swap_router || "",
-      queryAccount,
+      fromAddress,
     );
 
   useEffect(() => {
@@ -201,7 +207,7 @@ export default function Op({
     useTokenAllowance(
       token1.token?.address || null,
       selectedOp?.op_detail?.swap_router || "",
-      queryAccount,
+      fromAddress,
     );
 
   useEffect(() => {
@@ -277,7 +283,7 @@ export default function Op({
 
   function handleShowTxResult(res: Record<string, any>) {
     if (res.gaslimit) {
-      res.gas = (Number(res.gaslimit) * Number(advanceOptions.gas)) / 10 ** 18;
+      res.gas = (Number(res.gaslimit) * Number(advanceOptions.gas)) / 10 ** 9;
     }
     setTestResult(res);
     setTestTxDialogOpen(true);
@@ -291,7 +297,7 @@ export default function Op({
       }
 
       const gasCost =
-        (Number(res.gaslimit) * Number(advanceOptions.gas)) / 10 ** 18;
+        (Number(res.gaslimit) * Number(advanceOptions.gas)) / 10 ** 9;
 
       const isGasToken = token0.token?.address === GAS_TOKEN_ADDRESS;
       const amountCost = isGasToken ? gasCost + Number(token0.num) : gasCost;
@@ -355,16 +361,10 @@ export default function Op({
           />
         </div>
 
-        <QueryAccountBalance
-          account={queryAccount}
-          handleAccountChange={(e: string) => setQueryAccount(e)}
-          gas={gasBalance}
-          setGas={setGasBalance}
-        />
+        <QueryAccountBalance gas={gasBalance} setGas={setGasBalance} />
 
         {isSwapOp && (
           <SelectSwapToken
-            account={queryAccount}
             token0={token0}
             token1={token1}
             setToken0={setToken0}

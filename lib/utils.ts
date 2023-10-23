@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { AddressRegex } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,4 +19,16 @@ export function toNonExponential(num: number | string) {
   const fixedDig = Math.max(0, (m[1]?.length || 0) - Number(m[2]));
 
   return num.toFixed(fixedDig);
+}
+
+export function isAddress(address: string): boolean {
+  return AddressRegex.test(address);
+}
+
+export function replaceAddress(v: string) {
+  if (v && !v.startsWith("0")) return "";
+  if (v.length > 1 && !v.startsWith("0x") && !v.startsWith("0X")) return "0";
+  if (v.length > 42) return v.substring(0, 42);
+
+  return v.replace(/[^0-9a-fA-FxX]/g, "");
 }

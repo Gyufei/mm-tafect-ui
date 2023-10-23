@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo } from "react";
 import useSWRMutation from "swr/mutation";
 
-import { cn } from "@/lib/utils";
+import { cn, isAddress, replaceAddress } from "@/lib/utils";
 import fetcher from "@/lib/fetcher";
 import { NetworkContext } from "@/lib/providers/network-provider";
 
@@ -16,15 +16,12 @@ import {
 } from "@/components/ui/select";
 import { TokenContext } from "@/lib/providers/token-provider";
 import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
+import useSwapAddressStore from "@/lib/state";
 
 export default function QueryAccountBalance({
-  account,
-  handleAccountChange,
   gas,
   setGas,
 }: {
-  account: string;
-  handleAccountChange: (_acc: string) => void;
   gas: number | null;
   setGas: (_gas: number) => void;
 }) {
@@ -38,6 +35,21 @@ export default function QueryAccountBalance({
     setStableToken,
   } = useContext(TokenContext);
 
+  const fromAddress = useSwapAddressStore((state) => state.fromAddress);
+  const setFromAddress = useSwapAddressStore(
+    (state) => state.action.setFromAddress,
+  );
+  const toAddress = useSwapAddressStore((state) => state.toAddress);
+  const setToAddress = useSwapAddressStore(
+    (state) => state.action.setToAddress,
+  );
+
+  const handleAccountChange = (v: string) => {
+    const addrV = replaceAddress(v);
+
+    setFromAddress(addrV);
+  };
+
   const handleStableTokenSelect = (add: string) => {
     const selected = stableTokens.find(
       (token: Record<string, any>) => token.address === add,
@@ -45,21 +57,15 @@ export default function QueryAccountBalance({
     setStableToken(selected || null);
   };
 
-  useEffect(() => {
-    if (gasToken && userToken && stableToken && account) {
-      triggerAccountBalance();
-    }
-  }, [gasToken, userToken, stableToken, account]);
-
   const getAccountBalanceQuery = () => {
     const queryParams = new URLSearchParams();
 
-    if (!network || !account) {
+    if (!network || !fromAddress) {
       return;
     }
 
     queryParams.set("chain_id", network?.chain_id.toString());
-    queryParams.set("account", account);
+    queryParams.set("account", fromAddress);
 
     const queryTokens = [userToken?.address, stableToken?.address];
     queryParams.set("tokens", queryTokens.join(","));
@@ -72,12 +78,12 @@ export default function QueryAccountBalance({
   const getGasBalanceQuery = () => {
     const queryParams = new URLSearchParams();
 
-    if (!network || !account) {
+    if (!network || !fromAddress) {
       return;
     }
 
     queryParams.set("chain_id", network?.chain_id.toString());
-    queryParams.set("account", account);
+    queryParams.set("account", fromAddress);
 
     const query = queryParams.toString();
 
@@ -109,12 +115,22 @@ export default function QueryAccountBalance({
   }, [gasBalanceRes]);
 
   const handleQuery = () => {
-    if (!account) {
-      return;
+    if (
+      gasToken &&
+      userToken &&
+      stableToken &&
+      fromAddress &&
+      isAddress(fromAddress)
+    ) {
+      triggerGasBalance();
+      triggerAccountBalance();
     }
 
-    triggerGasBalance();
-    triggerAccountBalance();
+    if (!toAddress) {
+      setToAddress(fromAddress);
+    }
+
+    console.log(toAddress);
   };
 
   useEffect(() => {
@@ -133,14 +149,15 @@ export default function QueryAccountBalance({
         <div className="LabelText mb-1">FromAddress</div>
         <div className="flex justify-between">
           <Input
-            value={account}
+            value={fromAddress}
             onChange={(e: any) => handleAccountChange(e.target.value)}
             className="mr-3 border-border-color bg-white"
             placeholder="0x11111111111"
           />
           <button
+            disabled={!fromAddress || !isAddress(fromAddress)}
             onClick={() => handleQuery()}
-            className="rounded-md border border-border-color bg-white px-6 font-bold text-title-color hover:bg-custom-bg-white"
+            className="rounded-md border border-border-color bg-white px-6 font-bold text-title-color hover:bg-custom-bg-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             Query
           </button>

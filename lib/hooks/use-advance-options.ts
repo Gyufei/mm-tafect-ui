@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { UserEndPointContext } from "../providers/user-end-point-provider";
 import fetcher from "../fetcher";
 import { IAdvanceOptions } from "@/components/token-swap/op-advance-options";
+import { isAddress } from "../utils";
 
 export function useAdvanceOptions(networkId: string, queryAccount: string) {
   const { userPathMap } = useContext(UserEndPointContext);
@@ -17,7 +18,7 @@ export function useAdvanceOptions(networkId: string, queryAccount: string) {
   }, fetcher);
 
   const { data: nonceData } = useSWR(() => {
-    if (networkId && queryAccount) {
+    if (networkId && queryAccount && isAddress(queryAccount)) {
       return `${userPathMap.nonceNum}?chain_id=${networkId}&account=${queryAccount}`;
     } else {
       return null;

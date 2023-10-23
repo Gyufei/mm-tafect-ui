@@ -9,11 +9,12 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { replaceStrNum } from "@/lib/hooks/use-str-num";
+import { replaceStrNumNoDecimal } from "@/lib/hooks/use-str-num";
 import fetcher from "@/lib/fetcher";
 import { SystemEndPointPathMap } from "@/lib/end-point";
 import { toast } from "../ui/use-toast";
 import { UNIT32_MAX } from "@/lib/constants";
+import { replaceAddress } from "@/lib/utils";
 
 const EmptyRow = {
   root_account: "",
@@ -108,7 +109,13 @@ export function LoadKeyStoreDialog({
             <Input
               type="text"
               placeholder="name"
-              {...register("keystore_name", { required: true })}
+              {...register("keystore_name", {
+                required: true,
+                onChange: (e) => {
+                  const v = e.target.value;
+                  setValue("keystore_name", v.trim());
+                },
+              })}
             />
           </div>
 
@@ -143,6 +150,11 @@ export function LoadKeyStoreDialog({
                     <Input
                       {...register(`range.${index}.root_account`, {
                         required: true,
+                        minLength: 42,
+                        onChange: (e) => {
+                          const addr = replaceAddress(e.target.value);
+                          setValue(`range.${index}.root_account`, addr);
+                        },
                       })}
                       placeholder="0X"
                     />
@@ -150,7 +162,7 @@ export function LoadKeyStoreDialog({
                       <Input
                         {...register(`range.${index}.from_index`, {
                           onChange: (e) => {
-                            const num = replaceStrNum(e.target.value);
+                            const num = replaceStrNumNoDecimal(e.target.value);
                             setValue(`range.${index}.from_index`, num);
                           },
                         })}
@@ -160,7 +172,7 @@ export function LoadKeyStoreDialog({
                       <Input
                         {...register(`range.${index}.to_index`, {
                           onChange: (e) => {
-                            const num = replaceStrNum(e.target.value);
+                            const num = replaceStrNumNoDecimal(e.target.value);
                             setValue(`range.${index}.to_index`, num);
                           },
                         })}

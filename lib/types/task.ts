@@ -4,8 +4,8 @@ export enum StatusEnum {
   pending,
   finished,
   failed,
-  cancel,
-  replace,
+  canceled,
+  replaced,
 }
 
 export interface ITask {

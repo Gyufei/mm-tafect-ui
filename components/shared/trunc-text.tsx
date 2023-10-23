@@ -28,11 +28,13 @@ export default function TruncateText({
   showCopy,
   start = 8,
   end = 6,
+  children,
 }: {
   text: string;
   showCopy?: boolean;
   start?: number;
   end?: number;
+  children?: React.ReactNode;
 }) {
   return (
     <TooltipProvider>
@@ -44,7 +46,10 @@ export default function TruncateText({
           </span>
         </TooltipTrigger>
         <TooltipContent>
-          <p className="text-sm text-content-color">{text}</p>
+          <div className="flex items-center">
+            <p className="text-sm text-content-color">{text}</p>
+            {children}
+          </div>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

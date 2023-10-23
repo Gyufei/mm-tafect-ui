@@ -32,20 +32,16 @@ export default function OpAdvanceOptions({
   onChange: (_o: IAdvanceOptions) => void;
 }) {
   function handleAdvanceOptionsChange(key: string, value: any) {
-    if (key === "timeout" || key === "slippage" || key === "gas") {
+    if (key === "slippage" || key === "gas") {
       value = value ? replaceStrNum(value) : null;
     }
 
-    if (key === "nonce") {
+    if (key === "nonce" || key === "timeout") {
       value = value ? Number(replaceStrNumNoDecimal(value)) : null;
     }
 
     if (key === "schedule") {
       value = (new Date(value).getTime() / 1000).toFixed();
-    }
-
-    if (key === "gas") {
-      value = value ? Number(replaceStrNum(value)) * 10 ** 9 : null;
     }
 
     onChange({
@@ -104,7 +100,7 @@ export default function OpAdvanceOptions({
           <div>
             <div className="LabelText mb-1">Gas(gwei)</div>
             <Input
-              value={String(Number(options.gas) / 10 ** 9) || ""}
+              value={options.gas || ""}
               onChange={(e) =>
                 handleAdvanceOptionsChange("gas", e.target.value)
               }

@@ -23,3 +23,5 @@ export const UNIT256_MAX =
   "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
 export const UNIT32_MAX = "4294967295";
+
+export const AddressRegex = /^0x[a-fA-F0-9]{40}$/;

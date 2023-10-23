@@ -8,7 +8,6 @@ import { IToken } from "../types/token";
 import { ITokenNumDesc } from "@/components/token-swap/token-select-and-input";
 
 export function useTokenSwap(
-  account: string,
   swapRouter: string,
   token0: ITokenNumDesc,
   token1: ITokenNumDesc,
@@ -26,11 +25,14 @@ export function useTokenSwap(
   ) => {
     const setTokenAction = exactInput ? setToken1 : setToken0;
 
+    const amountNum = Number(amount);
+    if (!amountNum || !(amountNum > 0)) return;
+
     try {
       const result = await triggerEstimate({
         token0Addr: t0Addr,
         token1Addr: t1Addr,
-        amount,
+        amount: String(amountNum),
         exactInput: true,
       });
       setTokenAction((t: any) => ({ ...t, num: String(result || "") }));

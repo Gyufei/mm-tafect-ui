@@ -34,12 +34,12 @@ export default function SwapHistoryItemStatus({
       bg: "rgba(212, 44, 31, 0.1)",
       border: "rgba(212, 44, 31, 0.4)",
     },
-    [StatusEnum.cancel]: {
+    [StatusEnum.canceled]: {
       color: "#707070",
       bg: "#E9EAEE",
       border: "#bfbfbf",
     },
-    [StatusEnum.replace]: {
+    [StatusEnum.replaced]: {
       color: "#FFFFFF",
       bg: "#3388FF",
       border: "#73B2FF",
@@ -48,11 +48,8 @@ export default function SwapHistoryItemStatus({
 
   const colorVars = colorMap[status];
 
-  const text = useMemo(() => {
+  const statusText = useMemo(() => {
     const t = StatusEnum[status];
-
-    if (t === "cancel") return "canceled";
-
     return t;
   }, [status]);
 
@@ -78,7 +75,7 @@ export default function SwapHistoryItemStatus({
       className="w-[100px] cursor-pointer rounded-full text-sm hover:text-white"
     >
       <div className="flex items-center justify-center">
-        {isHover ? "dequeue" : text}
+        {isHover ? "dequeue" : statusText}
       </div>
     </div>
   ) : (
@@ -90,7 +87,7 @@ export default function SwapHistoryItemStatus({
       }}
       className="rounded-full bg-[#e9eaee] px-3 text-sm"
     >
-      <div className="flex items-center">{text}</div>
+      <div className="flex items-center">{statusText}</div>
     </div>
   );
 }

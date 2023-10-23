@@ -17,6 +17,8 @@ import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
 import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 import { uniqBy } from "lodash";
 import { TokenContext } from "@/lib/providers/token-provider";
+import { ArrowUpRight } from "lucide-react";
+import useSwapAddressStore from "@/lib/state";
 
 export default function FilterAccountList({
   keyStores,
@@ -40,6 +42,10 @@ export default function FilterAccountList({
     }
     return ts;
   }, [userToken, gasToken, stableToken]);
+
+  const setFromAddress = useSwapAddressStore(
+    (state) => state.action.setFromAddress,
+  );
 
   const [token, setToken] = useState<IToken | null>(null);
   const [tokenMin, setTokenMin] = useStrNum("");
@@ -140,6 +146,10 @@ export default function FilterAccountList({
     filterTrigger();
   }
 
+  function handleClickAcc(addr: string) {
+    setFromAddress(addr);
+  }
+
   return (
     <div className="flex flex-col justify-stretch">
       <div className="flex flex-col px-4">
@@ -192,7 +202,14 @@ export default function FilterAccountList({
               </div>
               <div className="flex flex-1 flex-col">
                 <div className="text-lg font-medium text-title-color">
-                  <TruncateText text={acc.account} />
+                  <TruncateText text={acc.account}>
+                    <span
+                      className="ml-1 cursor-pointer text-content-color"
+                      onClick={() => handleClickAcc(acc.account)}
+                    >
+                      <ArrowUpRight className="h-4 w-4" />
+                    </span>
+                  </TruncateText>
                 </div>
                 <div className="LabelText flex">
                   <div className="mr-6">

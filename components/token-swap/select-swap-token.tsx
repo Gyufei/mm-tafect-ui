@@ -10,9 +10,7 @@ export default function SelectSwapToken({
   setToken0,
   setToken1,
   swapRouter,
-  account,
 }: {
-  account: string;
   swapRouter: string;
   token0: ITokenNumDesc;
   token1: ITokenNumDesc;
@@ -40,7 +38,7 @@ export default function SelectSwapToken({
     handleToken0NumChange,
     handleToken1Change,
     handleToken1NumChange,
-  } = useTokenSwap(account, swapRouter, token0, token1, setToken0, setToken1);
+  } = useTokenSwap(swapRouter, token0, token1, setToken0, setToken1);
 
   return (
     <div className="mt-3 flex items-center justify-between px-3">

@@ -118,7 +118,7 @@ export default function KeyStoreItem() {
       targetAcc = getRangeAccounts(selectedRange.root_account);
     }
 
-    return sortBy(targetAcc, "gas").reverse();
+    return targetAcc;
   }, [
     userKeyStores,
     keyStoreAccountsData,

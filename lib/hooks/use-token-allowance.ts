@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import useSWR from "swr";
 
 import { UserEndPointContext } from "../providers/user-end-point-provider";
@@ -16,7 +16,7 @@ export function useTokenAllowance(
   const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
 
-  const res = useSWR(() => {
+  const queryStr = useMemo(() => {
     if (!tokenAddr || !account || !swapRouter) return null;
     if (!isAddress(tokenAddr) || !isAddress(account)) return null;
     if (tokenAddr === gasToken?.address) return null;
@@ -28,8 +28,12 @@ export function useTokenAllowance(
     query.set("spender", swapRouter || "");
 
     const queryStr = query.toString();
-    console.log(queryStr);
 
+    return queryStr;
+  }, [tokenAddr, account, swapRouter, network?.chain_id, gasToken?.address]);
+
+  const res = useSWR(() => {
+    if (!queryStr) return null;
     return `${userPathMap.accountTokenAllowance}?${queryStr}`;
   }, fetcher);
 

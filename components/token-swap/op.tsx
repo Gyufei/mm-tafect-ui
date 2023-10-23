@@ -111,7 +111,9 @@ export default function Op({
       account,
       keystore,
       ...advanceOptions,
-      gas: advanceOptions.gas ? Number(advanceOptions.gas) * 10 ** 9 : null,
+      gas: advanceOptions.gas
+        ? String(Number(advanceOptions.gas) * 10 ** 9)
+        : null,
     };
   };
 

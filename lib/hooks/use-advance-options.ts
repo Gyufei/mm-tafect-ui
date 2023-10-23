@@ -35,7 +35,7 @@ export function useAdvanceOptions(networkId: string, queryAccount: string) {
     if (gasPrice) {
       setAdvanceOptions({
         ...advanceOptions,
-        gas: gasPrice.gas_price,
+        gas: Number(gasPrice.gas_price) / 10 ** 9,
       });
     }
   }, [gasPrice]);

@@ -2,7 +2,14 @@
 
 import useSWR from "swr";
 import { sortBy } from "lodash";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { PenLine, Trash2 } from "lucide-react";
 
 import KeyStoreLinks from "@/components/key-store/key-store-links";
@@ -70,7 +77,9 @@ export default function KeyStoreItem() {
     }
   }, [userKeyStores, selectedKeyStore, selectedRange]);
 
-  const { data: keyStoreAccountsData, mutate: refreshAccount } = useSWR(() => {
+  const { data: keyStoreAccountsData, mutate: refreshAccount } = useSWR<
+    Array<{ accounts: Array<IAccountGas>; count: number }>
+  >(() => {
     if (userKeyStores.length && selectedKeyStore && network?.chain_id) {
       return `${userPathMap.keyStoreAccounts}?keystore=${selectedKeyStore.keystore_name}&chain_id=${network?.chain_id}`;
     } else {
@@ -78,33 +87,45 @@ export default function KeyStoreItem() {
     }
   }, fetcher);
 
+  const getRangeAccounts = useCallback(
+    (rootAddr: string) => {
+      if (!keyStoreAccountsData) return [];
+
+      const target =
+        keyStoreAccountsData.find((ks) => ks.accounts[0].account === rootAddr)
+          ?.accounts || [];
+
+      return target;
+    },
+    [keyStoreAccountsData],
+  );
+
   const accounts: Array<IAccountGas> = useMemo(() => {
     if (!userKeyStores || !keyStoreAccountsData || !selectedKeyStore) return [];
 
-    let targetAcc = [];
+    let targetAcc: Array<IAccountGas> = [];
     if (selectedKeyStore && !selectedRange) {
-      const rangeNum =
-        selectedKeyStore.range?.length || keyStoreAccountsData.length;
-      const accountRange = keyStoreAccountsData.slice(0, rangeNum);
-      targetAcc = accountRange.reduce(
-        (acc: Array<IAccountGas>, k: Record<string, any>) => {
-          return acc.concat(k.accounts);
+      targetAcc = selectedKeyStore.range.reduce(
+        (acc: Array<IAccountGas>, k) => {
+          const rangeAccounts = getRangeAccounts(k.root_account);
+          return acc.concat(rangeAccounts);
         },
         [],
       );
     }
 
     if (selectedKeyStore && selectedRange) {
-      const rootIndex = selectedKeyStore.range.findIndex(
-        (r: IKeyStoreRange) => {
-          return r.root_account === selectedRange.root_account;
-        },
-      );
-      targetAcc = keyStoreAccountsData[rootIndex]?.accounts || [];
+      targetAcc = getRangeAccounts(selectedRange.root_account);
     }
 
     return sortBy(targetAcc, "gas").reverse();
-  }, [userKeyStores, keyStoreAccountsData, selectedKeyStore, selectedRange]);
+  }, [
+    userKeyStores,
+    keyStoreAccountsData,
+    selectedKeyStore,
+    selectedRange,
+    getRangeAccounts,
+  ]);
 
   const accountCount: number = accounts.length;
 

@@ -79,11 +79,6 @@ export default function Op({
     return token0.token && token0.allowance === "0";
   }, [token0]);
 
-  const shouldApproveToken1 = useMemo(() => {
-    if (token1.token?.address === GAS_TOKEN_ADDRESS) return false;
-    return token1.token && token1.allowance === "0";
-  }, [token1]);
-
   const [transferAmount, setTransferAmount] = useState<string>("");
 
   const { advanceOptions, setAdvanceOptions } = useAdvanceOptions(
@@ -203,40 +198,15 @@ export default function Op({
         allowance: token0Allowance,
       });
     }
-  }, [token0Allowance]);
-
-  const { data: token1Allowance, mutate: trigger1Allowance } =
-    useTokenAllowance(
-      token1.token?.address || null,
-      selectedOp?.op_detail?.swap_router || "",
-      fromAddress,
-    );
-
-  useEffect(() => {
-    if (token1Allowance) {
-      setToken1({
-        ...token1,
-        allowance: token1Allowance,
-      });
-    }
-  }, [token1Allowance]);
+  }, [token0Allowance, token0]);
 
   const [approveLoading, setApproveLoading] = useState<boolean>(false);
   async function handleApprove() {
     setApproveLoading(true);
     try {
-      if (shouldApproveToken0) {
-        await approveAction(token0.token?.address || "");
+      await approveAction(token0.token?.address || "");
 
-        trigger0Allowance();
-      }
-
-      if (shouldApproveToken1) {
-        await approveAction(token1.token?.address || "");
-
-        trigger1Allowance();
-      }
-
+      trigger0Allowance();
       setApproveLoading(false);
       setSendTxResult({
         type: "success",
@@ -424,7 +394,7 @@ export default function Op({
             {testLoading && <Loader2 className="ml-1 h-4 w-4 animate-spin" />}
           </div>
         </Button>
-        {isSwapOp && (shouldApproveToken0 || shouldApproveToken1) && (
+        {isSwapOp && shouldApproveToken0 && (
           <Button
             disabled={approveLoading}
             variant="outline"

@@ -79,8 +79,8 @@ export default function SwapHistoryItem({
         </div>
       </div>
 
-      {isTransfer ||
-      (isSwap && taskTxData?.recipient !== taskTxData?.account) ? (
+      {(isSwap && taskTxData?.recipient !== taskTxData?.account) ||
+      isTransfer ? (
         <div className="flex justify-between text-content-color">
           {taskTxData?.recipient !== taskTxData?.account && (
             <div>

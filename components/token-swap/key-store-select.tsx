@@ -36,7 +36,7 @@ export default function KeyStoreSelect({
 
   useEffect(() => {
     if (!keyStores.length && keyStoreOptions.length) {
-      handleKeyStoreSelect([keyStoreOptions[0]]);
+      handleKeyStoreSelect(keyStoreOptions);
     }
   }, [keyStoreOptions]);
 
@@ -63,7 +63,10 @@ export default function KeyStoreSelect({
         >
           {keyStores.length ? (
             <>
-              <div className="mr-2 text-title-color">{keyStores[0].name}</div>
+              <div className="mr-2 text-title-color">
+                {keyStores[0].name}
+                {keyStores.length > 1 && " ..."}
+              </div>
               <div className="Tag mr-2 bg-[#e9eaee]">{keyStores.length}</div>
             </>
           ) : (

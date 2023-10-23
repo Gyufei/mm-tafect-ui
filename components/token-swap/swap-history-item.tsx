@@ -79,18 +79,19 @@ export default function SwapHistoryItem({
         </div>
       </div>
 
-      {!isApprove ? (
+      {isTransfer ||
+      (isSwap && taskTxData?.recipient !== taskTxData?.account) ? (
         <div className="flex justify-between text-content-color">
-          <div>
-            {
-              <>
-                Recipient: <TruncateText text={taskTxData?.recipient || ""} />
-              </>
-            }
-          </div>
-          <div className="TruncateSingleLine max-w-[200px]">
-            {isTransfer && <>Value: {taskTxData?.amount}</>}
-          </div>
+          {taskTxData?.recipient !== taskTxData?.account && (
+            <div>
+              Recipient: <TruncateText text={taskTxData?.recipient || ""} />
+            </div>
+          )}
+          {isTransfer && (
+            <div className="TruncateSingleLine max-w-[200px]">
+              Value: {taskTxData?.amount}
+            </div>
+          )}
         </div>
       ) : null}
 

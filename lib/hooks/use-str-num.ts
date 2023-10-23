@@ -5,7 +5,7 @@ export function replaceStrNum(str: string) {
 }
 
 export function replaceStrNumNoDecimal(str: string) {
-  return str.replace(/[^0-9.]/g, "");
+  return str.replace(/[^0-9]/g, "");
 }
 
 export const useStrNum = (

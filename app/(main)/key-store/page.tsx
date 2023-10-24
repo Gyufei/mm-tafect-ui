@@ -76,7 +76,7 @@ export default function KeyStoreItem() {
     }
   }, [userKeyStores, selectedKeyStore, selectedRange]);
 
-  const { data: keyStoreAccountsData, mutate: refreshAccount } = useSWR<
+  const { data: keyStoreAccountsDataRes, mutate: refreshAccount } = useSWR<
     Array<{ accounts: Array<IAccountGas>; count: number }>
   >(() => {
     if (userKeyStores.length && selectedKeyStore && network?.chain_id) {
@@ -85,6 +85,22 @@ export default function KeyStoreItem() {
       return null;
     }
   }, fetcher);
+
+  const keyStoreAccountsData = useMemo(() => {
+    if (!keyStoreAccountsDataRes) return [];
+
+    return keyStoreAccountsDataRes?.map((ks) => {
+      const indexedAccounts = ks.accounts.map((a, i) => ({
+        ...a,
+        index: i,
+      }));
+
+      return {
+        ...ks,
+        accounts: indexedAccounts,
+      };
+    });
+  }, [keyStoreAccountsDataRes]);
 
   const getRangeAccounts = useCallback(
     (range: { root_account: string; from_index: number; to_index: number }) => {
@@ -343,10 +359,7 @@ export default function KeyStoreItem() {
           </div>
         </div>
 
-        <KeyStoreAccountsTable
-          accounts={accounts}
-          startIndex={selectedRange ? selectedRange.from_index : 0}
-        />
+        <KeyStoreAccountsTable accounts={accounts} />
       </div>
     </>
   );

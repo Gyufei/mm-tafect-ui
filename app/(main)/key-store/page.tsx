@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import useSWRMutation from "swr/mutation";
 import { useUserKeystores } from "@/lib/hooks/use-user-keystores";
+import { uniqBy } from "lodash";
 
 export default function KeyStoreItem() {
   const { userPathMap } = useContext(UserEndPointContext);
@@ -132,6 +133,8 @@ export default function KeyStoreItem() {
         },
         [],
       );
+
+      targetAcc = uniqBy(targetAcc, "index");
     }
 
     if (selectedKeyStore && selectedRange) {

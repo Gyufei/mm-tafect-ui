@@ -87,12 +87,17 @@ export default function KeyStoreItem() {
   }, fetcher);
 
   const getRangeAccounts = useCallback(
-    (rootAddr: string) => {
+    (range: { root_account: string; from_index: number; to_index: number }) => {
       if (!keyStoreAccountsData) return [];
 
       const target =
-        keyStoreAccountsData.find((ks) => ks.accounts[0].account === rootAddr)
-          ?.accounts || [];
+        keyStoreAccountsData.find(
+          (ks) => ks.accounts[0].account === range.root_account,
+        )?.accounts || [];
+
+      if (target?.length) {
+        return target.slice(range.from_index, range.to_index + 1);
+      }
 
       return target;
     },
@@ -106,7 +111,7 @@ export default function KeyStoreItem() {
     if (selectedKeyStore && !selectedRange) {
       targetAcc = selectedKeyStore.range.reduce(
         (acc: Array<IAccountGas>, k) => {
-          const rangeAccounts = getRangeAccounts(k.root_account);
+          const rangeAccounts = getRangeAccounts(k);
           return acc.concat(rangeAccounts);
         },
         [],
@@ -114,7 +119,7 @@ export default function KeyStoreItem() {
     }
 
     if (selectedKeyStore && selectedRange) {
-      targetAcc = getRangeAccounts(selectedRange.root_account);
+      targetAcc = getRangeAccounts(selectedRange);
     }
 
     return targetAcc;

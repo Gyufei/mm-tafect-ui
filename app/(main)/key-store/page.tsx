@@ -1,7 +1,6 @@
 "use client";
 
 import useSWR from "swr";
-import { sortBy } from "lodash";
 import {
   useCallback,
   useContext,

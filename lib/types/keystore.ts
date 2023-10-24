@@ -11,3 +11,16 @@ export interface IKeyStoreRange {
   from_index: number;
   to_index: number;
 }
+
+export interface IKeyStoreAccount {
+  name: string;
+  accounts: Array<IKeyStoreAccountItem>;
+  count: number;
+}
+
+export interface IKeyStoreAccountItem {
+  account: string;
+  gas: string;
+  tx: number;
+  index: number;
+}

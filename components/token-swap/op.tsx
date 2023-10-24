@@ -1,7 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 
-import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
-
 import QueryAccountBalance from "@/components/token-swap/query-account-balance";
 import OpSelect from "@/components/token-swap/op-select";
 import { toast } from "@/components/ui/use-toast";
@@ -23,6 +21,7 @@ import { useTokenAllowance } from "@/lib/hooks/use-token-allowance";
 import { TokenContext } from "@/lib/providers/token-provider";
 import { Loader2 } from "lucide-react";
 import useSwapAddressStore from "@/lib/state";
+import { IKeyStoreAccount } from "@/lib/types/keystore";
 
 export default function Op({
   keyStores,

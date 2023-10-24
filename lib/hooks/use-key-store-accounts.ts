@@ -4,19 +4,7 @@ import fetcher from "@/lib/fetcher";
 import { UserEndPointContext } from "../providers/user-end-point-provider";
 import { IAccountGas } from "@/components/key-store/key-store-accounts-table";
 import { usePageKeystores } from "./use-page-keystores";
-import { IKeyStore } from "../types/keystore";
-
-export interface IKeyStoreAccount {
-  name: string;
-  accounts: Array<IKeyStoreAccountItem>;
-  count: number;
-}
-
-interface IKeyStoreAccountItem {
-  account: string;
-  gas: string;
-  tx: number;
-}
+import { IKeyStore, IKeyStoreAccount, IKeyStoreRange } from "../types/keystore";
 
 export function useKeyStoreAccounts(networkId: string | null, page: string) {
   const { userPathMap } = useContext(UserEndPointContext);
@@ -27,6 +15,23 @@ export function useKeyStoreAccounts(networkId: string | null, page: string) {
     Array<IKeyStoreAccount>
   >([]);
 
+  const getRangeAccounts = (
+    range: IKeyStoreRange,
+    accounts: Array<IKeyStoreAccount>,
+  ) => {
+    if (!accounts) return [];
+
+    const target =
+      accounts.find((ks) => ks.accounts[0].account === range.root_account)
+        ?.accounts || [];
+
+    if (target?.length) {
+      return target.slice(range.from_index, range.to_index + 1);
+    }
+
+    return target;
+  };
+
   async function getKeyStoreAccounts(name: string): Promise<IKeyStoreAccount> {
     try {
       const url = `${userPathMap.keyStoreAccounts}?keystore=${name}&chain_id=${networkId}`;
@@ -35,11 +40,10 @@ export function useKeyStoreAccounts(networkId: string | null, page: string) {
       const ks = keyStores.find((k) => k.keystore_name === name);
       if (!ks) throw new Error("keystore not found");
 
-      const rangeNum = ks.range?.length || res.length;
-      const accountRange = res.slice(0, rangeNum);
-      const targetAcc = accountRange.reduce(
-        (acc: Array<IAccountGas>, k: Record<string, any>) => {
-          return acc.concat(k.accounts);
+      const targetAcc = ks.range.reduce(
+        (acc: Array<IAccountGas>, rangeItem: IKeyStoreRange) => {
+          const targetAcc = getRangeAccounts(rangeItem, res);
+          return acc.concat(targetAcc);
         },
         [],
       );

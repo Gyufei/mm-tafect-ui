@@ -104,7 +104,7 @@ export default function KeyStoreItem() {
   }, [keyStoreAccountsDataRes]);
 
   const getRangeAccounts = useCallback(
-    (range: { root_account: string; from_index: number; to_index: number }) => {
+    (range: IKeyStoreRange) => {
       if (!keyStoreAccountsData) return [];
 
       const target =
@@ -135,6 +135,7 @@ export default function KeyStoreItem() {
       );
 
       targetAcc = uniqBy(targetAcc, "index");
+      // targetAcc = sortBy(uniqBy(targetAcc, "index"), "index");
     }
 
     if (selectedKeyStore && selectedRange) {

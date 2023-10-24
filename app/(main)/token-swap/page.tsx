@@ -4,14 +4,13 @@ import { useSwipeable } from "react-swipeable";
 
 import DetailItem from "@/components/shared/detail-item";
 
-import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
-
 import FilterAccountList from "@/components/token-swap/filter-account-list";
 import KeyStoreSelect from "@/components/token-swap/key-store-select";
 import Op from "@/components/token-swap/op";
 import SwapHistory from "@/components/token-swap/swap-history";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import MobileFoldBtn from "@/components/token-swap/mobile-fold-btn";
+import { IKeyStoreAccount } from "@/lib/types/keystore";
 
 export default function TokenSwap() {
   const { network } = useContext(NetworkContext);

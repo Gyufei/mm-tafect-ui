@@ -8,7 +8,6 @@ import TokenSelect from "@/components/token-swap/token-select";
 
 import { useStrNum } from "@/lib/hooks/use-str-num";
 import fetcher from "@/lib/fetcher";
-import { IKeyStoreAccount } from "@/lib/hooks/use-key-store-accounts";
 import { IToken } from "@/lib/types/token";
 import TruncateText from "../shared/trunc-text";
 import LoadingIcon from "../shared/loading-icon";
@@ -19,6 +18,7 @@ import { uniqBy } from "lodash";
 import { TokenContext } from "@/lib/providers/token-provider";
 import { ArrowUpRight } from "lucide-react";
 import useSwapAddressStore from "@/lib/state";
+import { IKeyStoreAccount } from "@/lib/types/keystore";
 
 export default function FilterAccountList({
   keyStores,

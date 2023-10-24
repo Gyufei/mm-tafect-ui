@@ -8,11 +8,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-import {
-  IKeyStoreAccount,
-  useKeyStoreAccounts,
-} from "@/lib/hooks/use-key-store-accounts";
+import { useKeyStoreAccounts } from "@/lib/hooks/use-key-store-accounts";
 import { NetworkContext } from "@/lib/providers/network-provider";
+import { IKeyStoreAccount } from "@/lib/types/keystore";
 
 export default function KeyStoreSelect({
   keyStores,

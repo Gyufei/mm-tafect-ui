@@ -33,7 +33,7 @@ export function useTokenSwap(
         token0Addr: t0Addr,
         token1Addr: t1Addr,
         amount: String(amountNum),
-        exactInput: true,
+        exactInput: exactInput,
       });
       setTokenAction((t: any) => ({ ...t, num: String(result || "") }));
     } catch (e) {
@@ -79,51 +79,39 @@ export function useTokenSwap(
   );
 
   const handleToken0Change = async (t: IToken | null) => {
-    setToken0({ ...token0, token: t });
-
-    if (!t) return;
+    setToken0((prev: ITokenNumDesc) => ({ ...prev, token: t }));
     if (!token0.num && !token1.num) return;
 
+    if (!t) return;
     if (!token1.token) {
-      setToken1({ ...token1, num: "" });
+      setToken1((prev: ITokenNumDesc) => ({ ...prev, token: t }));
       return;
     }
 
     const isSameToken = t?.address === token1.token?.address;
-
-    if (token0.num) {
-      if (isSameToken) {
-        setToken1({ ...token1, num: token0.num });
-      } else {
-        estimateAction(t.address, token1.token.address, token0.num, true);
+    if (isSameToken) {
+      if (token0.num) {
+        setToken1((prev: ITokenNumDesc) => ({ ...prev, num: token0.num }));
+      } else if (token1.num) {
+        setToken0((prev: ITokenNumDesc) => ({ ...prev, num: token1.num }));
       }
 
       return;
     }
 
-    if (token1.num) {
-      if (isSameToken) {
-        setToken0((val: ITokenNumDesc) => ({ ...val, num: token1.num }));
-      } else {
-        estimateAction(
-          t.address,
-          token1.token?.address || "",
-          token1.num,
-          false,
-        );
-      }
-
-      return;
+    if (token0.num) {
+      estimateAction(t.address, token1.token.address, token0.num, true);
+    } else if (token1.num) {
+      estimateAction(t.address, token1.token.address, token1.num, false);
     }
   };
 
   const handleToken0NumChange = (n: string) => {
     if (n === token0.num) return;
-
-    setToken0({ ...token0, num: n });
+    setToken0((prev: ITokenNumDesc) => ({ ...prev, num: n }));
 
     if (!token0.token || !token1.token) {
-      setToken1({ ...token1, num: "" });
+      setToken1((prev: ITokenNumDesc) => ({ ...prev, num: "" }));
       return;
     }
 
@@ -131,7 +119,7 @@ export function useTokenSwap(
       const isSameToken = token0?.token?.address === token1.token?.address;
 
       if (isSameToken) {
-        setToken1({ ...token1, num: n });
+        setToken1((prev: ITokenNumDesc) => ({ ...prev, num: n }));
       } else {
         estimateAction(
           token0?.token?.address || "",
@@ -146,44 +134,36 @@ export function useTokenSwap(
   };
 
   const handleToken1Change = async (t: IToken | null) => {
-    setToken1({ ...token1, token: t });
+    setToken1((prev: ITokenNumDesc) => ({ ...prev, token: t }));
 
     if (!t) return;
     if (!token0.num && !token1.num) return;
 
     if (!token0.token) {
-      setToken0({ ...token0, num: "" });
+      setToken0((prev: ITokenNumDesc) => ({ ...prev, num: "" }));
       return;
     }
 
     const isSameToken = t?.address === token0.token?.address;
-
-    if (token1.num) {
-      if (isSameToken) {
-        setToken0({ ...token1, num: token0.num });
-      } else {
-        estimateAction(
-          token0?.token?.address || "",
-          t?.address || "",
-          token1.num,
-          false,
-        );
+    if (isSameToken) {
+      if (token0.num) {
+        setToken1((prev: ITokenNumDesc) => ({ ...prev, num: token0.num }));
+      } else if (token1.num) {
+        setToken0((prev: ITokenNumDesc) => ({ ...prev, num: token1.num }));
       }
 
       return;
     }
 
     if (token0.num) {
-      if (isSameToken) {
-        setToken1((val: ITokenNumDesc) => ({ ...val, num: token0.num }));
-      } else {
-        estimateAction(
-          token0.token?.address || "",
-          t?.address,
-          token0.num,
-          true,
-        );
-      }
+      estimateAction(token0.token?.address || "", t?.address, token0.num, true);
+    } else if (token1.num) {
+      estimateAction(
+        token0?.token?.address || "",
+        t?.address || "",
+        token1.num,
+        false,
+      );
 
       return;
     }
@@ -191,11 +171,10 @@ export function useTokenSwap(
 
   const handleToken1NumChange = (n: string) => {
     if (n === token1.num) return;
-
-    setToken1({ ...token1, num: n });
+    setToken1((prev: ITokenNumDesc) => ({ ...prev, num: n }));
 
     if (!token0.token || !token1.token) {
-      setToken0({ ...token1, num: "" });
+      setToken0((prev: ITokenNumDesc) => ({ ...prev, num: "" }));
       return;
     }
 
@@ -203,7 +182,7 @@ export function useTokenSwap(
       const isSameToken = token0?.token?.address === token1.token?.address;
 
       if (isSameToken) {
-        setToken0({ ...token0, num: n });
+        setToken0((prev: ITokenNumDesc) => ({ ...prev, num: n }));
       } else {
         estimateAction(
           token0.token?.address || "",

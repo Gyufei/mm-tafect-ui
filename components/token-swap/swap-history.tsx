@@ -150,9 +150,12 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
       if (searchText === "") {
         return true;
       } else {
-        const isTxHash = task.txHash.includes(searchText);
-        const isAccount = task.account.includes(searchText);
-        return isTxHash || isAccount;
+        const isTxHash = task.txHash && task.txHash?.includes(searchText);
+        const isAccount =
+          task.data?.account && task.data?.account.includes(searchText);
+        const isReception =
+          task.data?.recipient && task.data?.recipient.includes(searchText);
+        return isTxHash || isAccount || isReception;
       }
     });
   }, [tasks, searchText]);

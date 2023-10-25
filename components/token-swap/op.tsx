@@ -192,12 +192,12 @@ export default function Op({
 
   useEffect(() => {
     if (token0Allowance) {
-      setToken0({
-        ...token0,
+      setToken0((prev) => ({
+        ...prev,
         allowance: token0Allowance,
-      });
+      }));
     }
-  }, [token0Allowance, token0]);
+  }, [token0Allowance]);
 
   const [approveLoading, setApproveLoading] = useState<boolean>(false);
   async function handleApprove() {

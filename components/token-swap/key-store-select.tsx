@@ -28,12 +28,19 @@ export default function KeyStoreSelect({
   const { network } = useContext(NetworkContext);
   const networkId = network?.chain_id || null;
 
-  const [openKeyStorePop, setKeyStorePop] = useState(false);
+  const [openKeyStorePopOpen, setKeyStorePopOpen] = useState(false);
 
   const keyStoreOptions = useKeyStoreAccounts(networkId, page);
 
   useEffect(() => {
+    const keyStoreNames = keyStores.map((ks) => ks.name);
+    const keyStoreOptionsNames = keyStoreOptions.map((ks) => ks.name);
+
     if (!keyStores.length && keyStoreOptions.length) {
+      handleKeyStoreSelect(keyStoreOptions);
+    }
+
+    if (keyStoreNames.find((name) => !keyStoreOptionsNames.includes(name))) {
       handleKeyStoreSelect(keyStoreOptions);
     }
   }, [keyStoreOptions]);
@@ -46,18 +53,18 @@ export default function KeyStoreSelect({
         return [...ks, keyStore];
       }
     });
-    setKeyStorePop(false);
+    setKeyStorePopOpen(false);
   };
 
   return (
     <Popover
-      open={openKeyStorePop}
-      onOpenChange={(isOpen) => setKeyStorePop(isOpen)}
+      open={openKeyStorePopOpen}
+      onOpenChange={(isOpen) => setKeyStorePopOpen(isOpen)}
     >
       <PopoverTrigger className="w-[350px]">
         <div
           className="flex items-center transition-all duration-75 active:bg-gray-100"
-          onClick={() => setKeyStorePop(!openKeyStorePop)}
+          onClick={() => setKeyStorePopOpen(!openKeyStorePopOpen)}
         >
           {keyStores.length ? (
             <>
@@ -72,7 +79,7 @@ export default function KeyStoreSelect({
           )}
           <ChevronDown
             className={`h-4 w-4 text-gray-600 transition-all ${
-              openKeyStorePop ? "rotate-180" : ""
+              openKeyStorePopOpen ? "rotate-180" : ""
             }`}
           />
         </div>

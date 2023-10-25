@@ -90,19 +90,19 @@ export function useTokenSwap(
 
     const isSameToken = t?.address === token1.token?.address;
     if (isSameToken) {
-      if (token0.num) {
-        setToken1((prev: ITokenNumDesc) => ({ ...prev, num: token0.num }));
-      } else if (token1.num) {
+      if (token1.num) {
         setToken0((prev: ITokenNumDesc) => ({ ...prev, num: token1.num }));
+      } else if (token0.num) {
+        setToken1((prev: ITokenNumDesc) => ({ ...prev, num: token0.num }));
       }
 
       return;
     }
 
-    if (token0.num) {
-      estimateAction(t.address, token1.token.address, token0.num, true);
-    } else if (token1.num) {
+    if (token1.num) {
       estimateAction(t.address, token1.token.address, token1.num, false);
+    } else if (token0.num) {
+      estimateAction(t.address, token1.token.address, token0.num, true);
     }
   };
 
@@ -156,16 +156,9 @@ export function useTokenSwap(
     }
 
     if (token0.num) {
-      estimateAction(token0.token?.address || "", t?.address, token0.num, true);
+      estimateAction(token0.token.address, t?.address, token0.num, true);
     } else if (token1.num) {
-      estimateAction(
-        token0?.token?.address || "",
-        t?.address || "",
-        token1.num,
-        false,
-      );
-
-      return;
+      estimateAction(token0.token.address, t?.address || "", token1.num, false);
     }
   };
 

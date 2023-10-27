@@ -12,9 +12,9 @@ export function getLocalUsers() {
   return localUsers;
 }
 
-export function setLocalUsers(users: IUser[]) {
+export function setLocalUsers(users: IUser[], broadcast: boolean = true) {
   localStorage.setItem(UserStorageKey, JSON.stringify(users));
-  BusDispatch(UserStorageChangeEvent);
+  if (broadcast) BusDispatch(UserStorageChangeEvent);
 }
 
 export function addOrUpdateUser(user: IUser) {
@@ -44,7 +44,7 @@ export function setUserActive(name: string) {
     return u;
   });
 
-  setLocalUsers(newLocal);
+  setLocalUsers(newLocal, false);
 }
 
 export function removeUser(name: string) {

@@ -1,26 +1,19 @@
 import useSWR from "swr";
 import { SystemEndPointPathMap } from "../end-point";
 import fetcher from "../fetcher";
-import { useContext, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { IKeyStore } from "../types/keystore";
-import { UserManageContext } from "../providers/user-manage-provider";
 
 export function usePageKeystores(page: string) {
-  const { currentUser } = useContext(UserManageContext);
-
   const { data: allKeyStores } = useSWR(
     SystemEndPointPathMap.allKeyStores,
     fetcher,
   );
 
-  const { data: pageKeyStoreNames, mutate: getPageKeyStoreNames } = useSWR(
+  const { data: pageKeyStoreNames } = useSWR(
     `${SystemEndPointPathMap.keyStoreByPage}?page_name=${page}`,
     fetcher,
   );
-
-  useEffect(() => {
-    getPageKeyStoreNames();
-  }, [currentUser, getPageKeyStoreNames]);
 
   const userKeyStores = useMemo<Array<IKeyStore>>(() => {
     if (!allKeyStores) return [];

@@ -35,53 +35,56 @@ export default function KeyStoreItem() {
   const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
 
-  const [selectedKeyStore, setSelectedKeyStore] = useState<IKeyStore | null>(
-    null,
-  );
-  const [selectedRange, setSelectedRange] = useState<IKeyStoreRange | null>(
-    null,
-  );
-
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
   const { data: userKeyStores, mutate: refetchKeyStores } = useUserKeystores();
 
-  const firstRenderSetSelect = useRef(false);
+  const [selectedKeyStoreName, setSelectedKeyStoreName] = useState<
+    string | null
+  >(null);
+  const selectedKeyStore = useMemo(() => {
+    if (!userKeyStores.length) return null;
+
+    const ks = userKeyStores.find(
+      (k: IKeyStore) => k.keystore_name === selectedKeyStoreName,
+    );
+
+    return ks;
+  }, [userKeyStores, selectedKeyStoreName]);
+
+  const [selectedRangeName, setSelectedRangeName] = useState<string | null>(
+    null,
+  );
+
+  const selectedRange = useMemo(() => {
+    if (!selectedKeyStoreName) return null;
+
+    const ks = selectedKeyStore?.range.find(
+      (k: IKeyStoreRange) => k.root_account === selectedRangeName,
+    );
+
+    return ks;
+  }, [selectedKeyStoreName, selectedKeyStore, selectedRangeName]);
 
   useEffect(() => {
     if (!userKeyStores.length) {
-      setSelectedKeyStore(null);
+      setSelectedKeyStoreName(null);
     }
 
-    if (
-      userKeyStores.length &&
-      !selectedKeyStore &&
-      !firstRenderSetSelect.current
-    ) {
-      setSelectedKeyStore(userKeyStores[0]);
-      firstRenderSetSelect.current = true;
-    }
+    const hasKeyStore = userKeyStores.find(
+      (ks) => ks.keystore_name === selectedKeyStoreName,
+    );
 
-    if (selectedKeyStore) {
-      const newKs = userKeyStores.find(
-        (k: IKeyStore) => k.keystore_name === selectedKeyStore.keystore_name,
-      );
-      if (newKs) setSelectedKeyStore(newKs);
+    if (userKeyStores.length && (!selectedKeyStoreName || !hasKeyStore)) {
+      setSelectedKeyStoreName(userKeyStores[0].keystore_name);
     }
-
-    if (selectedRange) {
-      const newRange = selectedKeyStore?.range.find(
-        (r: IKeyStoreRange) => r.root_account === selectedRange.root_account,
-      );
-      if (newRange) setSelectedRange(newRange);
-    }
-  }, [userKeyStores, selectedKeyStore, selectedRange]);
+  }, [userKeyStores, selectedKeyStoreName]);
 
   const { data: keyStoreAccountsDataRes, mutate: refreshAccount } = useSWR<
     Array<{ accounts: Array<IAccountGas>; count: number }>
   >(() => {
-    if (userKeyStores.length && selectedKeyStore && network?.chain_id) {
-      return `${userPathMap.keyStoreAccounts}?keystore=${selectedKeyStore.keystore_name}&chain_id=${network?.chain_id}`;
+    if (userKeyStores.length && selectedKeyStoreName && network?.chain_id) {
+      return `${userPathMap.keyStoreAccounts}?keystore=${selectedKeyStoreName}&chain_id=${network?.chain_id}`;
     } else {
       return null;
     }
@@ -257,8 +260,8 @@ export default function KeyStoreItem() {
   };
 
   const onDelete = () => {
-    setSelectedKeyStore(null);
-    setSelectedRange(null);
+    setSelectedKeyStoreName(null);
+    setSelectedRangeName(null);
     refetchKeyStores();
   };
 
@@ -266,10 +269,10 @@ export default function KeyStoreItem() {
     <>
       <KeyStoreLinks
         keyStores={userKeyStores}
-        selected={selectedKeyStore}
-        setSelected={setSelectedKeyStore}
-        selectedRange={selectedRange}
-        setSelectedRange={setSelectedRange}
+        selected={selectedKeyStoreName || null}
+        setSelected={setSelectedKeyStoreName}
+        selectedRange={selectedRangeName}
+        setSelectedRange={setSelectedRangeName}
         onSubmitted={() => refetchKeyStores()}
         onDelete={() => setDeleteDialogOpen(true)}
       ></KeyStoreLinks>
@@ -284,9 +287,9 @@ export default function KeyStoreItem() {
             </DetailItem>
             {!selectedRange && (
               <DetailItem title="Works for">
-                {selectedKeyStore ? (
+                {selectedKeyStoreName ? (
                   <KeyStorePageSelect
-                    keyStoreName={selectedKeyStore?.keystore_name || null}
+                    keyStoreName={selectedKeyStoreName || null}
                   />
                 ) : (
                   <div className="h-6 w-10"></div>
@@ -356,7 +359,7 @@ export default function KeyStoreItem() {
             )}
             <DeleteKeyStoreDialog
               open={deleteDialogOpen}
-              keyStoreName={selectedKeyStore?.keystore_name || null}
+              keyStoreName={selectedKeyStoreName || null}
               onOpenChange={setDeleteDialogOpen}
               onDeleted={onDelete}
             />

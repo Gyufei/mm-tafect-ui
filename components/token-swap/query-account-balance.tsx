@@ -129,8 +129,6 @@ export default function QueryAccountBalance({
     if (!toAddress) {
       setToAddress(fromAddress);
     }
-
-    console.log(toAddress);
   };
 
   useEffect(() => {

@@ -163,7 +163,6 @@ export function LoadKeyStoreDialog({
                         {...register(`range.${index}.from_index`, {
                           onChange: (e) => {
                             const num = replaceStrNumNoDecimal(e.target.value);
-                            console.log(num);
                             setValue(`range.${index}.from_index`, num);
                           },
                         })}
@@ -174,7 +173,6 @@ export function LoadKeyStoreDialog({
                         {...register(`range.${index}.to_index`, {
                           onChange: (e) => {
                             const num = replaceStrNumNoDecimal(e.target.value);
-                            console.log(num);
                             setValue(`range.${index}.to_index`, num);
                           },
                         })}

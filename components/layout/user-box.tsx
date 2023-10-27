@@ -24,6 +24,7 @@ export function UserBox() {
   function handleChangeUser(user: IUser) {
     if (user?.name === currentUser?.name) return;
     setUserActive(user?.name);
+    window.location.reload();
   }
 
   return (

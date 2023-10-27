@@ -52,10 +52,10 @@ export default function TokenProvider({
     return uniqueT;
   };
 
-  const { data: tokens } = useSWR(
-    `${userPathMap.tokenList}?chain_id=${networkId}`,
-    tokenFetcher,
-  );
+  const { data: tokens } = useSWR(() => {
+    if (!networkId) return null;
+    return `${userPathMap.tokenList}?chain_id=${networkId}`;
+  }, tokenFetcher);
 
   const token = useMemo(() => {
     if (tokens && userWeb3Info?.token_address) {

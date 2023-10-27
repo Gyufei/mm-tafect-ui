@@ -25,10 +25,10 @@ export default function KeyStoreLinks({
   onSubmitted,
 }: {
   keyStores: Array<IKeyStore>;
-  selectedRange: IKeyStoreRange | null;
-  selected: IKeyStore | null;
-  setSelected: (_s: IKeyStore | null) => void;
-  setSelectedRange: (_s: IKeyStoreRange | null) => void;
+  selectedRange: string | null;
+  selected: string | null;
+  setSelected: (_s: string | null) => void;
+  setSelectedRange: (_s: string | null) => void;
   onDelete: () => void;
   onSubmitted: () => void;
 }) {
@@ -68,13 +68,13 @@ export default function KeyStoreLinks({
   };
 
   const onSelectedKeyStore = (ks: IKeyStore) => {
-    setSelected(ks);
+    setSelected(ks.keystore_name);
     setSelectedRange(null);
   };
 
   const onSelectedRootAccount = (rAcc: IKeyStoreRange, ks: IKeyStore) => {
-    setSelected(ks);
-    setSelectedRange(rAcc);
+    setSelected(ks.keystore_name);
+    setSelectedRange(rAcc.root_account);
   };
 
   return (
@@ -90,7 +90,7 @@ export default function KeyStoreLinks({
               <div
                 data-state={
                   !selectedRange &&
-                  selected?.keystore_name === String(ks.keystore_name)
+                  selected === String(ks.keystore_name)
                     ? "active"
                     : "inactive"
                 }
@@ -114,7 +114,7 @@ export default function KeyStoreLinks({
                   onClick={onDelete}
                   strokeWidth={3}
                   data-state={
-                    selected?.keystore_name === String(ks)
+                    selected === String(ks)
                       ? "active"
                       : "inactive"
                   }
@@ -125,13 +125,13 @@ export default function KeyStoreLinks({
                 {ks.range.map((r: any) => (
                   <div
                     data-state={
-                      selectedRange?.root_account === String(r.root_account)
+                      selectedRange === String(r.root_account)
                         ? "active"
                         : "inactive"
                     }
                     onClick={() => onSelectedRootAccount(r, ks)}
                     key={r.root_account}
-                    className="ml-8 mt-2 cursor-pointer rounded-lg border px-3 py-[8px] text-content-color data-[state=active]:border-[#d7d9df] data-[state=active]:bg-[#e9eaee] data-[state=active]:text-[#000] md:mb-3 md:mt-0 md:rounded-none md:rounded-e-none md:rounded-s md:border-r-0 md:border-transparent md:py-[10px]"
+                    className="ml-8 mt-2 cursor-pointer rounded-lg border px-3 py-[8px] text-content-color data-[state=active]:border-[#d7d9df] data-[state=active]:bg-[#e9eaee] data-[state=active]:text-[#000] md:mt-0 md:rounded-none md:rounded-e-none md:rounded-s md:border-r-0 md:border-transparent md:py-[10px]"
                   >
                     <TruncateText text={r.root_account} /> ({r.from_index || 0},
                     {r.to_index && String(r.to_index) !== UNIT32_MAX

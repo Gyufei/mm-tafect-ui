@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { SystemEndPointPathMap } from "../end-point";
 import fetcher from "../fetcher";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { IKeyStore } from "../types/keystore";
 
 export function useUserKeystores() {
@@ -32,10 +32,10 @@ export function useUserKeystores() {
     return ks;
   }, [allKeyStores, useKeyStoreNames]);
 
-  const refresh = () => {
-    refetchAllKeyStores();
-    refetchKeyStores();
-  };
+  const refresh = useCallback(async () => {
+    await refetchAllKeyStores();
+    await refetchKeyStores();
+  }, [refetchAllKeyStores, refetchKeyStores]);
 
   return {
     data: userKeyStores,

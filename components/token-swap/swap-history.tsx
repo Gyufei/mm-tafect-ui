@@ -128,9 +128,13 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
   };
 
   useEffect(() => {
-    if (networkId && opList?.length && tokens?.length) {
-      filterTrigger();
-    }
+    const inId = setInterval(() => {
+      if (networkId && opList?.length && tokens?.length) {
+        filterTrigger();
+      }
+    }, 30000);
+
+    return () => clearInterval(inId);
   }, [networkId, opList?.length, tokens.length]);
 
   const {

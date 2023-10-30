@@ -25,7 +25,7 @@ export function isAddress(address: string): boolean {
   return AddressRegex.test(address);
 }
 
-export function replaceAddress(v: string) {
+export function parseToAddress(v: string) {
   if (v && !v.startsWith("0")) return "";
   if (v.length > 1 && !v.startsWith("0x") && !v.startsWith("0X")) return "0";
   if (v.length > 42) return v.substring(0, 42);

@@ -1,41 +1,24 @@
-import { useContext, useEffect, useState } from "react";
-import useSWR from "swr";
+import { useEffect, useState } from "react";
 
-import { UserEndPointContext } from "../providers/user-end-point-provider";
-import fetcher from "../fetcher";
 import { IAdvanceOptions } from "@/components/token-swap/op-advance-options";
-import { isAddress } from "../utils";
+import { useGasPrice } from "./use-gas-price";
+import { useNonce } from "./use-nonce";
 
-export function useAdvanceOptions(networkId: string, queryAccount: string) {
-  const { userPathMap } = useContext(UserEndPointContext);
-
-  const { data: gasPrice } = useSWR(() => {
-    if (networkId) {
-      return `${userPathMap.gasPrice}?chain_id=${networkId}`;
-    } else {
-      return null;
-    }
-  }, fetcher);
-
-  const { data: nonceData } = useSWR(() => {
-    if (networkId && queryAccount && isAddress(queryAccount)) {
-      return `${userPathMap.nonceNum}?chain_id=${networkId}&account=${queryAccount}`;
-    } else {
-      return null;
-    }
-  }, fetcher);
+export function useAdvanceOptions(queryAccount: string) {
+  const { data: gasPrice } = useGasPrice();
+  const { data: nonce } = useNonce(queryAccount);
 
   useEffect(() => {
-    if (nonceData) {
-      setAdvanceOptions({ ...advanceOptions, nonce: Number(nonceData.nonce) });
+    if (nonce) {
+      setAdvanceOptions({ ...advanceOptions, nonce: nonce });
     }
-  }, [nonceData]);
+  }, [nonce]);
 
   useEffect(() => {
     if (gasPrice) {
       setAdvanceOptions({
         ...advanceOptions,
-        gas: Number(gasPrice.gas_price) / 10 ** 9,
+        gas: gasPrice,
       });
     }
   }, [gasPrice]);

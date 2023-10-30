@@ -13,6 +13,8 @@ import LockIcon from "@/components/icons/lock";
 import NoCheckIcon from "@/components/icons/noCheck";
 import { replaceStrNum, replaceStrNumNoDecimal } from "@/lib/hooks/use-str-num";
 import { subMinutes } from "date-fns";
+import { useGasPrice } from "@/lib/hooks/use-gas-price";
+import { useNonce } from "@/lib/hooks/use-nonce";
 
 export interface IAdvanceOptions {
   schedule: Date | null;
@@ -27,10 +29,15 @@ export interface IAdvanceOptions {
 export default function OpAdvanceOptions({
   options,
   onChange,
+  account,
 }: {
   options: IAdvanceOptions;
   onChange: (_o: IAdvanceOptions) => void;
+  account: string;
 }) {
+  const { data: gasPrice } = useGasPrice();
+  const { data: nonce } = useNonce(account);
+
   function handleAdvanceOptionsChange(key: string, value: any) {
     if (key === "slippage" || key === "gas") {
       value = value ? replaceStrNum(value) : null;
@@ -89,12 +96,12 @@ export default function OpAdvanceOptions({
           <div>
             <div className="LabelText mb-1">Nonce</div>
             <Input
-              value={options.nonce || ""}
+              value={options.nonce != null ? options.nonce : ""}
               onChange={(e) =>
                 handleAdvanceOptionsChange("nonce", e.target.value)
               }
               className="rounded-md border-border-color"
-              placeholder="0"
+              placeholder={nonce || "0"}
             />
           </div>
           <div>
@@ -105,7 +112,7 @@ export default function OpAdvanceOptions({
                 handleAdvanceOptionsChange("gas", e.target.value)
               }
               className="rounded-md border-border-color"
-              placeholder="0"
+              placeholder={String(gasPrice)}
             />
           </div>
           <button

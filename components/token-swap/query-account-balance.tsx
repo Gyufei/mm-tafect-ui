@@ -1,11 +1,15 @@
 import { useContext, useEffect, useMemo } from "react";
-import useSWRMutation from "swr/mutation";
 
-import { cn, isAddress, replaceAddress } from "@/lib/utils";
-import fetcher from "@/lib/fetcher";
+import { cn, isAddress, parseToAddress } from "@/lib/utils";
 import { NetworkContext } from "@/lib/providers/network-provider";
 
 import { Input } from "../ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import {
   Select,
@@ -15,8 +19,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TokenContext } from "@/lib/providers/token-provider";
-import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 import useSwapAddressStore from "@/lib/state";
+import { useAccountBalance } from "@/lib/hooks/use-account-balance";
+import { useGasPrice } from "@/lib/hooks/use-gas-price";
+import { useNonce } from "@/lib/hooks/use-nonce";
 
 export default function QueryAccountBalance({
   gas,
@@ -25,7 +31,6 @@ export default function QueryAccountBalance({
   gas: number | null;
   setGas: (_gas: number) => void;
 }) {
-  const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
   const {
     token: userToken,
@@ -45,8 +50,7 @@ export default function QueryAccountBalance({
   );
 
   const handleAccountChange = (v: string) => {
-    const addrV = replaceAddress(v);
-
+    const addrV = parseToAddress(v);
     setFromAddress(addrV);
   };
 
@@ -57,56 +61,17 @@ export default function QueryAccountBalance({
     setStableToken(selected || null);
   };
 
-  const getAccountBalanceQuery = () => {
-    const queryParams = new URLSearchParams();
-
-    if (!network || !fromAddress) {
-      return;
-    }
-
-    queryParams.set("chain_id", network?.chain_id.toString());
-    queryParams.set("account", fromAddress);
-
-    const queryTokens = [userToken?.address, stableToken?.address];
-    queryParams.set("tokens", queryTokens.join(","));
-
-    const query = queryParams.toString();
-
-    return query;
-  };
-
-  const getGasBalanceQuery = () => {
-    const queryParams = new URLSearchParams();
-
-    if (!network || !fromAddress) {
-      return;
-    }
-
-    queryParams.set("chain_id", network?.chain_id.toString());
-    queryParams.set("account", fromAddress);
-
-    const query = queryParams.toString();
-
-    return query;
-  };
+  const { mutate: getGas } = useGasPrice();
+  const { mutate: getNonce } = useNonce(fromAddress);
 
   const {
-    data: accountBalanceRes,
-    trigger: triggerAccountBalance,
-    reset: resetAccountBalance,
-  } = useSWRMutation(
-    `${userPathMap.accountTokensBalance}?${getAccountBalanceQuery()}`,
-    fetcher as any,
-  );
-
-  const {
-    data: gasBalanceRes,
-    trigger: triggerGasBalance,
-    reset: resetGasBalance,
-  } = useSWRMutation(
-    `${userPathMap.accountTokenBalance}?${getGasBalanceQuery()}`,
-    fetcher as any,
-  );
+    accountBalanceRes,
+    triggerAccountBalance,
+    resetAccountBalance,
+    gasBalanceRes,
+    triggerGasBalance,
+    resetGasBalance,
+  } = useAccountBalance(fromAddress, userToken, stableToken);
 
   useEffect(() => {
     if (gasBalanceRes) {
@@ -126,6 +91,11 @@ export default function QueryAccountBalance({
       triggerAccountBalance();
     }
 
+    if (fromAddress) {
+      getGas();
+      getNonce();
+    }
+
     if (!toAddress) {
       setToAddress(fromAddress);
     }
@@ -134,7 +104,7 @@ export default function QueryAccountBalance({
   useEffect(() => {
     resetAccountBalance();
     resetGasBalance();
-  }, [network?.chain_id]);
+  }, [network?.chain_id, resetAccountBalance, resetGasBalance]);
 
   const accountBalances = useMemo(
     () => accountBalanceRes?.batch_balance_of || [0, 0],
@@ -186,9 +156,28 @@ export default function QueryAccountBalance({
               ))}
             </SelectContent>
           </Select>
-          <div className="TruncateSingleLine text-lg font-medium text-title-color">
-            {accountBalances[1]}
-          </div>
+          {accountBalances[1]?.length > 5 ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="TruncateSingleLine text-lg font-medium text-title-color">
+                    {accountBalances[1]}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="flex items-center">
+                    <p className="text-sm text-content-color">
+                      {accountBalances[1]}
+                    </p>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <div className="TruncateSingleLine text-lg font-medium text-title-color">
+              {accountBalances[1]}
+            </div>
+          )}
         </div>
       </div>
     </>
@@ -212,9 +201,26 @@ function SmallTokenCard({
       )}
     >
       <div className="LabelText h-[20px]">{name}</div>
-      <div className="TruncateSingleLine text-lg font-medium text-title-color">
-        {num}
-      </div>
+      {String(num).length > 5 ? (
+        <TooltipProvider delayDuration={200}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="TruncateSingleLine text-lg font-medium text-title-color">
+                {num}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="flex items-center">
+                <p className="text-sm text-content-color">{num}</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <div className="TruncateSingleLine text-lg font-medium text-title-color">
+          {num}
+        </div>
+      )}
     </div>
   );
 }

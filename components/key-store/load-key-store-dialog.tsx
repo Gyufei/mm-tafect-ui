@@ -14,7 +14,7 @@ import fetcher from "@/lib/fetcher";
 import { SystemEndPointPathMap } from "@/lib/end-point";
 import { toast } from "../ui/use-toast";
 import { UNIT32_MAX } from "@/lib/constants";
-import { replaceAddress } from "@/lib/utils";
+import { parseToAddress } from "@/lib/utils";
 
 const EmptyRow = {
   root_account: "",
@@ -152,7 +152,7 @@ export function LoadKeyStoreDialog({
                         required: true,
                         minLength: 42,
                         onChange: (e) => {
-                          const addr = replaceAddress(e.target.value);
+                          const addr = parseToAddress(e.target.value);
                           setValue(`range.${index}.root_account`, addr);
                         },
                       })}

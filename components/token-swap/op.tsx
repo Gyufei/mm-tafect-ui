@@ -80,10 +80,7 @@ export default function Op({
 
   const [transferAmount, setTransferAmount] = useState<string>("");
 
-  const { advanceOptions, setAdvanceOptions } = useAdvanceOptions(
-    network?.chain_id || "",
-    fromAddress,
-  );
+  const { advanceOptions, setAdvanceOptions } = useAdvanceOptions(fromAddress);
 
   const handleTransferAmountChange = (e: string) => {
     const reNum = replaceStrNum(e);
@@ -371,6 +368,7 @@ export default function Op({
         <OpAdvanceOptions
           options={advanceOptions}
           onChange={setAdvanceOptions}
+          account={fromAddress}
         />
       </div>
 

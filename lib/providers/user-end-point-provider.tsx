@@ -6,7 +6,7 @@ import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 import { SystemEndPointPathMap, UserEndPointPathMap } from "../end-point";
 import { cloneDeep } from "lodash";
-import { redirect } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 
 type PathMap = typeof UserEndPointPathMap;
 
@@ -38,8 +38,10 @@ export default function UserEndPointProvider({
 
   const [userPathMap, setPathMap] = useState({} as PathMap);
 
+  const pathname = usePathname();
+
   useEffect(() => {
-    if (userEndPointData && !userEndPoint) {
+    if (userEndPointData && !userEndPoint && !pathname.includes("/setting")) {
       redirect("/setting");
       return;
     }
@@ -52,7 +54,7 @@ export default function UserEndPointProvider({
     });
 
     setPathMap(newMap);
-  }, [userEndPoint]);
+  }, [userEndPointData, userEndPoint, pathname]);
 
   return (
     <UserEndPointContext.Provider

@@ -52,12 +52,14 @@ export function useKeyStoreAccounts(networkId: string | null, page: string) {
         name,
         accounts: targetAcc,
         count: targetAcc.length,
+        accountLoading: false,
       };
     } catch (e) {
       return {
         name,
         accounts: [],
         count: 0,
+        accountLoading: false,
       };
     }
   }
@@ -67,6 +69,18 @@ export function useKeyStoreAccounts(networkId: string | null, page: string) {
       return;
     }
 
+    const ksAcs = keyStores.map((ks: IKeyStore) => {
+      return {
+        name: ks.keystore_name,
+        accounts: [],
+        count: 0,
+        accountLoading: true,
+      };
+    });
+    setKeyStoreAccounts(() => {
+      return ksAcs;
+    });
+
     async function getItemAccounts() {
       const ksAcs = await Promise.all(
         keyStores.map((ks: IKeyStore) => {
@@ -74,7 +88,9 @@ export function useKeyStoreAccounts(networkId: string | null, page: string) {
         }),
       );
 
-      setKeyStoreAccounts(ksAcs);
+      setKeyStoreAccounts(() => {
+        return ksAcs;
+      });
     }
 
     getItemAccounts();

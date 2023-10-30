@@ -33,15 +33,16 @@ export default function KeyStoreSelect({
   const keyStoreOptions = useKeyStoreAccounts(networkId, page);
 
   useEffect(() => {
-    const keyStoreNames = keyStores.map((ks) => ks.name);
-    const keyStoreOptionsNames = keyStoreOptions.map((ks) => ks.name);
-
     if (!keyStores.length && keyStoreOptions.length) {
       handleKeyStoreSelect(keyStoreOptions);
     }
 
-    if (keyStoreNames.find((name) => !keyStoreOptionsNames.includes(name))) {
-      handleKeyStoreSelect(keyStoreOptions);
+    if (keyStores.length) {
+      const ks = keyStores.map((ks) => {
+        const newKs = keyStoreOptions.find((kso) => kso.name === ks.name);
+        return newKs as any;
+      });
+      handleKeyStoreSelect(ks);
     }
   }, [keyStoreOptions]);
 
@@ -107,9 +108,11 @@ export default function KeyStoreSelect({
                     htmlFor={option.name}
                   >
                     {option.name}
-                    <div className="Tag ml-2 bg-[#e9eaee]">
-                      {option.accounts.length}
-                    </div>
+                    {!option.accountLoading && (
+                      <div className="Tag ml-2 bg-[#e9eaee]">
+                        {option.accounts.length}
+                      </div>
+                    )}
                   </label>
                 </div>
               ))}

@@ -25,9 +25,10 @@ export default function FilterAccountList({
 }: {
   keyStores: Array<IKeyStoreAccount>;
 }) {
+  const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
   const networkId = network?.chain_id;
-  const { userPathMap } = useContext(UserEndPointContext);
+
   const { token: userToken, gasToken, stableToken } = useContext(TokenContext);
   const tokens = useMemo(() => {
     const ts = [];
@@ -75,6 +76,8 @@ export default function FilterAccountList({
     fetcher as any,
   );
 
+  console.log("accounts", accounts);
+  console.log(keyStores);
   const uniqAccounts = useMemo<Array<Record<string, any>>>(() => {
     if (!Array.isArray(accounts)) {
       return [];
@@ -98,7 +101,7 @@ export default function FilterAccountList({
 
     return newAccount;
     return newAccount;
-  }, [accounts]);
+  }, [accounts, keyStores]);
 
   function getFilterQuery() {
     const queryParams = new URLSearchParams();

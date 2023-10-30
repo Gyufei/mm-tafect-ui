@@ -129,13 +129,15 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
 
   useEffect(() => {
     const inId = setInterval(() => {
-      if (networkId && opList?.length && tokens?.length) {
-        filterTrigger();
-      }
+      handleSearch();
     }, 30000);
 
     return () => clearInterval(inId);
-  }, [networkId, opList?.length, tokens.length]);
+  }, []);
+
+  useEffect(() => {
+    handleSearch();
+  }, [networkId, opList?.length, tokens?.length]);
 
   const {
     data: tasks,
@@ -165,6 +167,8 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
   }, [tasks, searchText]);
 
   const handleSearch = () => {
+    if (!networkId || !opList?.length || !tokens?.length) return null;
+
     if (!filterTaskDate.min && !filterTaskDate.max) {
       return null;
     } else {

@@ -16,6 +16,7 @@ export interface IKeyStoreAccount {
   name: string;
   accounts: Array<IKeyStoreAccountItem>;
   count: number;
+  accountLoading: boolean;
 }
 
 export interface IKeyStoreAccountItem {

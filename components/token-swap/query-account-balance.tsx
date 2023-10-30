@@ -41,13 +41,9 @@ export default function QueryAccountBalance({
   } = useContext(TokenContext);
 
   const fromAddress = useSwapAddressStore((state) => state.fromAddress);
-  const setFromAddress = useSwapAddressStore(
-    (state) => state.action.setFromAddress,
-  );
+  const setFromAddress = useSwapAddressStore((state) => state.setFromAddress);
   const toAddress = useSwapAddressStore((state) => state.toAddress);
-  const setToAddress = useSwapAddressStore(
-    (state) => state.action.setToAddress,
-  );
+  const setToAddress = useSwapAddressStore((state) => state.setToAddress);
 
   const handleAccountChange = (v: string) => {
     const addrV = parseToAddress(v);

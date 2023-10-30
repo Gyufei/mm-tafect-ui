@@ -17,7 +17,9 @@ export function useGasPrice() {
     } else {
       return null;
     }
-  }, fetcher);
+  }, fetcher, {
+    refreshInterval: 12000
+  });
 
   return {
     ...res,

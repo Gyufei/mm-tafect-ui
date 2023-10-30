@@ -54,7 +54,7 @@ const DialogContent = React.forwardRef<
             {title}
           </DialogTitle>
           {showClose && (
-            <DialogPrimitive.Close className="absolute right-4 top-[3px] rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+            <DialogPrimitive.Close className="absolute right-4 top-[3px] rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
               <span className="text-sm text-primary">Close</span>
             </DialogPrimitive.Close>
           )}

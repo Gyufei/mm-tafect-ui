@@ -49,9 +49,7 @@ export default function Op({
 
   const fromAddress = useSwapAddressStore((state) => state.fromAddress);
   const toAddress = useSwapAddressStore((state) => state.toAddress);
-  const setToAddress = useSwapAddressStore(
-    (state) => state.action.setToAddress,
-  );
+  const setToAddress = useSwapAddressStore((state) => state.setToAddress);
 
   const [gasBalance, setGasBalance] = useState<number | null>(0);
 

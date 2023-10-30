@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronDownCircle } from "lucide-react";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
 
 import {
   Collapsible,
@@ -15,6 +16,9 @@ import { replaceStrNum, replaceStrNumNoDecimal } from "@/lib/hooks/use-str-num";
 import { subMinutes } from "date-fns";
 import { useGasPrice } from "@/lib/hooks/use-gas-price";
 import { useNonce } from "@/lib/hooks/use-nonce";
+import useIndexStore from "@/lib/state";
+import { TimezonesMap } from "@/lib/constants";
+// import { getNowOfTimezone } from "@/lib/utils";
 
 export interface IAdvanceOptions {
   schedule: Date | null;
@@ -35,6 +39,12 @@ export default function OpAdvanceOptions({
   onChange: (_o: IAdvanceOptions) => void;
   account: string;
 }) {
+  const timezone = useIndexStore((state) => state.timezone);
+  const curTimezoneStr = useMemo(
+    () => TimezonesMap[timezone as any] || "UTC",
+    [timezone],
+  );
+
   const { data: gasPrice } = useGasPrice();
   const { data: nonce } = useNonce(account);
 
@@ -57,7 +67,32 @@ export default function OpAdvanceOptions({
     });
   }
 
-  const pastTime = subMinutes(new Date(), 10);
+  const now = new Date().getTime();
+
+  const localTimezoneStr = useMemo(() => {
+    const offsetMinus = -new Date().getTimezoneOffset() / 60;
+    const offset =
+      offsetMinus > 0 ? `${Math.abs(offsetMinus)}` : `-${offsetMinus}`;
+    return TimezonesMap[offset as any] || "UTC";
+  }, []);
+
+  const displayDate = useMemo(() => {
+    if (!options.schedule) return null;
+    const utcDate = zonedTimeToUtc(
+      new Date(Number(options.schedule) * 1000).toISOString(),
+      localTimezoneStr,
+    );
+    const curTimezoneDate = utcToZonedTime(utcDate, curTimezoneStr);
+
+    return curTimezoneDate;
+  }, [options.schedule]);
+
+  const pastTime = (() => {
+    const utcDate = zonedTimeToUtc(new Date().toISOString(), localTimezoneStr);
+    const curTimezoneDate = utcToZonedTime(utcDate, curTimezoneStr);
+
+    return subMinutes(curTimezoneDate, 10);
+  })();
 
   return (
     <AdvanceCollapsible>
@@ -150,18 +185,14 @@ export default function OpAdvanceOptions({
               minDateTime={pastTime}
               timeSteps={{ hours: 1, minutes: 1 }}
               slotProps={{ textField: { size: "small", fullWidth: true } }}
-              value={
-                options.schedule
-                  ? new Date(Number(options.schedule) * 1000)
-                  : null
-              }
+              value={displayDate}
               onChange={(e: Date | null) =>
                 handleAdvanceOptionsChange("schedule", e)
               }
               format="yyyy-MM-dd HH:mm"
             />
             <button
-              onClick={() => handleAdvanceOptionsChange("schedule", new Date())}
+              onClick={() => handleAdvanceOptionsChange("schedule", now)}
               className="flex h-10 w-[92px] cursor-pointer items-center justify-center rounded-md border hover:bg-custom-bg-white"
             >
               Now

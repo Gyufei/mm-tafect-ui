@@ -44,9 +44,7 @@ export default function FilterAccountList({
     return ts;
   }, [userToken, gasToken, stableToken]);
 
-  const setFromAddress = useSwapAddressStore(
-    (state) => state.action.setFromAddress,
-  );
+  const setFromAddress = useSwapAddressStore((state) => state.setFromAddress);
 
   const [token, setToken] = useState<IToken | null>(null);
   const [tokenMin, setTokenMin] = useStrNum("");
@@ -76,8 +74,6 @@ export default function FilterAccountList({
     fetcher as any,
   );
 
-  console.log("accounts", accounts);
-  console.log(keyStores);
   const uniqAccounts = useMemo<Array<Record<string, any>>>(() => {
     if (!Array.isArray(accounts)) {
       return [];

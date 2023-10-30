@@ -36,6 +36,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.0",
     "js-md5": "^0.7.3",
     "lodash": "^4.17.21",
     "lucide-react": "0.259.0",

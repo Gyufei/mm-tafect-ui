@@ -12,13 +12,19 @@ export function useNonce(queryAccount: string) {
 
   const chain_id = network?.chain_id || "";
 
-  const res = useSWR(() => {
-    if (chain_id && queryAccount && isAddress(queryAccount)) {
-      return `${userPathMap.nonceNum}?chain_id=${chain_id}&account=${queryAccount}`;
-    } else {
-      return null;
-    }
-  }, fetcher);
+  const res = useSWR(
+    () => {
+      if (chain_id && queryAccount && isAddress(queryAccount)) {
+        return `${userPathMap.nonceNum}?chain_id=${chain_id}&account=${queryAccount}`;
+      } else {
+        return null;
+      }
+    },
+    fetcher,
+    {
+      refreshInterval: 12000,
+    },
+  );
 
   return {
     ...res,

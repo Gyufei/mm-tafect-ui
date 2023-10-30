@@ -30,6 +30,9 @@ import { SystemEndPointPathMap } from "@/lib/end-point";
 import fetcher from "@/lib/fetcher";
 import { TokenContext } from "@/lib/providers/token-provider";
 import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
+import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
+import { TimezonesMap } from "@/lib/constants";
+import useIndexStore from "@/lib/state";
 
 const SwapHistory = forwardRef((props: any, ref: any) => {
   const { userPathMap } = useContext(UserEndPointContext);
@@ -37,6 +40,20 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
   const networkId = network?.chain_id || null;
 
   const { tokens } = useContext(TokenContext);
+
+  const timezone = useIndexStore((state) => state.timezone);
+
+  const curTimezoneStr = useMemo(
+    () => TimezonesMap[timezone as any] || "UTC",
+    [timezone],
+  );
+
+  const localTimezoneStr = useMemo(() => {
+    const offsetMinus = -new Date().getTimezoneOffset() / 60;
+    const offset =
+      offsetMinus > 0 ? `${Math.abs(offsetMinus)}` : `-${offsetMinus}`;
+    return TimezonesMap[offset as any] || "UTC";
+  }, []);
 
   const { data: opList } = useSWR(() => {
     return networkId
@@ -92,7 +109,12 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
       })
       .map((t: Record<string, any>) => {
         const data = JSON.parse(t.data);
-        const date = format(new Date(t.schedule * 1000), "YYY-MM-dd HH:mm");
+        const utcDate = zonedTimeToUtc(
+          new Date(Number(t.schedule) * 1000).toISOString(),
+          localTimezoneStr,
+        );
+        const curTimezoneDate = utcToZonedTime(utcDate, curTimezoneStr);
+        const date = format(curTimezoneDate, "YYY-MM-dd HH:mm");
 
         const opType = opList.find((op: Record<string, any>) => {
           return op.op_id === t.op;
@@ -130,7 +152,7 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
   useEffect(() => {
     const inId = setInterval(() => {
       handleSearch();
-    }, 30000);
+    }, 12000);
 
     return () => clearInterval(inId);
   }, []);

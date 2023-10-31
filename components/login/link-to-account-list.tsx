@@ -1,9 +1,8 @@
-import { UserManageContext } from "@/lib/providers/user-manage-provider";
+import useIndexStore from "@/lib/state";
 import { ChevronLeft } from "lucide-react";
-import { useContext } from "react";
 
 export default function LinkToAccountList({ onShow }: { onShow: () => void }) {
-  const { allUsers } = useContext(UserManageContext);
+  const allUsers = useIndexStore((state) => state.users);
 
   return (
     <>

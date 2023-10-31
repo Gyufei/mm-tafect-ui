@@ -2,16 +2,14 @@ import fetcher from "../fetcher";
 import { SystemEndPointPathMap } from "../end-point";
 import { toast } from "@/components/ui/use-toast";
 import { IUser } from "./user";
-import {
-  addOrUpdateUser,
-  removeOldStorage,
-} from "./local-user-storage";
+import useIndexStore from "../state";
 
 export async function signInAction(credentials: {
   username: string;
   password: string;
 }) {
-  removeOldStorage();
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
 
   try {
     const res = await fetcher(
@@ -34,7 +32,7 @@ export async function signInAction(credentials: {
       active: true,
     };
 
-    addOrUpdateUser(user);
+    useIndexStore.getState().addOrUpdateUser(user);
 
     return true;
   } catch (e: any) {

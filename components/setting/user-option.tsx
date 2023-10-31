@@ -2,16 +2,15 @@
 import DetailItem from "../shared/detail-item";
 import EditEndPoint from "./edit-end-point";
 
-import { UserManageContext } from "@/lib/providers/user-manage-provider";
-import { useContext } from "react";
 import ChangeTimezone from "./timezone";
+import useIndexStore from "@/lib/state";
 
 export default function UserOption() {
-  const { currentUser: user } = useContext(UserManageContext);
+  const activeUser = useIndexStore((state) => state.activeUser());
 
   return (
     <div className="flex flex-1 flex-col justify-stretch">
-      <DetailItem title="Email Address">{user?.email || ""}</DetailItem>
+      <DetailItem title="Email Address">{activeUser?.email || ""}</DetailItem>
       <EditEndPoint />
       <ChangeTimezone />
     </div>

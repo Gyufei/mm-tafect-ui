@@ -7,7 +7,6 @@ import { chesna } from "./fonts";
 
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
-import UserManageProvider from "@/lib/providers/user-manage-provider";
 import SWRConfigProvider from "@/lib/providers/swr-config-provider";
 import MuiPickerProvider from "@/lib/providers/mui-picker-provider";
 import AuthRedirect from "@/components/shared/auth-redirect";
@@ -31,10 +30,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={cn(chesna.variable, "h-full w-full")}
-    >
+    <html lang="en" className={cn(chesna.variable, "h-full w-full")}>
       <body className="h-screen w-full overflow-x-hidden overflow-y-hidden md:overflow-x-auto">
         <Suspense
           fallback={
@@ -43,13 +39,11 @@ export default async function RootLayout({
             </div>
           }
         >
-          <UserManageProvider>
-            <AuthRedirect>
-              <SWRConfigProvider>
-                <MuiPickerProvider>{children}</MuiPickerProvider>
-              </SWRConfigProvider>
-            </AuthRedirect>
-          </UserManageProvider>
+          <AuthRedirect>
+            <SWRConfigProvider>
+              <MuiPickerProvider>{children}</MuiPickerProvider>
+            </SWRConfigProvider>
+          </AuthRedirect>
         </Suspense>
         <Analytics />
         <Toaster />

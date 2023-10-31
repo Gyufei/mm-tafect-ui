@@ -40,11 +40,6 @@ export default function OpAdvanceOptions({
   account: string;
 }) {
   const timezone = useIndexStore((state) => state.timezone);
-  const curTimezoneStr = useMemo(
-    () => TimezonesMap[timezone as any] || "UTC",
-    [timezone],
-  );
-
   const { data: gasPrice } = useGasPrice();
   const { data: nonce } = useNonce(account);
 
@@ -68,6 +63,11 @@ export default function OpAdvanceOptions({
   }
 
   const now = new Date().getTime();
+
+  const curTimezoneStr = useMemo(
+    () => TimezonesMap[timezone as any] || "UTC",
+    [timezone],
+  );
 
   const localTimezoneStr = useMemo(() => {
     const offsetMinus = -new Date().getTimezoneOffset() / 60;

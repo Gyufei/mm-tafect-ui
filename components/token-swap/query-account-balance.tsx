@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TokenContext } from "@/lib/providers/token-provider";
-import useSwapAddressStore from "@/lib/state";
+import useIndexStore from "@/lib/state";
 import { useAccountBalance } from "@/lib/hooks/use-account-balance";
 import { useGasPrice } from "@/lib/hooks/use-gas-price";
 import { useNonce } from "@/lib/hooks/use-nonce";
@@ -40,10 +40,10 @@ export default function QueryAccountBalance({
     setStableToken,
   } = useContext(TokenContext);
 
-  const fromAddress = useSwapAddressStore((state) => state.fromAddress);
-  const setFromAddress = useSwapAddressStore((state) => state.setFromAddress);
-  const toAddress = useSwapAddressStore((state) => state.toAddress);
-  const setToAddress = useSwapAddressStore((state) => state.setToAddress);
+  const fromAddress = useIndexStore((state) => state.fromAddress);
+  const setFromAddress = useIndexStore((state) => state.setFromAddress);
+  const toAddress = useIndexStore((state) => state.toAddress);
+  const setToAddress = useIndexStore((state) => state.setToAddress);
 
   const handleAccountChange = (v: string) => {
     const addrV = parseToAddress(v);

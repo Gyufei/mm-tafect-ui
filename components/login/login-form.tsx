@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IUser } from "@/lib/auth/user";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,6 +23,8 @@ import LinkToAccountList from "./link-to-account-list";
 import md5 from "js-md5";
 import { signInAction } from "@/lib/auth/auth-api";
 import { useRouter } from "next/navigation";
+import { isAfter } from "date-fns";
+import useIndexStore from "@/lib/state";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -39,6 +41,8 @@ export default function LoginForm({
   showWithUser?: boolean;
 }) {
   const router = useRouter();
+  const setUserActive = useIndexStore((state) => state.setUserActive);
+
   const [showLoginFailTip, setShowLoginFailTip] = useState(false);
   const showUserForLogin = showWithUser && user?.name;
 
@@ -50,13 +54,34 @@ export default function LoginForm({
     },
   });
 
+  const alreadyLogin = useMemo(() => {
+    if (!showWithUser || !user) return false;
+    if (!user.token) return false;
+
+    const isExpired = user?.expires
+      ? isAfter(user?.expires, new Date())
+      : false;
+
+    return isExpired;
+  }, [user, showWithUser]);
+
   useEffect(() => {
     if (showUserForLogin) {
       form.setValue("email", user.email || "");
     }
+
+    if (alreadyLogin) {
+      form.setValue("password", user?.email || "");
+    }
   }, [user]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (alreadyLogin) {
+      setUserActive(user?.name || "");
+      router.push("/dashboard");
+      return;
+    }
+
     const { email, password } = values;
     const mPassword = md5(password);
 
@@ -133,7 +158,12 @@ export default function LoginForm({
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input className="rounded" type="password" {...field} />
+                    <Input
+                      disabled={alreadyLogin}
+                      className="rounded"
+                      type="password"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

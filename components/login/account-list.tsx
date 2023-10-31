@@ -1,12 +1,11 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
 import { IUser } from "@/lib/auth/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useSwipeable } from "react-swipeable";
-import { UserManageContext } from "@/lib/providers/user-manage-provider";
-import { removeUser } from "@/lib/auth/local-user-storage";
+import useIndexStore from "@/lib/state";
 
 export default function AccountList({
   onAdd,
@@ -15,7 +14,8 @@ export default function AccountList({
   onAdd: () => void;
   onSelect: (ac: IUser) => void;
 }) {
-  const { allUsers } = useContext(UserManageContext);
+  const allUsers = useIndexStore((state) => state.users);
+  const removeUser = useIndexStore((state) => state.removeUser);
 
   const handleDelete = (ac: IUser) => {
     removeUser(ac.name);

@@ -51,3 +51,15 @@ export const TimezonesMap: Record<string, any> = {
   "10": "Australia/Sydney",
   "11": "Pacific/Noumea",
 };
+
+export const TzList = (() => {
+  const arr = [];
+  for (let i = 13; i >= -12; i--) {
+    const temp = i >= 0 ? `+${i}` : `-${-1 * i}`;
+    arr.push({
+      text: `UTC${temp}`,
+      value: i,
+    });
+  }
+  return arr;
+})();

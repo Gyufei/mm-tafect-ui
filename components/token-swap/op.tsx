@@ -12,7 +12,6 @@ import ActionTip, { IActionType } from "../shared/action-tip";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
 import { useAdvanceOptions } from "@/lib/hooks/use-advance-options";
-import { UserManageContext } from "@/lib/providers/user-manage-provider";
 import { replaceStrNum } from "@/lib/hooks/use-str-num";
 import { Input } from "../ui/input";
 import { useOp } from "@/lib/hooks/use-op";
@@ -20,7 +19,7 @@ import SelectSwapToken from "./select-swap-token";
 import { useTokenAllowance } from "@/lib/hooks/use-token-allowance";
 import { TokenContext } from "@/lib/providers/token-provider";
 import { Loader2 } from "lucide-react";
-import useSwapAddressStore from "@/lib/state";
+import useIndexStore from "@/lib/state";
 import { IKeyStoreAccount } from "@/lib/types/keystore";
 
 export default function Op({
@@ -32,9 +31,10 @@ export default function Op({
   children?: React.ReactNode;
   afterAction: () => void;
 }) {
-  const { currentUser } = useContext(UserManageContext);
   const { network } = useContext(NetworkContext);
   const { gasToken } = useContext(TokenContext);
+
+  const activeUser = useIndexStore((state) => state.activeUser());
 
   const {
     op: selectedOp,
@@ -47,9 +47,9 @@ export default function Op({
     opApproveSendUrl,
   } = useOp();
 
-  const fromAddress = useSwapAddressStore((state) => state.fromAddress);
-  const toAddress = useSwapAddressStore((state) => state.toAddress);
-  const setToAddress = useSwapAddressStore((state) => state.setToAddress);
+  const fromAddress = useIndexStore((state) => state.fromAddress);
+  const toAddress = useIndexStore((state) => state.toAddress);
+  const setToAddress = useIndexStore((state) => state.setToAddress);
 
   const [gasBalance, setGasBalance] = useState<number | null>(0);
 
@@ -95,7 +95,7 @@ export default function Op({
     const account = fromAddress;
 
     return {
-      user_name: currentUser?.email,
+      user_name: activeUser?.email,
       chain_id,
       account,
       keystore,

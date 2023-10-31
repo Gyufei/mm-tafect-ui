@@ -3,7 +3,7 @@ import { useState } from "react";
 import { PenLine } from "lucide-react";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import useGlobalState from "@/lib/state";
+import useIndexStore from "@/lib/state";
 import DetailItem from "../shared/detail-item";
 
 import {
@@ -13,14 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TzList } from "@/lib/constants";
 
 export default function ChangeTimezone() {
   const [showChangeDialog, setShowChangeDialog] = useState(false);
 
-  const timezone = useGlobalState((state) => state.timezone);
-  const timezoneText = useGlobalState((state) => state.timezoneText());
-  const tzList = useGlobalState((state) => state.tzList);
-  const setTimezone = useGlobalState((state) => state.setTimezone);
+  const timezone = useIndexStore((state) => state.timezone);
+  const timezoneText = useIndexStore((state) => state.timezoneText());
+  const setTimezone = useIndexStore((state) => state.setTimezone);
 
   const handleSelect = (val: string) => {
     setTimezone(val);
@@ -53,8 +53,8 @@ export default function ChangeTimezone() {
                 <SelectTrigger>
                   <SelectValue placeholder="Select OP" />
                 </SelectTrigger>
-                <SelectContent>
-                  {(tzList || []).map((t: { value: number; text: string }) => (
+                <SelectContent className="h-[180px] overflow-y-scroll">
+                  {(TzList || []).map((t: { value: number; text: string }) => (
                     <SelectItem key={t.value} value={String(t.value)}>
                       {t.text}
                     </SelectItem>

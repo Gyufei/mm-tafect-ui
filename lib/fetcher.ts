@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 "use client";
 
-import { activeUserLogout, getUserActive } from "./auth/local-user-storage";
+import useIndexStore from "./state";
 
 export default async function fetcher(
   input: URL | RequestInfo,
@@ -10,9 +10,9 @@ export default async function fetcher(
 ) {
   let newInit = init;
   if (!skipToken) {
-    const token = getUserActive()?.token;
+    const token = useIndexStore.getState().activeUser()?.token;
     if (!token) {
-      activeUserLogout();
+      useIndexStore.getState().activeLogout();
       return null;
     }
 
@@ -33,7 +33,7 @@ export default async function fetcher(
     ) as any;
 
     if (res.status === 401) {
-      activeUserLogout();
+      useIndexStore.getState().activeLogout();
       return null;
     }
 

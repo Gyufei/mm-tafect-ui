@@ -1,23 +1,23 @@
 "use client";
 
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IUser } from "@/lib/auth/user";
 
 import LoginForm from "@/components/login/login-form";
 import AccountList from "@/components/login/account-list";
-import { UserManageContext } from "@/lib/providers/user-manage-provider";
+import useIndexStore from "@/lib/state";
 
 export default function Login() {
-  const { currentUser } = useContext(UserManageContext);
+  const activeUser = useIndexStore((state) => state.activeUser);
   const [showAccountList, setShowAccountList] = useState(false);
   const [showWithUserFlag, setShowWithUser] = useState(true);
 
   const [currentSelectedAccount, setCurrentSelectedAccount] =
-    useState<IUser | null>(currentUser);
+    useState<IUser | null>(activeUser);
 
   useEffect(() => {
-    setCurrentSelectedAccount(currentUser);
-  }, [currentUser]);
+    setCurrentSelectedAccount(activeUser);
+  }, [activeUser]);
 
   const handleSelectAccount = useCallback((account: IUser) => {
     setCurrentSelectedAccount(account);

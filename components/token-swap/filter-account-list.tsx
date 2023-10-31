@@ -17,7 +17,7 @@ import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 import { uniqBy } from "lodash";
 import { TokenContext } from "@/lib/providers/token-provider";
 import { ArrowUpRight } from "lucide-react";
-import useSwapAddressStore from "@/lib/state";
+import useIndexStore from "@/lib/state";
 import { IKeyStoreAccount } from "@/lib/types/keystore";
 
 export default function FilterAccountList({
@@ -44,7 +44,7 @@ export default function FilterAccountList({
     return ts;
   }, [userToken, gasToken, stableToken]);
 
-  const setFromAddress = useSwapAddressStore((state) => state.setFromAddress);
+  const setFromAddress = useIndexStore((state) => state.setFromAddress);
 
   const [token, setToken] = useState<IToken | null>(null);
   const [tokenMin, setTokenMin] = useStrNum("");

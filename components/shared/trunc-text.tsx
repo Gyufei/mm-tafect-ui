@@ -37,7 +37,7 @@ export default function TruncateText({
   children?: React.ReactNode;
 }) {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger asChild>
           <span className="inline-flex items-center">

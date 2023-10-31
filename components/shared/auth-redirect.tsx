@@ -1,8 +1,9 @@
 "use client";
 
-import { useContext, useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { redirect, usePathname } from "next/navigation";
-import { UserManageContext } from "@/lib/providers/user-manage-provider";
+import { isAfter } from "date-fns";
+import useIndexStore from "@/lib/state";
 
 const loginPath = "/login";
 const Matcher = ["/dashboard", "/key-store", "/token-swap", "/setting"];
@@ -12,13 +13,24 @@ export default function AuthRedirect({
 }: {
   children: React.ReactNode;
 }) {
-  const { currentUser, status } = useContext(UserManageContext);
+  const activeUser = useIndexStore((state) => {
+    return state.activeUser();
+  });
+
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (status !== "success") return;
+  const isLogin = useMemo(() => {
+    if (!activeUser?.token || !activeUser?.expires) return false;
 
-    if (!currentUser) {
+    const isExpired = activeUser?.expires
+      ? isAfter(activeUser?.expires, new Date())
+      : false;
+
+    return isExpired;
+  }, [activeUser]);
+
+  useEffect(() => {
+    if (!isLogin) {
       if (pathname === "/" || Matcher.find((m) => pathname.includes(m))) {
         redirect(loginPath);
       }
@@ -27,7 +39,7 @@ export default function AuthRedirect({
         redirect("/dashboard");
       }
     }
-  }, [currentUser, pathname, status]);
+  }, [isLogin, pathname]);
 
   return <>{children}</>;
 }

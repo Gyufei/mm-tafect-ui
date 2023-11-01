@@ -3,12 +3,12 @@ import { useContext } from "react";
 
 import fetcher from "../fetcher";
 import { NetworkContext } from "../providers/network-provider";
-import { UserEndPointContext } from "../providers/user-end-point-provider";
 import { isAddress } from "../utils";
+import useIndexStore from "../state";
 
 export function useNonce(queryAccount: string) {
   const { network } = useContext(NetworkContext);
-  const { userPathMap } = useContext(UserEndPointContext);
+  const userPathMap = useIndexStore((state) => state.userPathMap());
 
   const chain_id = network?.chain_id || "";
 

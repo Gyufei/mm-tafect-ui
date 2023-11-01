@@ -32,38 +32,3 @@ export function parseToAddress(v: string) {
 
   return v.replace(/[^0-9a-fA-FxX]/g, "");
 }
-
-export function getDateOfTimezone(date: Date, timezone: string | undefined) {
-  if (!timezone) return date;
-
-  const offset = -date.getTimezoneOffset();
-
-  const targetOffset = Number(timezone) * 60;
-  const nowTimezoneDate = new Date(
-    date.getTime() + (targetOffset - offset) * 60 * 1000,
-  );
-
-  return nowTimezoneDate;
-}
-
-export function getNowOfTimezone(timezone: string | undefined) {
-  return getDateOfTimezone(new Date(), timezone);
-}
-
-export function getUTC0DateTime(
-  timestamp: string,
-  timezone: string | undefined,
-) {
-  const utc0Timestamp = Number(timestamp) - Number(timezone) * 60 * 1000;
-
-  return utc0Timestamp;
-}
-
-export function getTimeOfTimezone(
-  timestamp: string,
-  timezone: string | undefined,
-) {
-  const timezoneStamp = Number(timestamp) + Number(timezone) * 60 * 1000;
-
-  return timezoneStamp;
-}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, LogOut, Plus } from "lucide-react";
 import Image from "next/image";
 
 import {
@@ -8,14 +8,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { IUser } from "@/lib/auth/user";
-import { isAfter } from "date-fns";
+import { IUser, checkUserIsValid } from "@/lib/auth/user";
 import useIndexStore from "@/lib/state";
 import { Skeleton } from "../ui/skeleton";
+import { Button } from "../ui/button";
+import useEffectStore from "@/lib/state/use-store";
 
 export function UserBox() {
   const allUsers = useIndexStore((state) => state.users);
-  const activeUser = useIndexStore((state) => state.activeUser());
+  const activeUser = useEffectStore(useIndexStore, (state) =>
+    state.activeUser(),
+  );
   const setUserActive = useIndexStore((state) => state.setUserActive);
   const userLogout = useIndexStore((state) => state.userLogout);
 
@@ -31,12 +34,18 @@ export function UserBox() {
     window.location.reload();
   }
 
+  const getName = (user: IUser | null) => {
+    if (!user) return "";
+    if (user.aliasname) return user.aliasname;
+    return user.name;
+  };
+
   return (
     <div className="flex h-[70px] items-center justify-start border-b border-r-0 border-t-0 border-[#d6d6d6] pl-6">
       {activeUser ? (
         <Avatar className="mr-3 h-8 w-8 rounded">
           <AvatarImage src={activeUser?.image || ""} />
-          <AvatarFallback>{activeUser?.name?.[0] || ""}</AvatarFallback>
+          <AvatarFallback>{getName(activeUser)?.[0] || ""}</AvatarFallback>
         </Avatar>
       ) : (
         <Skeleton className="mr-3 h-8 w-8 rounded-full" />
@@ -50,9 +59,9 @@ export function UserBox() {
             onClick={() => setOpenPopover(!openPopover)}
             className="flex cursor-pointer items-center justify-between py-2 pr-4 transition-all duration-75 active:bg-gray-100"
           >
-            <p className="mr-1 font-medium text-title-color">
-              {activeUser?.name}
-            </p>
+            <span className="mr-1 font-medium text-title-color">
+              {getName(activeUser)}
+            </span>
             <ChevronDown
               className={`h-4 w-4 text-gray-600 transition-all ${
                 openPopover ? "rotate-180" : ""
@@ -63,19 +72,14 @@ export function UserBox() {
         <PopoverContent className="mr-4 w-[220px] px-0 py-2" align="start">
           <div className="rounded-md bg-white">
             {allUsers?.map((user) => {
-              const isOnlyUser = allUsers?.length === 1;
               const isActive = user.name === activeUser?.name;
-              const isValid = user?.expires
-                ? isAfter(user?.expires, new Date())
-                : false;
-
-              const showLogout =
-                isOnlyUser || (!isOnlyUser && !isActive && isValid);
+              const isValid = checkUserIsValid(user);
+              const name = getName(user);
 
               return (
                 <div
                   key={user.name}
-                  className="flex cursor-pointer items-center justify-between space-x-2 px-2 py-1 transition-all duration-75  hover:bg-custom-bg-white active:bg-custom-bg-white"
+                  className="flex cursor-pointer items-center justify-between space-x-2 px-2 py-3 transition-all duration-75  hover:bg-custom-bg-white active:bg-custom-bg-white"
                   onClick={() => handleChangeUser(user)}
                 >
                   <div className="flex items-center">
@@ -91,13 +95,13 @@ export function UserBox() {
                     </div>
                     <Avatar className="mr-3 h-8 w-8 rounded">
                       <AvatarImage src={activeUser?.image || ""} />
-                      <AvatarFallback>{user?.name?.[0] || ""}</AvatarFallback>
+                      <AvatarFallback>{name?.[0] || ""}</AvatarFallback>
                     </Avatar>
-                    <span>{user?.name}</span>
+                    <span>{name}</span>
                   </div>
-                  {showLogout && (
+                  {isValid && (
                     <LogOut
-                      className="h-4 w-4 cursor-pointer text-[#999]"
+                      className="h-4 w-4 cursor-pointer text-[#999] hover:text-[#da5349]"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleSignOut(user.name);
@@ -107,9 +111,32 @@ export function UserBox() {
                 </div>
               );
             })}
+            <AddNewBtn />
           </div>
         </PopoverContent>
       </Popover>
+    </div>
+  );
+}
+
+function AddNewBtn() {
+  const activeUser = useIndexStore((state) => state.activeUser());
+  const updateUsers = useIndexStore((state) => state.addOrUpdateUser);
+
+  const handleClick = () => {
+    if (activeUser) {
+      updateUsers({
+        ...activeUser,
+        active: false,
+      });
+    }
+  };
+
+  return (
+    <div className="mt-2 flex justify-center py-1" onClick={handleClick}>
+      <Button className="h-10 w-[204px] border border-dashed bg-white px-2 text-[#bfbfbf] hover:bg-custom-bg-white">
+        <Plus className="h-5 w-5" />
+      </Button>
     </div>
   );
 }

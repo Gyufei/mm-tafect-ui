@@ -1,28 +1,54 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { IUser } from "@/lib/auth/user";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import LoginForm from "@/components/login/login-form";
 import AccountList from "@/components/login/account-list";
 import useIndexStore from "@/lib/state";
+import { IUser, checkUserIsValid } from "@/lib/auth/user";
+import useEffectStore from "@/lib/state/use-store";
 
 export default function Login() {
-  const activeUser = useIndexStore((state) => state.activeUser);
+  const router = useRouter();
+  const activeUser = useEffectStore(useIndexStore, (state) =>
+    state.activeUser(),
+  );
+  const setUserActive = useIndexStore((state) => state.setUserActive);
   const [showAccountList, setShowAccountList] = useState(false);
   const [showWithUserFlag, setShowWithUser] = useState(true);
 
   const [currentSelectedAccount, setCurrentSelectedAccount] =
     useState<IUser | null>(activeUser);
 
-  useEffect(() => {
-    setCurrentSelectedAccount(activeUser);
+  const alreadyLogin = useMemo(() => {
+    if (!activeUser) return false;
+    if (!activeUser?.token) return false;
+
+    const isExpired = checkUserIsValid(activeUser);
+
+    return isExpired;
   }, [activeUser]);
 
+  useEffect(() => {
+    if (alreadyLogin) {
+      setShowAccountList(true);
+    } else {
+      setCurrentSelectedAccount(activeUser);
+    }
+  }, [alreadyLogin, activeUser]);
+
   const handleSelectAccount = useCallback((account: IUser) => {
-    setCurrentSelectedAccount(account);
-    setShowWithUser(true);
-    setShowAccountList(false);
+    const isValid = checkUserIsValid(account);
+
+    if (isValid) {
+      setUserActive(account?.name || "");
+      router.push("/dashboard");
+    } else {
+      setCurrentSelectedAccount(account);
+      setShowWithUser(true);
+      setShowAccountList(false);
+    }
   }, []);
 
   const handleAddAccount = useCallback(() => {

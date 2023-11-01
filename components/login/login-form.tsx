@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { IUser } from "@/lib/auth/user";
+import { IUser, checkUserIsValid } from "@/lib/auth/user";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,6 @@ import LinkToAccountList from "./link-to-account-list";
 import md5 from "js-md5";
 import { signInAction } from "@/lib/auth/auth-api";
 import { useRouter } from "next/navigation";
-import { isAfter } from "date-fns";
 import useIndexStore from "@/lib/state";
 
 const formSchema = z.object({
@@ -41,8 +40,8 @@ export default function LoginForm({
   showWithUser?: boolean;
 }) {
   const router = useRouter();
-  const setUserActive = useIndexStore((state) => state.setUserActive);
 
+  const setUserActive = useIndexStore((state) => state.setUserActive);
   const [showLoginFailTip, setShowLoginFailTip] = useState(false);
   const showUserForLogin = showWithUser && user?.name;
 
@@ -58,9 +57,7 @@ export default function LoginForm({
     if (!showWithUser || !user) return false;
     if (!user.token) return false;
 
-    const isExpired = user?.expires
-      ? isAfter(user?.expires, new Date())
-      : false;
+    const isExpired = checkUserIsValid(user);
 
     return isExpired;
   }, [user, showWithUser]);
@@ -92,10 +89,9 @@ export default function LoginForm({
 
     if (!res) {
       setShowLoginFailTip(true);
-      return;
+    } else {
+      router.push("/dashboard");
     }
-
-    router.push("/dashboard");
   }
 
   const FormHead = () => {
@@ -143,7 +139,11 @@ export default function LoginForm({
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input className="rounded" type="string" {...field} />
+                      <Input
+                        className="rounded hover:border-blue-500 focus:bg-[#e9f0fd]"
+                        type="string"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -160,7 +160,7 @@ export default function LoginForm({
                   <FormControl>
                     <Input
                       disabled={alreadyLogin}
-                      className="rounded"
+                      className="rounded hover:border-blue-500 focus:bg-[#e9f0fd]"
                       type="password"
                       {...field}
                     />

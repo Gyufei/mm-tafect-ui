@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { formatDistance, isAfter } from "date-fns";
-import { IUser } from "@/lib/auth/user";
+import { formatDistance } from "date-fns";
+import { IUser, checkUserIsValid } from "@/lib/auth/user";
 
 export default function SessionTip({
   className,
@@ -12,7 +12,7 @@ export default function SessionTip({
 }) {
   const now = new Date().getTime();
 
-  const isAfterTime = user?.expires ? isAfter(user?.expires, now) : false;
+  const isAfterTime = checkUserIsValid(user);
 
   const formattedDifference = useMemo(() => {
     if (!isAfterTime || !user?.expires) return null;

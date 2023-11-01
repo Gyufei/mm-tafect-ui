@@ -17,8 +17,6 @@ import { subMinutes } from "date-fns";
 import { useGasPrice } from "@/lib/hooks/use-gas-price";
 import { useNonce } from "@/lib/hooks/use-nonce";
 import useIndexStore from "@/lib/state";
-import { TimezonesMap } from "@/lib/constants";
-// import { getNowOfTimezone } from "@/lib/utils";
 
 export interface IAdvanceOptions {
   schedule: Date | null;
@@ -39,7 +37,6 @@ export default function OpAdvanceOptions({
   onChange: (_o: IAdvanceOptions) => void;
   account: string;
 }) {
-  const timezone = useIndexStore((state) => state.timezone);
   const { data: gasPrice } = useGasPrice();
   const { data: nonce } = useNonce(account);
 
@@ -64,17 +61,8 @@ export default function OpAdvanceOptions({
 
   const now = new Date().getTime();
 
-  const curTimezoneStr = useMemo(
-    () => TimezonesMap[timezone as any] || "UTC",
-    [timezone],
-  );
-
-  const localTimezoneStr = useMemo(() => {
-    const offsetMinus = -new Date().getTimezoneOffset() / 60;
-    const offset =
-      offsetMinus > 0 ? `${Math.abs(offsetMinus)}` : `-${offsetMinus}`;
-    return TimezonesMap[offset as any] || "UTC";
-  }, []);
+  const curTimezoneStr = useIndexStore((state) => state.curTimezoneStr());
+  const localTimezoneStr = useIndexStore((state) => state.localTimezoneStr());
 
   const displayDate = useMemo(() => {
     if (!options.schedule) return null;
@@ -85,7 +73,7 @@ export default function OpAdvanceOptions({
     const curTimezoneDate = utcToZonedTime(utcDate, curTimezoneStr);
 
     return curTimezoneDate;
-  }, [options.schedule]);
+  }, [options.schedule, curTimezoneStr, localTimezoneStr]);
 
   const pastTime = (() => {
     const utcDate = zonedTimeToUtc(new Date().toISOString(), localTimezoneStr);
@@ -151,6 +139,7 @@ export default function OpAdvanceOptions({
             />
           </div>
           <button
+            title="fixed gas"
             onClick={() =>
               handleAdvanceOptionsChange("fixed_gas", !options.fixed_gas)
             }
@@ -163,6 +152,7 @@ export default function OpAdvanceOptions({
             )}
           </button>
           <button
+            title="no check gas"
             onClick={() =>
               handleAdvanceOptionsChange("no_check_gas", !options.no_check_gas)
             }

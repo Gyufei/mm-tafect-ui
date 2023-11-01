@@ -64,6 +64,7 @@ html {
   }
 }
 
-.MuiInputBase-input {
-  font-family: var(--font-chesna);
+.MuiInputBase-input,
+.MuiOutlinedInput-root {
+  font-family: var(--font-chesna) !important;
 }

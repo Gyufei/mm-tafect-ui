@@ -1,16 +1,16 @@
 import { useContext } from "react";
 import { NetworkContext } from "../providers/network-provider";
-import { UserEndPointContext } from "../providers/user-end-point-provider";
 import { IToken } from "../types/token";
 import useSWRMutation from "swr/mutation";
 import fetcher from "../fetcher";
+import useIndexStore from "../state";
 
 export function useAccountBalance(
   fromAddress: string,
   userToken: IToken | null,
   stableToken: IToken | null,
 ) {
-  const { userPathMap } = useContext(UserEndPointContext);
+  const userPathMap = useIndexStore((state) => state.userPathMap());
   const { network } = useContext(NetworkContext);
 
   const getAccountBalanceQuery = () => {

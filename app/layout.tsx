@@ -9,7 +9,8 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 import SWRConfigProvider from "@/lib/providers/swr-config-provider";
 import MuiPickerProvider from "@/lib/providers/mui-picker-provider";
-import AuthRedirect from "@/components/shared/auth-redirect";
+import GlobalRedirect from "@/components/shared/global-redirect";
+import GlobalInit from "@/components/shared/global-init";
 
 export const metadata: Metadata = {
   title: "mm-tafect-ui",
@@ -39,11 +40,13 @@ export default async function RootLayout({
             </div>
           }
         >
-          <AuthRedirect>
-            <SWRConfigProvider>
-              <MuiPickerProvider>{children}</MuiPickerProvider>
-            </SWRConfigProvider>
-          </AuthRedirect>
+          <GlobalInit>
+            <GlobalRedirect>
+              <SWRConfigProvider>
+                <MuiPickerProvider>{children}</MuiPickerProvider>
+              </SWRConfigProvider>
+            </GlobalRedirect>
+          </GlobalInit>
         </Suspense>
         <Analytics />
         <Toaster />

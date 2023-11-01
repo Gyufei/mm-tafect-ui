@@ -7,6 +7,9 @@ export const SystemEndPointPathMap = {
   logout: WithHost("/user/logout"),
   changePassword: WithHost("/user/change_password"),
   endPoint: WithHost("/user/end_point"),
+  userInfo: WithHost("/user/info"),
+  userTimezone: WithHost("/user/timezone"),
+  userAliasName: WithHost("/user/aliasname"),
 
   allKeyStores: WithHost("/keystore/all"),
   userKeyStores: WithHost("/keystore/user"),

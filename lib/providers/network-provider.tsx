@@ -1,12 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import useSWR from "swr";
 
 import { INetwork } from "@/lib/types/network";
 import fetcher from "@/lib/fetcher";
 import { SystemEndPointPathMap } from "../end-point";
-import { UserEndPointContext } from "./user-end-point-provider";
+import useIndexStore from "../state";
 
 interface INetworkContext {
   network: INetwork | null;
@@ -21,7 +21,7 @@ export default function NetworkProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { userPathMap } = useContext(UserEndPointContext);
+  const userPathMap = useIndexStore((state) => state.userPathMap());
 
   const [network, setNetwork] = useState<INetwork | null>(null);
   const { data: userWeb3Info } = useSWR(

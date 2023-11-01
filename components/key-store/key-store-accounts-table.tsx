@@ -59,7 +59,7 @@ export default function KeyStoreAccountsTable({
       </div>
       <Table className="table-fixed">
         <TableHeader className="sticky top-0 h-10 bg-white text-content-color">
-          <TableRow className="border-b border-shadow-color">
+          <TableRow className="shadow-md">
             <TableHead className="w-[30px] text-center font-normal md:w-[100px]">
               #
             </TableHead>
@@ -69,18 +69,18 @@ export default function KeyStoreAccountsTable({
             <TableHead className="font-normal">Gas</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="text-lg">
+        <TableBody className="text-base">
           {filteredAccount.length ? (
             filteredAccount?.map((aG) => (
               <TableRow
                 key={aG.account}
-                className="h-[56px] border-b border-shadow-color"
+                className="h-[48px] border-b border-shadow-color"
               >
-                <TableCell className="text-center">{aG.index}</TableCell>
-                <TableCell>
+                <TableCell className="p-2 text-center">{aG.index}</TableCell>
+                <TableCell className="p-2">
                   <TruncateText text={aG.account} showCopy={true} />
                 </TableCell>
-                <TableCell>
+                <TableCell className="p-2">
                   <span className="TruncateSingleLine inline-block max-w-[100px] leading-4 md:max-w-none">
                     {aG.gas}
                   </span>

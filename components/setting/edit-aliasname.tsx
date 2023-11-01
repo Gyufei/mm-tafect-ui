@@ -1,41 +1,32 @@
 "use client";
 
-import Image from "next/image";
-import { useContext, useRef, useState } from "react";
+import useSWRMutation from "swr/mutation";
 
-import { NetworkContext } from "@/lib/providers/network-provider";
+import Image from "next/image";
 import DetailItem from "../shared/detail-item";
 import { Input } from "../ui/input";
 import { Skeleton } from "../ui/skeleton";
 import { SystemEndPointPathMap } from "@/lib/end-point";
 import fetcher from "@/lib/fetcher";
-import useSWRMutation from "swr/mutation";
 import { toast } from "../ui/use-toast";
 import { UserInfoContext } from "@/lib/providers/user-info-provider";
 import useIndexStore from "@/lib/state";
+import { useContext, useRef, useState } from "react";
 import useEffectStore from "@/lib/state/use-store";
 
-const URL_REGEX =
-  /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/;
-
-export default function EditEndPoint() {
-  const userEndPoint = useEffectStore(useIndexStore, (state) =>
-    state.endpoint(),
+export default function EditAliasname() {
+  const activeUser = useEffectStore(useIndexStore, (state) =>
+    state.activeUser(),
   );
+  const aliasname = activeUser?.aliasname;
 
-  const { network } = useContext(NetworkContext);
   const { refreshUser } = useContext(UserInfoContext);
-
-  const networkDisplay = network?.network_name
-    ? `(${network?.network_name})`
-    : "";
-
   const [edit, setEdit] = useState(false);
-  const [inputValue, setInputValue] = useState(userEndPoint);
+  const [inputValue, setInputValue] = useState(aliasname);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onEdit = () => {
-    setInputValue(userEndPoint);
+    setInputValue(aliasname);
     setTimeout(() => {
       inputRef.current?.select();
       inputRef.current?.focus();
@@ -47,12 +38,7 @@ export default function EditEndPoint() {
     setInputValue(val);
 
     if (!val) {
-      setErrorMsg("Endpoint is required");
-      return;
-    }
-
-    if (!URL_REGEX.test(val || "")) {
-      setErrorMsg("Not a valid URL");
+      setErrorMsg("aliasname is required");
       return;
     }
 
@@ -64,7 +50,7 @@ export default function EditEndPoint() {
       return;
     }
 
-    if (inputValue === userEndPoint) {
+    if (inputValue === aliasname) {
       setEdit(false);
       return;
     }
@@ -74,7 +60,7 @@ export default function EditEndPoint() {
 
   const submitEndpoint = async (url: string, { arg }: { arg: string }) => {
     const searchParams = new URLSearchParams();
-    searchParams.append("end_point", arg);
+    searchParams.append("aliasname", arg);
     const query = searchParams.toString();
 
     const res = await fetcher(`${url}?${query}`, {
@@ -82,24 +68,24 @@ export default function EditEndPoint() {
     });
 
     toast({
-      description: "Endpoint updated",
+      description: "aliasname updated",
     });
-    setEdit(false);
     refreshUser();
+    setEdit(false);
     return res;
   };
 
   const { trigger: submitAction } = useSWRMutation(
-    SystemEndPointPathMap.endPoint,
+    SystemEndPointPathMap.userAliasName,
     submitEndpoint,
   );
 
   const [errorMsg, setErrorMsg] = useState("");
 
   return (
-    <DetailItem title={`Service Endpoint ${networkDisplay}`}>
+    <DetailItem title="User Alias">
       <div className="relative flex h-10 w-full flex-col justify-center">
-        {userEndPoint ? (
+        {activeUser ? (
           <div className="flex items-center gap-x-3">
             {edit ? (
               <Input
@@ -107,13 +93,13 @@ export default function EditEndPoint() {
                 ref={inputRef}
                 type="text"
                 value={inputValue || ""}
-                placeholder="https://"
+                placeholder="aliasname"
                 onBlur={onBlur}
                 onChange={(e) => onChange(e.target.value)}
                 className="focus-visible:ring-0 data-[state=error]:border-destructive"
               />
             ) : (
-              <span>{userEndPoint}</span>
+              <span>{aliasname}</span>
             )}
             <Image
               className="cursor-pointer"

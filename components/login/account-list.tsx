@@ -1,7 +1,8 @@
 import { useState } from "react";
+import Image from "next/image";
 import { Plus, Trash2 } from "lucide-react";
 
-import { IUser } from "@/lib/auth/user";
+import { IUser, checkUserIsValid } from "@/lib/auth/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useSwipeable } from "react-swipeable";
@@ -44,7 +45,7 @@ export default function AccountList({
 
       <div
         onClick={() => handleAdd()}
-        className="ml-4 mr-10 flex min-w-full cursor-pointer justify-center rounded border border-border-color bg-white p-4 hover:bg-slate-50 md:w-[378px] md:min-w-[auto]"
+        className="mx-auto flex w-[95%] cursor-pointer justify-center rounded border border-border-color bg-custom-bg-white p-4 hover:bg-slate-50 md:ml-4 md:mr-10 md:w-[378px]"
       >
         <Plus></Plus>
       </div>
@@ -72,26 +73,38 @@ const AccountCard = ({
 
   const [showTrash, setShowTrash] = useState(false);
 
+  const isValid = checkUserIsValid(ac);
+
   return (
     <div className="mb-5 flex w-full items-center overflow-x-hidden px-4">
       <div
         {...swiperHandlers}
         data-state={showTrash ? "show" : "hide"}
-        className="flex min-w-full cursor-pointer justify-start rounded border border-border-color bg-white p-4 hover:bg-slate-50 data-[state=hide]:translate-x-0 data-[state=show]:-translate-x-16 md:w-[420px] md:min-w-[auto] md:translate-x-0"
+        className="flex min-w-full cursor-pointer justify-between rounded border border-border-color bg-white p-4 hover:bg-slate-50 data-[state=hide]:translate-x-0 data-[state=show]:-translate-x-16 md:w-[420px] md:min-w-[auto] md:translate-x-0"
         onClick={() => onSelect(ac)}
       >
-        <Avatar className="mr-4 h-10 w-10 rounded-lg">
-          <AvatarImage src={ac?.image || ""} />
-          <AvatarFallback>{ac?.name?.[0] || ""}</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col items-start justify-between">
-          <div className="text-base font-bold leading-4 text-title-color">
-            {ac?.name}
-          </div>
-          <div className="text-base leading-4 text-content-color">
-            {ac?.email}
+        <div className="flex items-center">
+          <Avatar className="mr-4 h-10 w-10 rounded-lg">
+            <AvatarImage src={ac?.image || ""} />
+            <AvatarFallback>{ac?.name?.[0] || ""}</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col items-start justify-between">
+            <div className="text-base font-bold leading-4 text-title-color">
+              {ac?.name}
+            </div>
+            <div className="text-base leading-4 text-content-color">
+              {ac?.email}
+            </div>
           </div>
         </div>
+        {isValid && (
+          <Image
+            alt="check"
+            src="/icons/cur-check.svg"
+            width={24}
+            height={24}
+          />
+        )}
       </div>
       <div
         data-state={showTrash ? "show" : "hide"}
@@ -100,7 +113,7 @@ const AccountCard = ({
         <Trash2 className="hover:text-primary" onClick={() => onDelete(ac)} />
       </div>
       <Trash2
-        className="ml-4 hidden cursor-pointer hover:text-primary md:inline-block"
+        className="ml-4 hidden cursor-pointer hover:text-[#da5349] md:inline-block"
         onClick={() => onDelete(ac)}
       />
     </div>

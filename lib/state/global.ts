@@ -2,14 +2,22 @@ import { StateCreator } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { IUser } from "../auth/user";
 import { cloneDeep } from "lodash";
+import { TimezonesMap } from "../constants";
+import { UserEndPointPathMap } from "../end-point";
+
+type PathMap = typeof UserEndPointPathMap;
 
 export interface GlobalStoreSlice {
-  timezone: string | null | undefined;
-  timezoneText: () => string;
-  setTimezone: (val: string) => void;
-
   users: Array<IUser>;
   activeUser: () => IUser | null;
+
+  timezone: () => string;
+  timezoneText: () => string;
+  curTimezoneStr: () => string;
+  localTimezoneStr: () => string;
+
+  endpoint: () => string | null | undefined;
+  userPathMap: () => PathMap;
 
   addOrUpdateUser: (user: IUser) => void;
   setUserActive: (name: string) => void;
@@ -24,16 +32,49 @@ export const CreateGlobalStoreState: StateCreator<
   [["zustand/persist", unknown]]
 > = persist(
   (set, get) => ({
-    timezone: String(Math.round((new Date().getTimezoneOffset() * -1) / 60)),
+    users: [],
+
+    timezone: () => {
+      const activeUser = get().activeUser();
+      const userTz = activeUser?.timezone;
+      return (
+        userTz || String(Math.round((new Date().getTimezoneOffset() * -1) / 60))
+      );
+    },
     timezoneText: () => {
-      const timezone = (get() as any).timezone;
+      const timezone = (get() as any).timezone();
       if (!timezone) return "";
       const temp = timezone >= 0 ? `+${timezone}` : timezone;
       return `UTC${temp}`;
     },
-    setTimezone: (val: string) => set(() => ({ timezone: val })),
+    curTimezoneStr: () => {
+      const tz = get().timezone();
+      if (!tz) return "UTC";
+      return TimezonesMap[tz] || "UTC";
+    },
+    localTimezoneStr: () => {
+      const offsetMinus = -new Date().getTimezoneOffset() / 60;
+      const offset =
+        offsetMinus > 0 ? `${Math.abs(offsetMinus)}` : `-${offsetMinus}`;
+      return TimezonesMap[offset as any] || "UTC";
+    },
 
-    users: [],
+    endpoint: () => {
+      const activeUser = get().activeUser();
+      if (!activeUser) return null;
+      return activeUser?.endpoint || null;
+    },
+    userPathMap: () => {
+      const endPoint = get().endpoint();
+      const newMap = cloneDeep(UserEndPointPathMap);
+      const keys = Object.keys(newMap) as Array<keyof PathMap>;
+
+      keys.map((key) => {
+        newMap[key] = endPoint ? `${endPoint}${newMap[key]}` : "";
+      });
+
+      return newMap;
+    },
 
     activeUser: () => {
       const users = get().users;
@@ -107,5 +148,6 @@ export const CreateGlobalStoreState: StateCreator<
   {
     name: "globalStorage", // name of the item in the storage (must be unique)
     storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
+    partialize: (state) => ({ users: state.users }),
   },
 );

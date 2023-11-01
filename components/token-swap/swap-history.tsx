@@ -17,6 +17,7 @@ import {
   subDays,
 } from "date-fns";
 import { DatePicker } from "@mui/x-date-pickers";
+import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,31 +30,17 @@ import { ITask } from "@/lib/types/task";
 import { SystemEndPointPathMap } from "@/lib/end-point";
 import fetcher from "@/lib/fetcher";
 import { TokenContext } from "@/lib/providers/token-provider";
-import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
-import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
-import { TimezonesMap } from "@/lib/constants";
 import useIndexStore from "@/lib/state";
 
 const SwapHistory = forwardRef((props: any, ref: any) => {
-  const { userPathMap } = useContext(UserEndPointContext);
+  const userPathMap = useIndexStore((state) => state.userPathMap());
   const { network } = useContext(NetworkContext);
   const networkId = network?.chain_id || null;
 
   const { tokens } = useContext(TokenContext);
 
-  const timezone = useIndexStore((state) => state.timezone);
-
-  const curTimezoneStr = useMemo(
-    () => TimezonesMap[timezone as any] || "UTC",
-    [timezone],
-  );
-
-  const localTimezoneStr = useMemo(() => {
-    const offsetMinus = -new Date().getTimezoneOffset() / 60;
-    const offset =
-      offsetMinus > 0 ? `${Math.abs(offsetMinus)}` : `-${offsetMinus}`;
-    return TimezonesMap[offset as any] || "UTC";
-  }, []);
+  const curTimezoneStr = useIndexStore((state) => state.curTimezoneStr());
+  const localTimezoneStr = useIndexStore((state) => state.localTimezoneStr());
 
   const { data: opList } = useSWR(() => {
     return networkId

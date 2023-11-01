@@ -8,9 +8,6 @@ export async function signInAction(credentials: {
   username: string;
   password: string;
 }) {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-
   try {
     const res = await fetcher(
       SystemEndPointPathMap.login,
@@ -23,7 +20,7 @@ export async function signInAction(credentials: {
     );
 
     const { access_token } = res;
-
+    
     const user: IUser = {
       name: credentials.username.split("@")[0],
       email: credentials.username,

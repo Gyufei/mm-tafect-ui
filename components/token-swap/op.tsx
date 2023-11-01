@@ -6,12 +6,13 @@ import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { ITokenNumDesc } from "@/components/token-swap/token-select-and-input";
 import fetcher from "@/lib/fetcher";
-import OpAdvanceOptions from "@/components/token-swap/op-advance-options";
+import OpAdvanceOptions, {
+  IAdvanceOptions,
+} from "@/components/token-swap/op-advance-options";
 import { TestTxResult } from "./test-tx-result";
 import ActionTip, { IActionType } from "../shared/action-tip";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
-import { useAdvanceOptions } from "@/lib/hooks/use-advance-options";
 import { replaceStrNum } from "@/lib/hooks/use-str-num";
 import { Input } from "../ui/input";
 import { useOp } from "@/lib/hooks/use-op";
@@ -21,6 +22,9 @@ import { TokenContext } from "@/lib/providers/token-provider";
 import { Loader2 } from "lucide-react";
 import useIndexStore from "@/lib/state";
 import { IKeyStoreAccount } from "@/lib/types/keystore";
+import { useGasPrice } from "@/lib/hooks/use-gas-price";
+import { useNonce } from "@/lib/hooks/use-nonce";
+import useEffectStore from "@/lib/state/use-store";
 
 export default function Op({
   keyStores,
@@ -34,7 +38,9 @@ export default function Op({
   const { network } = useContext(NetworkContext);
   const { gasToken } = useContext(TokenContext);
 
-  const activeUser = useIndexStore((state) => state.activeUser());
+  const activeUser = useEffectStore(useIndexStore, (state) =>
+    state.activeUser(),
+  );
 
   const {
     op: selectedOp,
@@ -71,6 +77,9 @@ export default function Op({
     allowance: "",
   });
 
+  const { data: gasPrice } = useGasPrice();
+  const { data: nonce } = useNonce(fromAddress);
+
   const shouldApproveToken0 = useMemo(() => {
     if (token0.token?.address === GAS_TOKEN_ADDRESS) return false;
     return token0.token && token0.allowance === "0";
@@ -78,7 +87,15 @@ export default function Op({
 
   const [transferAmount, setTransferAmount] = useState<string>("");
 
-  const { advanceOptions, setAdvanceOptions } = useAdvanceOptions(fromAddress);
+  const [advanceOptions, setAdvanceOptions] = useState<IAdvanceOptions>({
+    schedule: null,
+    timeout: 1800,
+    slippage: "0.02",
+    nonce: null,
+    gas: null,
+    fixed_gas: false,
+    no_check_gas: false,
+  });
 
   const handleTransferAmountChange = (e: string) => {
     const reNum = replaceStrNum(e);
@@ -102,7 +119,8 @@ export default function Op({
       ...advanceOptions,
       gas: advanceOptions.gas
         ? String(Number(advanceOptions.gas) * 10 ** 9)
-        : null,
+        : String(Number(gasPrice) * 10 ** 9),
+      nonce: advanceOptions.nonce || nonce,
     };
   };
 

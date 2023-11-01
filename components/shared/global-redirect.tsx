@@ -2,29 +2,27 @@
 
 import { useEffect, useMemo } from "react";
 import { redirect, usePathname } from "next/navigation";
-import { isAfter } from "date-fns";
 import useIndexStore from "@/lib/state";
+import { checkUserIsValid } from "@/lib/auth/user";
 
 const loginPath = "/login";
 const Matcher = ["/dashboard", "/key-store", "/token-swap", "/setting"];
 
-export default function AuthRedirect({
+export default function GlobalRedirect({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const activeUser = useIndexStore((state) => {
-    return state.activeUser();
-  });
+  const activeUser = useIndexStore((state) => state.activeUser());
+  const endpoint = useIndexStore((state) => state.endpoint());
 
   const pathname = usePathname();
 
   const isLogin = useMemo(() => {
+    if (!activeUser) return false;
     if (!activeUser?.token || !activeUser?.expires) return false;
 
-    const isExpired = activeUser?.expires
-      ? isAfter(activeUser?.expires, new Date())
-      : false;
+    const isExpired = checkUserIsValid(activeUser);
 
     return isExpired;
   }, [activeUser]);
@@ -35,6 +33,16 @@ export default function AuthRedirect({
         redirect(loginPath);
       }
     } else {
+      if (
+        activeUser &&
+        "endpoint" in activeUser &&
+        !endpoint &&
+        !pathname.includes("/setting")
+      ) {
+        redirect("/setting");
+        return;
+      }
+
       if (pathname === "/") {
         redirect("/dashboard");
       }

@@ -1,19 +1,20 @@
 import { useContext, useMemo } from "react";
 import useSWR from "swr";
 
-import { UserEndPointContext } from "../providers/user-end-point-provider";
 import { NetworkContext } from "../providers/network-provider";
 import fetcher from "../fetcher";
 import { isAddress } from "../utils";
 import { TokenContext } from "../providers/token-provider";
+import useIndexStore from "../state";
 
 export function useTokenAllowance(
   tokenAddr: string | null,
   swapRouter: string,
   account: string,
 ) {
+  const userPathMap = useIndexStore((state) => state.userPathMap());
+
   const { gasToken } = useContext(TokenContext);
-  const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
 
   const queryStr = useMemo(() => {

@@ -22,7 +22,6 @@ import KeyStoreAccountsTable, {
   IAccountGas,
 } from "@/components/key-store/key-store-accounts-table";
 import { NetworkContext } from "@/lib/providers/network-provider";
-import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
 import DeleteKeyStoreDialog from "@/components/key-store/delete-key-store-dialog";
 import { IKeyStore, IKeyStoreRange } from "@/lib/types/keystore";
 import { Input } from "@/components/ui/input";
@@ -30,10 +29,11 @@ import { toast } from "@/components/ui/use-toast";
 import useSWRMutation from "swr/mutation";
 import { useUserKeystores } from "@/lib/hooks/use-user-keystores";
 import { uniqBy } from "lodash";
+import useIndexStore from "@/lib/state";
 
 export default function KeyStoreItem() {
-  const { userPathMap } = useContext(UserEndPointContext);
   const { network } = useContext(NetworkContext);
+  const userPathMap  = useIndexStore((state) => state.userPathMap());
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 

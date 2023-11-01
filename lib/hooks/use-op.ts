@@ -1,9 +1,9 @@
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { IOp } from "../types/op";
-import { UserEndPointContext } from "../providers/user-end-point-provider";
+import useIndexStore from "../state";
 
 export function useOp() {
-  const { userPathMap } = useContext(UserEndPointContext);
+  const userPathMap = useIndexStore((state) => state.userPathMap());
   const [op, setOp] = useState<IOp | null>(null);
 
   const isApproveOp = useMemo(() => op?.op_id === 3, [op]);

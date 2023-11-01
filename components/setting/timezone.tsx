@@ -1,10 +1,12 @@
 "use client";
-import { useState } from "react";
-import { PenLine } from "lucide-react";
+import { useContext, useState } from "react";
+import Image from "next/image";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import useIndexStore from "@/lib/state";
 import DetailItem from "../shared/detail-item";
+
+import { toast } from "../ui/use-toast";
 
 import {
   Select,
@@ -14,16 +16,45 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TzList } from "@/lib/constants";
+import useEffectStore from "@/lib/state/use-store";
+import fetcher from "@/lib/fetcher";
+import useSWRMutation from "swr/mutation";
+import { SystemEndPointPathMap } from "@/lib/end-point";
+import { UserInfoContext } from "@/lib/providers/user-info-provider";
 
 export default function ChangeTimezone() {
+  const { refreshUser } = useContext(UserInfoContext);
+
   const [showChangeDialog, setShowChangeDialog] = useState(false);
 
-  const timezone = useIndexStore((state) => state.timezone);
-  const timezoneText = useIndexStore((state) => state.timezoneText());
-  const setTimezone = useIndexStore((state) => state.setTimezone);
+  const timezone = useEffectStore(useIndexStore, (state) => state.timezone());
+  const timezoneText = useEffectStore(useIndexStore, (state) =>
+    state.timezoneText(),
+  );
+
+  const submitEndpoint = async (url: string, { arg }: { arg: string }) => {
+    const searchParams = new URLSearchParams();
+    searchParams.append("timezone", arg);
+    const query = searchParams.toString();
+
+    const res = await fetcher(`${url}?${query}`, {
+      method: "POST",
+    });
+
+    toast({
+      description: "timezone updated",
+    });
+    refreshUser();
+    return res;
+  };
+
+  const { trigger: submitAction } = useSWRMutation(
+    SystemEndPointPathMap.userTimezone,
+    submitEndpoint,
+  );
 
   const handleSelect = (val: string) => {
-    setTimezone(val);
+    submitAction(val as string);
   };
 
   return (
@@ -34,7 +65,13 @@ export default function ChangeTimezone() {
           onClick={() => setShowChangeDialog(true)}
         >
           <span>{timezoneText}</span>
-          <PenLine className="h-6 w-6" />
+          <Image
+            src="/icons/edit.svg"
+            width={24}
+            height={24}
+            className="cursor-pointer"
+            alt="edit"
+          />
         </div>
         <Dialog
           open={showChangeDialog}

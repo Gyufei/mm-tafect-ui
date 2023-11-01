@@ -7,8 +7,8 @@ import fetcher from "@/lib/fetcher";
 import { IToken } from "@/lib/types/token";
 import { NetworkContext } from "./network-provider";
 import { uniqBy } from "lodash";
-import { UserEndPointContext } from "./user-end-point-provider";
 import { GAS_TOKEN_ADDRESS } from "../constants";
+import useIndexStore from "../state";
 
 interface ITokenContext {
   tokens: Array<IToken>;
@@ -35,7 +35,7 @@ export default function TokenProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { userPathMap } = useContext(UserEndPointContext);
+  const userPathMap = useIndexStore((state) => state.userPathMap());
   const { network } = useContext(NetworkContext);
   const networkId = network?.chain_id || null;
 

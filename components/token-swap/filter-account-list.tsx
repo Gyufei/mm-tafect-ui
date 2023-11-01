@@ -1,5 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import useSWRMutation from "swr/mutation";
+import { uniqBy } from "lodash";
+import { ArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,23 +11,21 @@ import TokenSelect from "@/components/token-swap/token-select";
 import { useStrNum } from "@/lib/hooks/use-str-num";
 import fetcher from "@/lib/fetcher";
 import { IToken } from "@/lib/types/token";
-import TruncateText from "../shared/trunc-text";
-import LoadingIcon from "../shared/loading-icon";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
-import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
-import { uniqBy } from "lodash";
 import { TokenContext } from "@/lib/providers/token-provider";
-import { ArrowUpRight } from "lucide-react";
 import useIndexStore from "@/lib/state";
 import { IKeyStoreAccount } from "@/lib/types/keystore";
+
+import TruncateText from "../shared/trunc-text";
+import LoadingIcon from "../shared/loading-icon";
 
 export default function FilterAccountList({
   keyStores,
 }: {
   keyStores: Array<IKeyStoreAccount>;
 }) {
-  const { userPathMap } = useContext(UserEndPointContext);
+  const userPathMap = useIndexStore((state) => state.userPathMap());
   const { network } = useContext(NetworkContext);
   const networkId = network?.chain_id;
 

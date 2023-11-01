@@ -1,13 +1,13 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import fetcher from "@/lib/fetcher";
-import { UserEndPointContext } from "../providers/user-end-point-provider";
 import { IAccountGas } from "@/components/key-store/key-store-accounts-table";
 import { usePageKeystores } from "./use-page-keystores";
 import { IKeyStore, IKeyStoreAccount, IKeyStoreRange } from "../types/keystore";
+import useIndexStore from "../state";
 
 export function useKeyStoreAccounts(networkId: string | null, page: string) {
-  const { userPathMap } = useContext(UserEndPointContext);
+  const userPathMap = useIndexStore((state) => state.userPathMap());
 
   const { data: keyStores } = usePageKeystores(page);
 

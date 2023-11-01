@@ -6,7 +6,7 @@ import TruncateText from "@/components/shared/trunc-text";
 import SwapHistoryItemStatus from "./swap-history-items-status";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import { toNonExponential } from "@/lib/utils";
-import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
+import useIndexStore from "@/lib/state";
 import fetcher from "@/lib/fetcher";
 import useSWRMutation from "swr/mutation";
 
@@ -18,7 +18,7 @@ export default function SwapHistoryItem({
   onCancel: () => void;
 }) {
   const { network } = useContext(NetworkContext);
-  const { userPathMap } = useContext(UserEndPointContext);
+  const userPathMap  = useIndexStore((state) => state.userPathMap());
 
   const isSwap = task.op === 1;
   const isTransfer = task.op === 2;

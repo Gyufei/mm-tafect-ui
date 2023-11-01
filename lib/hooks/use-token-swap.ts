@@ -2,7 +2,7 @@ import { useContext } from "react";
 import useSWRMutation from "swr/mutation";
 
 import fetcher from "@/lib/fetcher";
-import { UserEndPointContext } from "@/lib/providers/user-end-point-provider";
+import useIndexStore from "@/lib/state";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import { IToken } from "../types/token";
 import { ITokenNumDesc } from "@/components/token-swap/token-select-and-input";
@@ -14,7 +14,7 @@ export function useTokenSwap(
   setToken0: (_t: any) => void,
   setToken1: (_t: any) => void,
 ) {
-  const { userPathMap } = useContext(UserEndPointContext);
+  const userPathMap  = useIndexStore((state) => state.userPathMap());
   const { network } = useContext(NetworkContext);
 
   const estimateAction = async (

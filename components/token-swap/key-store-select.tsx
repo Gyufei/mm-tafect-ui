@@ -39,7 +39,7 @@ export default function KeyStoreSelect({
 
     if (keyStores.length) {
       const ks = keyStores.map((ks) => {
-        const newKs = keyStoreOptions.find((kso) => kso.name === ks.name);
+        const newKs = keyStoreOptions.find((k) => k.name === ks.name);
         return newKs as any;
       });
       handleKeyStoreSelect(ks);

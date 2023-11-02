@@ -9,4 +9,5 @@ export const HintTexts = {
   ChangeAliasnameEmptyError: "Aliasname is require",
   ChangeAliasnameSuccess: "Aliasname updated",
   NotUrlError: "Not a valid URL",
+  LoadKeyStoreSuccess: "Add KeyStore Success",
 };

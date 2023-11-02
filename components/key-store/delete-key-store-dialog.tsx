@@ -46,7 +46,7 @@ export default function DeleteKeyStoreDialog({
           <div className="flex justify-center text-2xl text-title-color">
             Title
           </div>
-          <div className="mb-5 mt-2 text-center text-base">
+          <div className="mb-5 mt-2 text-center text-base max-w-[260px] break-words">
             {`Are you sure to delete "${keyStoreName}" ?`}
           </div>
           <Button

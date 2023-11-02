@@ -15,6 +15,7 @@ import { SystemEndPointPathMap } from "@/lib/end-point";
 import { toast } from "../ui/use-toast";
 import { UNIT32_MAX } from "@/lib/constants";
 import { parseToAddress } from "@/lib/utils";
+import { HintTexts } from "@/lib/hint-texts";
 
 const EmptyRow = {
   root_account: "",
@@ -65,7 +66,7 @@ export function LoadKeyStoreDialog({
     });
 
     toast({
-      description: "Add KeyStore Success",
+      description: HintTexts.LoadKeyStoreSuccess,
     });
     onSubmitted(arg);
     return res;

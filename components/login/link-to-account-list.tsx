@@ -1,19 +1,13 @@
-import { IUser } from "@/lib/auth/user";
 import useIndexStore from "@/lib/state";
+import useEffectStore from "@/lib/state/use-store";
 import { ChevronLeft } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export default function LinkToAccountList({ onShow }: { onShow: () => void }) {
-  const allUsers = useIndexStore((state) => state.users);
-  const [clientUsers, setClientUsers] = useState<IUser[]>([]);
-
-  useEffect(() => {
-    setClientUsers(allUsers);
-  }, [allUsers]);
+  const allUsers = useEffectStore(useIndexStore, (state) => state.users);
 
   return (
     <>
-      {clientUsers.length > 0 && (
+      {allUsers && allUsers?.length > 0 && (
         <div
           className="absolute top-[-40px] flex select-none items-center hover:cursor-pointer md:top-[-3.8em]"
           onClick={onShow}

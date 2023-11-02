@@ -35,18 +35,26 @@ export function useKeyStoreAccounts(networkId: string | null, page: string) {
   async function getKeyStoreAccounts(name: string): Promise<IKeyStoreAccount> {
     try {
       const url = `${userPathMap.keyStoreAccounts}?keystore=${name}&chain_id=${networkId}`;
-      const res = await fetcher(url);
+      const res: Array<IKeyStoreAccount> = await fetcher(url);
 
       const ks = keyStores.find((k) => k.keystore_name === name);
       if (!ks) throw new Error("keystore not found");
 
-      const targetAcc = ks.range.reduce(
-        (acc: Array<IAccountGas>, rangeItem: IKeyStoreRange) => {
-          const targetAcc = getRangeAccounts(rangeItem, res);
-          return acc.concat(targetAcc);
-        },
-        [],
-      );
+      let targetAcc = [];
+
+      if (!ks.range.length) {
+        targetAcc = res.reduce((acc: Array<IAccountGas>, ks) => {
+          return acc.concat(ks.accounts);
+        }, []);
+      } else {
+        targetAcc = ks.range.reduce(
+          (acc: Array<IAccountGas>, rangeItem: IKeyStoreRange) => {
+            const targetAcc = getRangeAccounts(rangeItem, res);
+            return acc.concat(targetAcc);
+          },
+          [],
+        );
+      }
 
       return {
         name,

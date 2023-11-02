@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import LoginForm from "@/components/login/login-form";
@@ -30,13 +30,9 @@ export default function Login() {
     return isExpired;
   }, [activeUser]);
 
-  useEffect(() => {
-    if (alreadyLogin) {
-      setShowAccountList(true);
-    } else {
-      setCurrentSelectedAccount(activeUser);
-    }
-  }, [alreadyLogin, activeUser]);
+  if (alreadyLogin && !showAccountList) {
+    setShowAccountList(true);
+  }
 
   const handleSelectAccount = useCallback((account: IUser) => {
     const isValid = checkUserIsValid(account);

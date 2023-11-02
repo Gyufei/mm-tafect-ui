@@ -1,14 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { PenLine, Trash2 } from "lucide-react";
 
 import KeyStoreLinks from "@/components/key-store/key-store-links";
@@ -33,7 +26,7 @@ import useIndexStore from "@/lib/state";
 
 export default function KeyStoreItem() {
   const { network } = useContext(NetworkContext);
-  const userPathMap  = useIndexStore((state) => state.userPathMap());
+  const userPathMap = useIndexStore((state) => state.userPathMap());
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
@@ -52,10 +45,13 @@ export default function KeyStoreItem() {
     return ks;
   }, [userKeyStores, selectedKeyStoreName]);
 
+  if (userKeyStores.length && !selectedKeyStoreName) {
+    setSelectedKeyStoreName(userKeyStores[0].keystore_name);
+  }
+
   const [selectedRangeName, setSelectedRangeName] = useState<string | null>(
     null,
   );
-
   const selectedRange = useMemo(() => {
     if (!selectedKeyStoreName) return null;
 
@@ -65,20 +61,6 @@ export default function KeyStoreItem() {
 
     return ks;
   }, [selectedKeyStoreName, selectedKeyStore, selectedRangeName]);
-
-  useEffect(() => {
-    if (!userKeyStores.length) {
-      setSelectedKeyStoreName(null);
-    }
-
-    const hasKeyStore = userKeyStores.find(
-      (ks) => ks.keystore_name === selectedKeyStoreName,
-    );
-
-    if (userKeyStores.length && (!selectedKeyStoreName || !hasKeyStore)) {
-      setSelectedKeyStoreName(userKeyStores[0].keystore_name);
-    }
-  }, [userKeyStores, selectedKeyStoreName]);
 
   const { data: keyStoreAccountsDataRes, mutate: refreshAccount } = useSWR<
     Array<{ accounts: Array<IAccountGas>; count: number }>
@@ -96,7 +78,7 @@ export default function KeyStoreItem() {
     return keyStoreAccountsDataRes?.map((ks) => {
       const indexedAccounts = ks.accounts.map((a, i) => ({
         ...a,
-        index: i,
+        index: i + 1,
       }));
 
       return {
@@ -116,7 +98,7 @@ export default function KeyStoreItem() {
         )?.accounts || [];
 
       if (target?.length) {
-        return target.slice(range.from_index, range.to_index + 1);
+        return target.slice(range.from_index - 1, range.to_index);
       }
 
       return target;
@@ -129,16 +111,26 @@ export default function KeyStoreItem() {
 
     let targetAcc: Array<IAccountGas> = [];
     if (selectedKeyStore && !selectedRange) {
-      targetAcc = selectedKeyStore.range.reduce(
-        (acc: Array<IAccountGas>, k) => {
-          const rangeAccounts = getRangeAccounts(k);
-          return acc.concat(rangeAccounts);
-        },
-        [],
-      );
+      if (selectedKeyStore.range.length === 0) {
+        targetAcc = keyStoreAccountsData
+          .reduce((acc: Array<IAccountGas>, ks) => {
+            return acc.concat(ks.accounts);
+          }, [])
+          .map((ag, i) => ({
+            ...ag,
+            index: i + 1,
+          }));
+      } else {
+        targetAcc = selectedKeyStore.range.reduce(
+          (acc: Array<IAccountGas>, k) => {
+            const rangeAccounts = getRangeAccounts(k);
+            return acc.concat(rangeAccounts);
+          },
+          [],
+        );
+      }
 
-      targetAcc = uniqBy(targetAcc, "index");
-      // targetAcc = sortBy(uniqBy(targetAcc, "index"), "index");
+      targetAcc = uniqBy(targetAcc, "account");
     }
 
     if (selectedKeyStore && selectedRange) {
@@ -260,6 +252,8 @@ export default function KeyStoreItem() {
   };
 
   const onDelete = () => {
+    console.log("on delete in keystore page");
+    console.log(selectedKeyStoreName);
     setSelectedKeyStoreName(null);
     setSelectedRangeName(null);
     refetchKeyStores();

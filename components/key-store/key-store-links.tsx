@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { ChevronRight, PlusCircle, X } from "lucide-react";
 import { LoadKeyStoreDialog } from "./load-key-store-dialog";
@@ -41,16 +41,14 @@ export default function KeyStoreLinks({
 
   const [mapIsOpen, setMapIsOpen] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    setMapIsOpen((m: Record<string, boolean>) => {
-      keyStores.forEach((ks: IKeyStore) => {
-        if (has(m, ks.keystore_name)) return;
+  keyStores.forEach((ks: IKeyStore) => {
+    if (!has(mapIsOpen, ks.keystore_name)) {
+      setMapIsOpen((m: Record<string, boolean>) => {
         m[ks.keystore_name] = false;
+        return m;
       });
-
-      return m;
-    });
-  }, [keyStores]);
+    }
+  });
 
   const onOpenChange = (name: string) => {
     setMapIsOpen((prev) => {
@@ -89,8 +87,7 @@ export default function KeyStoreLinks({
             >
               <div
                 data-state={
-                  !selectedRange &&
-                  selected === String(ks.keystore_name)
+                  !selectedRange && selected === String(ks.keystore_name)
                     ? "active"
                     : "inactive"
                 }
@@ -113,11 +110,7 @@ export default function KeyStoreLinks({
                 <X
                   onClick={onDelete}
                   strokeWidth={3}
-                  data-state={
-                    selected === String(ks)
-                      ? "active"
-                      : "inactive"
-                  }
+                  data-state={selected === String(ks) ? "active" : "inactive"}
                   className="ml-3 hidden h-4 w-4 cursor-pointer rounded-full bg-border-color p-1 data-[state=active]:block md:data-[state=active]:hidden"
                 />
               </div>

@@ -13,6 +13,7 @@ import { UserInfoContext } from "@/lib/providers/user-info-provider";
 import useIndexStore from "@/lib/state";
 import { useContext, useRef, useState } from "react";
 import useEffectStore from "@/lib/state/use-store";
+import { HintTexts } from "@/lib/hint-texts";
 
 export default function EditAliasname() {
   const activeUser = useEffectStore(useIndexStore, (state) =>
@@ -38,7 +39,7 @@ export default function EditAliasname() {
     setInputValue(val);
 
     if (!val) {
-      setErrorMsg("aliasname is required");
+      setErrorMsg(HintTexts.ChangeAliasnameEmptyError);
       return;
     }
 
@@ -68,7 +69,7 @@ export default function EditAliasname() {
     });
 
     toast({
-      description: "aliasname updated",
+      description: HintTexts.ChangeAliasnameSuccess,
     });
     refreshUser();
     setEdit(false);

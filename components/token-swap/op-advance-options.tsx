@@ -124,7 +124,7 @@ export default function OpAdvanceOptions({
                 handleAdvanceOptionsChange("nonce", e.target.value)
               }
               className="rounded-md border-border-color"
-              placeholder={nonce || "0"}
+              placeholder={String(nonce) || "0"}
             />
           </div>
           <div>

@@ -27,6 +27,7 @@ export const UNIT32_MAX = "4294967295";
 export const AddressRegex = /^0x[a-fA-F0-9]{40}$/;
 
 export const TimezonesMap: Record<string, any> = {
+  "-12": "Pacific/Wake",
   "-11": "Pacific/Midway",
   "-10": "Pacific/Honolulu",
   "-9": "America/Anchorage",
@@ -38,9 +39,9 @@ export const TimezonesMap: Record<string, any> = {
   "-3": "America/Argentina/Buenos_Aires",
   "-2": "Atlantic/South_Georgia",
   "-1": "Atlantic/Azores",
-  "0": "UTC",
-  "1": "Europe/Paris",
-  "2": "Europe/Helsinki",
+  "0": "Etc/UTC",
+  "1": "Europe/London",
+  "2": "Europe/Berlin",
   "3": "Europe/Moscow",
   "4": "Asia/Dubai",
   "5": "Asia/Karachi",
@@ -50,6 +51,7 @@ export const TimezonesMap: Record<string, any> = {
   "9": "Asia/Tokyo",
   "10": "Australia/Sydney",
   "11": "Pacific/Noumea",
+  "12": "Pacific/Auckland",
 };
 
 export const TzList = (() => {

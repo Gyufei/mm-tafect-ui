@@ -48,15 +48,14 @@ export const CreateGlobalStoreState: StateCreator<
       return `UTC${temp}`;
     },
     curTimezoneStr: () => {
-      const tz = get().timezone();
-      if (!tz) return "UTC";
-      return TimezonesMap[tz] || "UTC";
+      const tz = get().timezone() || 0;
+      return TimezonesMap[tz];
     },
     localTimezoneStr: () => {
       const offsetMinus = -new Date().getTimezoneOffset() / 60;
       const offset =
         offsetMinus > 0 ? `${Math.abs(offsetMinus)}` : `-${offsetMinus}`;
-      return TimezonesMap[offset as any] || "UTC";
+      return TimezonesMap[offset];
     },
 
     endpoint: () => {

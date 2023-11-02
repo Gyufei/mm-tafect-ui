@@ -28,7 +28,7 @@ export function useGasPrice() {
   return {
     ...res,
     data: res.data?.gas_price
-      ? Number(res.data.gas_price) / 10 ** 9
+      ? (Number(res.data.gas_price) / 10 ** 9).toFixed(9)
       : undefined,
   };
 }

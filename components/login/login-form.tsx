@@ -24,6 +24,7 @@ import md5 from "js-md5";
 import { signInAction } from "@/lib/auth/auth-api";
 import { useRouter } from "next/navigation";
 import useIndexStore from "@/lib/state";
+import LoadingIcon from "../shared/loading-icon";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -41,9 +42,11 @@ export default function LoginForm({
 }) {
   const router = useRouter();
 
+  const showUserForLogin = showWithUser && user?.name;
+
   const setUserActive = useIndexStore((state) => state.setUserActive);
   const [showLoginFailTip, setShowLoginFailTip] = useState(false);
-  const showUserForLogin = showWithUser && user?.name;
+  const [isLogging, setIsLogging] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -73,6 +76,7 @@ export default function LoginForm({
   }, [user]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLogging(true);
     if (alreadyLogin) {
       setUserActive(user?.name || "");
       router.push("/dashboard");
@@ -92,6 +96,8 @@ export default function LoginForm({
     } else {
       router.push("/dashboard");
     }
+
+    setIsLogging(false);
   }
 
   const FormHead = () => {
@@ -172,10 +178,17 @@ export default function LoginForm({
 
             <div className="mt-5 flex flex-col items-stretch justify-center md:flex-row md:items-center md:justify-between ">
               <button
-                className="mb-3 flex h-10 w-full items-center justify-center rounded-3xl bg-primary px-10 py-2.5 text-white md:mb-0 md:w-36"
+                disabled={isLogging}
+                className="mb-3 flex h-10 w-full items-center justify-center rounded-3xl bg-primary px-10 py-2.5 text-white disabled:cursor-not-allowed disabled:bg-gray-300 md:mb-0 md:w-36"
                 type="submit"
               >
-                sign in
+                <div className="flex items-center">
+                  <span className="whitespace-nowrap">sign in</span>
+                  <LoadingIcon
+                    className="ml-1 text-white"
+                    isLoading={isLogging}
+                  />
+                </div>
               </button>
               <div className="cursor-pointer text-center text-sm text-primary">
                 Having trouble signing in?

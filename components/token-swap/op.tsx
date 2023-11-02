@@ -25,6 +25,7 @@ import { IKeyStoreAccount } from "@/lib/types/keystore";
 import { useGasPrice } from "@/lib/hooks/use-gas-price";
 import { useNonce } from "@/lib/hooks/use-nonce";
 import useEffectStore from "@/lib/state/use-store";
+import { HintTexts } from "@/lib/hint-texts";
 
 export default function Op({
   keyStores,
@@ -222,7 +223,7 @@ export default function Op({
       setApproveLoading(false);
       setSendTxResult({
         type: "success",
-        message: `Approve Success`,
+        message: HintTexts.ApproveSuccess,
       });
 
       afterAction();
@@ -276,7 +277,11 @@ export default function Op({
   async function testTxBeforeSend() {
     try {
       const res = await signAction();
-      if (!res || !res.gaslimit) {
+      if (!res) {
+        return;
+      }
+
+      if (!res.gaslimit) {
         throw new Error("gas insufficient");
       }
 
@@ -312,7 +317,7 @@ export default function Op({
 
       setSendTxResult({
         type: "success",
-        message: `Your funds have been staked in the pool`,
+        message: HintTexts.ScheduleSuccess,
       });
       afterAction();
     } catch (e: any) {
@@ -328,7 +333,10 @@ export default function Op({
   async function handleSend() {
     setSendLoading(true);
     const testRes = await testTxBeforeSend();
-    if (!testRes) return;
+    if (!testRes) {
+      setSendLoading(false);
+      return;
+    }
 
     await sendAction();
     setSendLoading(false);

@@ -20,7 +20,7 @@ export async function signInAction(credentials: {
     );
 
     const { access_token } = res;
-    
+
     const user: IUser = {
       name: credentials.username.split("@")[0],
       email: credentials.username,

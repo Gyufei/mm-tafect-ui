@@ -38,6 +38,7 @@ export default function UserInfoProvider({
   useEffect(() => {
     if (hasRender.current) return;
     if (!activeUser || !userInfoData) return;
+    if (activeUser.email !== userInfoData.username) return;
 
     const newUser = {
       ...activeUser,

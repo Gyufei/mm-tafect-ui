@@ -14,6 +14,7 @@ import { toast } from "../ui/use-toast";
 import { UserInfoContext } from "@/lib/providers/user-info-provider";
 import useIndexStore from "@/lib/state";
 import useEffectStore from "@/lib/state/use-store";
+import { HintTexts } from "@/lib/hint-texts";
 
 const URL_REGEX =
   /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/;
@@ -47,12 +48,12 @@ export default function EditEndPoint() {
     setInputValue(val);
 
     if (!val) {
-      setErrorMsg("Endpoint is required");
+      setErrorMsg(HintTexts.ChangeEndpointEmptyError);
       return;
     }
 
     if (!URL_REGEX.test(val || "")) {
-      setErrorMsg("Not a valid URL");
+      setErrorMsg(HintTexts.NotUrlError);
       return;
     }
 
@@ -82,7 +83,7 @@ export default function EditEndPoint() {
     });
 
     toast({
-      description: "Endpoint updated",
+      description: HintTexts.ChangeEndpointSuccess,
     });
     setEdit(false);
     refreshUser();

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import LoadingIcon from "@/components/shared/loading-icon";
+import { HintTexts } from "@/lib/hint-texts";
 
 interface IFormFields {
   password: string;
@@ -45,7 +46,7 @@ export default function ChangePassword() {
     });
 
     toast({
-      description: "Change password successfully",
+      description: HintTexts.ChangePasswordSuccess,
     });
 
     setShowChangeDialog(false);
@@ -86,7 +87,7 @@ export default function ChangePassword() {
                 type="password"
                 {...register("password", {
                   validate: (value) => {
-                    if (!value) return "Please Input";
+                    if (!value) return HintTexts.ChangePasswordEmptyError;
 
                     const repeat = getValues("repeatPassword");
 
@@ -94,7 +95,7 @@ export default function ChangePassword() {
                       return true;
                     }
                     if (value !== repeat) {
-                      return "Two Password not match";
+                      return HintTexts.ChangePasswordRepeatError;
                     }
                   },
                   deps: ["repeatPassword"],
@@ -102,7 +103,7 @@ export default function ChangePassword() {
               />
               <div className="text-sm font-medium text-destructive">
                 {formState.errors?.password && (
-                  <p>{formState.errors.password.message || "123"}</p>
+                  <p>{formState.errors.password.message}</p>
                 )}
               </div>
             </div>
@@ -112,7 +113,7 @@ export default function ChangePassword() {
                 type="password"
                 {...register("repeatPassword", {
                   validate: (value) => {
-                    if (!value) return "Please Input";
+                    if (!value) return HintTexts.ChangePasswordEmptyError;
 
                     const pass = getValues("password");
                     if (!pass || !value) {
@@ -120,7 +121,7 @@ export default function ChangePassword() {
                     }
 
                     if (value !== pass) {
-                      return "Two Password not match";
+                      return HintTexts.ChangePasswordRepeatError;
                     }
                   },
                   deps: ["password"],
@@ -128,7 +129,7 @@ export default function ChangePassword() {
               />
               <div className="text-sm font-medium text-destructive">
                 {formState.errors?.repeatPassword && (
-                  <p>{formState.errors.repeatPassword.message || "123"}</p>
+                  <p>{formState.errors.repeatPassword.message}</p>
                 )}
               </div>
             </div>

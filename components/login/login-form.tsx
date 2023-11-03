@@ -1,8 +1,5 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { IUser, checkUserIsValid } from "@/lib/auth/user";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import * as z from "zod";
@@ -23,8 +20,9 @@ import LinkToAccountList from "./link-to-account-list";
 import md5 from "js-md5";
 import { signInAction } from "@/lib/auth/auth-api";
 import { useRouter } from "next/navigation";
-import useIndexStore from "@/lib/state";
 import LoadingIcon from "../shared/loading-icon";
+import { IUser } from "@/lib/auth/user";
+import { useEffect, useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -44,7 +42,6 @@ export default function LoginForm({
 
   const showUserForLogin = showWithUser && user?.name;
 
-  const setUserActive = useIndexStore((state) => state.setUserActive);
   const [showLoginFailTip, setShowLoginFailTip] = useState(false);
   const [isLogging, setIsLogging] = useState(false);
 
@@ -56,33 +53,14 @@ export default function LoginForm({
     },
   });
 
-  const alreadyLogin = useMemo(() => {
-    if (!showWithUser || !user) return false;
-    if (!user.token) return false;
-
-    const isExpired = checkUserIsValid(user);
-
-    return isExpired;
-  }, [user, showWithUser]);
-
   useEffect(() => {
-    if (showUserForLogin) {
+    if (showUserForLogin && user?.email) {
       form.setValue("email", user.email || "");
     }
-
-    if (alreadyLogin) {
-      form.setValue("password", user?.email || "");
-    }
-  }, [user]);
+  }, [showUserForLogin, user?.email, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLogging(true);
-    if (alreadyLogin) {
-      setUserActive(user?.name || "");
-      router.push("/dashboard");
-      return;
-    }
-
     const { email, password } = values;
     const mPassword = md5(password);
 
@@ -165,7 +143,6 @@ export default function LoginForm({
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={alreadyLogin}
                       className="rounded hover:border-blue-500 focus:bg-[#e9f0fd]"
                       type="password"
                       {...field}

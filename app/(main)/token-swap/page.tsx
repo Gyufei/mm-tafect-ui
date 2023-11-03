@@ -45,7 +45,7 @@ export default function TokenSwap() {
   };
 
   return (
-    <>
+    <div className="relative grid h-full grid-cols-1 bg-[#fafafa] md:static md:grid-cols-3 md:overflow-y-hidden">
       <div
         data-state={showSlidePage === "Filter Account"}
         className="border-[#dadada absolute top-[-69px]  z-10 h-screen w-full rounded-t-3xl border-r-0 bg-[#fafafa] data-[state=false]:hidden data-[state=true]:animate-in data-[state=false]:animate-out data-[state=false]:slide-out-to-bottom data-[state=true]:slide-in-from-bottom md:static md:h-full md:w-auto md:rounded-none md:border-r md:data-[state=false]:block"
@@ -83,6 +83,6 @@ export default function TokenSwap() {
         <SwiperHandlerBox />
         <SwapHistory ref={historySearchRef} />
       </div>
-    </>
+    </div>
   );
 }

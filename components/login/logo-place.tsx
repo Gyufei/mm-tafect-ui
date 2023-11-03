@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function LogoPlace() {
   const BorderCol = () => {
     return (
@@ -9,12 +11,14 @@ export default function LogoPlace() {
     <div className="align-center relative m-0 flex w-full flex-col justify-center md:left-[-200px] md:h-full md:w-auto md:flex-row">
       <BorderCol />
       <div
-        className="absolute top-[-50%] z-10 mx-auto my-0 h-32 w-32 select-none rounded-full border-stone-300 bg-white md:left-[-50%] md:top-1/4"
+        className="absolute top-[-50%] border border-[#d6d6d6] z-10 mx-auto my-0 h-32 w-32 select-none rounded-full bg-white md:left-[-50%] md:top-1/4"
         style={{
           left: "calc(50% - 64px)",
           boxShadow: "-1px 0px 0px 0px #d6d6d6, inset -1px 0px 0px 0px #d6d6d6",
         }}
-      ></div>
+      >
+        <Image src="/logo.svg" width={128} height={128} alt="logo" />
+      </div>
 
       <BorderCol />
     </div>

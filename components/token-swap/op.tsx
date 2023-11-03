@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 
 import QueryAccountBalance from "@/components/token-swap/query-account-balance";
 import OpSelect from "@/components/token-swap/op-select";
@@ -204,14 +204,12 @@ export default function Op({
       fromAddress,
     );
 
-  useEffect(() => {
-    if (token0Allowance) {
-      setToken0((prev) => ({
-        ...prev,
-        allowance: token0Allowance,
-      }));
-    }
-  }, [token0Allowance]);
+  if (token0Allowance && token0.allowance !== token0Allowance) {
+    setToken0((prev) => ({
+      ...prev,
+      allowance: token0Allowance,
+    }));
+  }
 
   const [approveLoading, setApproveLoading] = useState<boolean>(false);
   async function handleApprove() {

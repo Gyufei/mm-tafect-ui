@@ -31,7 +31,9 @@ export function UserBox() {
   function handleChangeUser(user: IUser) {
     if (user?.name === activeUser?.name) return;
     setUserActive(user?.name);
-    window.location.reload();
+    if (checkUserIsValid(user)) {
+      window.location.reload();
+    }
   }
 
   const getName = (user: IUser | null) => {

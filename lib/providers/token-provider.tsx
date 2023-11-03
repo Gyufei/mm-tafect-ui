@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import useSWR from "swr";
 
 import fetcher from "@/lib/fetcher";
@@ -95,12 +95,10 @@ export default function TokenProvider({
     );
   }, [tokens, currencySymbol]);
 
-  useEffect(() => {
-    if (stableTokens.length > 0 && !stableToken) {
-      const st = stableTokens.find((t) => t.symbol === "USDT") || null;
-      setStableToken(st);
-    }
-  }, [stableTokens, stableToken]);
+  if (stableTokens.length > 0 && !stableToken) {
+    const st = stableTokens.find((t) => t.symbol === "USDT") || null;
+    setStableToken(st);
+  }
 
   return (
     <TokenContext.Provider

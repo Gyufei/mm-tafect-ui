@@ -39,7 +39,7 @@ export default function OpSelect({
     if (opList?.length && !op) {
       handleOpSelect(opList.find((op: Record<string, any>) => op.op_id === 1));
     }
-  }, [opList, op]);
+  }, [opList, op, handleOpSelect]);
 
   const handleSelect = (opName: string) => {
     const op = opList.find((op: Record<string, any>) => op.op_name === opName);

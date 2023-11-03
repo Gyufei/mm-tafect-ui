@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useEffect, useState } from "react";
+import { createContext } from "react";
 import useSWR from "swr";
 
 import { INetwork } from "@/lib/types/network";
@@ -23,7 +23,6 @@ export default function NetworkProvider({
 }) {
   const userPathMap = useIndexStore((state) => state.userPathMap());
 
-  const [network, setNetwork] = useState<INetwork | null>(null);
   const { data: userWeb3Info } = useSWR(
     () => userPathMap.web3Info || null,
     fetcher,
@@ -33,14 +32,10 @@ export default function NetworkProvider({
     fetcher,
   );
 
-  useEffect(() => {
-    if (networks && userWeb3Info?.chain_id) {
-      const curNet = networks.find(
-        (n) => String(n.chain_id) === String(userWeb3Info?.chain_id),
-      );
-      setNetwork(curNet || null);
-    }
-  }, [networks, userWeb3Info]);
+  const network =
+    (networks || []).find(
+      (n) => String(n.chain_id) === String(userWeb3Info?.chain_id),
+    ) || null;
 
   return (
     <NetworkContext.Provider

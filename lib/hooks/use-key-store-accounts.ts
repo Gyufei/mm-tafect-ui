@@ -85,6 +85,7 @@ export function useKeyStoreAccounts(networkId: string | null, page: string) {
         accountLoading: true,
       };
     });
+
     setKeyStoreAccounts(() => {
       return ksAcs;
     });

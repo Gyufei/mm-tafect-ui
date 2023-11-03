@@ -73,7 +73,7 @@ export default function QueryAccountBalance({
     if (gasBalanceRes) {
       setGas(gasBalanceRes?.balance_of || 0);
     }
-  }, [gasBalanceRes]);
+  }, [gasBalanceRes, setGas]);
 
   const handleQuery = () => {
     if (

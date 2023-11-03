@@ -65,3 +65,5 @@ export const TzList = (() => {
   }
   return arr;
 })();
+
+export const DayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];

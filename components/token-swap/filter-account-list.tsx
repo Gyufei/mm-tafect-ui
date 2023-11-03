@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import useSWRMutation from "swr/mutation";
 import { uniqBy } from "lodash";
 import { ArrowUpRight } from "lucide-react";
@@ -49,13 +49,6 @@ export default function FilterAccountList({
   const [token, setToken] = useState<IToken | null>(null);
   const [tokenMin, setTokenMin] = useStrNum("");
   const [tokenMax, setTokenMax] = useStrNum("");
-
-  useEffect(() => {
-    setToken(null);
-    filterResultReset();
-    setTokenMax("");
-    setTokenMin("");
-  }, [networkId]);
 
   function handleTokenSelect(token: IToken | null) {
     setToken(token);

@@ -34,6 +34,10 @@ export default function Login() {
     setShowAccountList(true);
   }
 
+  if (!alreadyLogin && activeUser && !currentSelectedAccount) {
+    setCurrentSelectedAccount(activeUser);
+  }
+
   const handleSelectAccount = useCallback((account: IUser) => {
     const isValid = checkUserIsValid(account);
 

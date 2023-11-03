@@ -258,7 +258,7 @@ export default function KeyStoreItem() {
   };
 
   return (
-    <>
+    <div className="flex h-[calc(100vh-70px)] w-screen flex-col bg-[#fafafa] md:w-auto md:flex-row md:items-stretch">
       <KeyStoreLinks
         keyStores={userKeyStores}
         selected={selectedKeyStoreName || null}
@@ -360,6 +360,6 @@ export default function KeyStoreItem() {
 
         <KeyStoreAccountsTable accounts={accounts} />
       </div>
-    </>
+    </div>
   );
 }

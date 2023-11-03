@@ -47,7 +47,7 @@ export default function GlobalRedirect({
         redirect("/dashboard");
       }
     }
-  }, [isLogin, pathname]);
+  }, [isLogin, pathname, activeUser, endpoint]);
 
   return <>{children}</>;
 }

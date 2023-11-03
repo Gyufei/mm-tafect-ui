@@ -78,7 +78,7 @@ export default function KeyStoreItem() {
     return keyStoreAccountsDataRes?.map((ks) => {
       const indexedAccounts = ks.accounts.map((a, i) => ({
         ...a,
-        index: i + 1,
+        index: i,
       }));
 
       return {
@@ -98,7 +98,7 @@ export default function KeyStoreItem() {
         )?.accounts || [];
 
       if (target?.length) {
-        return target.slice(range.from_index - 1, range.to_index);
+        return target.slice(range.from_index, range.to_index + 1);
       }
 
       return target;
@@ -118,7 +118,7 @@ export default function KeyStoreItem() {
           }, [])
           .map((ag, i) => ({
             ...ag,
-            index: i + 1,
+            index: i,
           }));
       } else {
         targetAcc = selectedKeyStore.range.reduce(
@@ -252,8 +252,6 @@ export default function KeyStoreItem() {
   };
 
   const onDelete = () => {
-    console.log("on delete in keystore page");
-    console.log(selectedKeyStoreName);
     setSelectedKeyStoreName(null);
     setSelectedRangeName(null);
     refetchKeyStores();

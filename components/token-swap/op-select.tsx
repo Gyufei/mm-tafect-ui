@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useContext, useEffect, useMemo } from "react";
 import useSWR from "swr";
 
@@ -13,6 +14,12 @@ import { SystemEndPointPathMap } from "@/lib/end-point";
 import fetcher from "@/lib/fetcher";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import { IOp } from "@/lib/types/op";
+
+const ImgMap = {
+  uniswap: "/icons/uniswap.svg",
+  pancakeSwap: "/icons/pancakeswap.png",
+  transfer: "/icons/transfer.svg",
+};
 
 export default function OpSelect({
   op,
@@ -46,15 +53,59 @@ export default function OpSelect({
     handleOpSelect(op);
   };
 
+  const getImageSrc = (op: IOp) => {
+    if (!op) return "";
+
+    if (op.op_id === 2) {
+      return ImgMap.transfer;
+    }
+
+    if (op.op_id === 1) {
+      if (op.op_name.includes("Pancake")) {
+        return ImgMap.pancakeSwap;
+      }
+
+      if (op.op_name.includes("Uniswap")) {
+        return ImgMap.uniswap;
+      }
+    }
+
+    return "";
+  };
+
   return (
     <Select value={op?.op_name} onValueChange={(e) => handleSelect(e)}>
       <SelectTrigger>
-        <SelectValue placeholder="Select OP" />
+        <SelectValue placeholder="Select OP">
+          {op ? (
+            <div className="flex items-center">
+              {getImageSrc(op) && (
+                <Image
+                  src={getImageSrc(op)}
+                  width={20}
+                  height={20}
+                  alt="logo"
+                />
+              )}
+              <span className="ml-1">{op.op_name}</span>
+            </div>
+          ) : null}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {(displayOpList || []).map((op: Record<string, string>) => (
-          <SelectItem key={op.op_name} value={op.op_name}>
-            {op.op_name}
+        {(displayOpList || []).map((op: IOp) => (
+          <SelectItem showIndicator={false} key={op.op_name} value={op.op_name}>
+            <div className="flex items-center">
+              {getImageSrc(op) && (
+                <Image
+                  src={getImageSrc(op)}
+                  width={20}
+                  height={20}
+                  alt="logo"
+                />
+              )}
+              <span className="ml-1">{op.op_name}</span>
+            </div>
           </SelectItem>
         ))}
       </SelectContent>

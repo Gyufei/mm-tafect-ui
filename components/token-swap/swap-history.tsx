@@ -1,5 +1,6 @@
 import {
   forwardRef,
+  useCallback,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -136,18 +137,6 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
     return parsed;
   };
 
-  useEffect(() => {
-    const inId = setInterval(() => {
-      handleSearch();
-    }, 12000);
-
-    return () => clearInterval(inId);
-  }, []);
-
-  useEffect(() => {
-    handleSearch();
-  }, [networkId, opList?.length, tokens?.length]);
-
   const {
     data: tasks,
     trigger: filterTrigger,
@@ -157,6 +146,32 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
     trigger: any;
     isMutating: boolean;
   } = useSWRMutation(`${userPathMap.swapHistory}?${getQueryStr()}`, fetchTasks);
+
+  const handleSearch = useCallback(() => {
+    if (!networkId || !opList?.length || !tokens?.length) return null;
+
+    if (!filterTaskDate.min && !filterTaskDate.max) {
+      return null;
+    } else {
+      filterTrigger();
+    }
+  }, [
+    networkId,
+    opList?.length,
+    tokens?.length,
+    filterTaskDate,
+    filterTrigger,
+  ]);
+
+  useEffect(() => {
+    handleSearch();
+
+    const inId = setInterval(() => {
+      handleSearch();
+    }, 12000);
+
+    return () => clearInterval(inId);
+  }, [networkId, opList?.length, tokens?.length, handleSearch]);
 
   const [searchText, setSearchText] = useState("");
 
@@ -174,16 +189,6 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
       }
     });
   }, [tasks, searchText]);
-
-  const handleSearch = () => {
-    if (!networkId || !opList?.length || !tokens?.length) return null;
-
-    if (!filterTaskDate.min && !filterTaskDate.max) {
-      return null;
-    } else {
-      filterTrigger();
-    }
-  };
 
   useImperativeHandle(ref, () => ({
     handleSearch,

@@ -70,6 +70,8 @@ export default function OpAdvanceOptions({
       new Date(Number(options.schedule) * 1000).toISOString(),
       localTimezoneStr,
     );
+    console.log(new Date(Number(options.schedule) * 1000).toISOString());
+    console.log(curTimezoneStr, localTimezoneStr);
     const curTimezoneDate = utcToZonedTime(utcDate, curTimezoneStr);
 
     return curTimezoneDate;

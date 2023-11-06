@@ -119,9 +119,9 @@ export default function Op({
       keystore,
       ...advanceOptions,
       gas: advanceOptions.gas
-        ? String(Number(advanceOptions.gas) * 10 ** 9)
-        : String(Number(gasPrice) * 10 ** 9),
-      nonce: advanceOptions.nonce || nonce,
+        ? (Number(advanceOptions.gas) * 10 ** 9).toFixed()
+        : (Number(gasPrice) * 10 ** 9).toFixed(),
+      nonce: advanceOptions.nonce || nonce === "-" ? null : nonce,
     };
   };
 

@@ -28,6 +28,6 @@ export function useNonce(queryAccount: string) {
 
   return {
     ...res,
-    data: Number(res.data?.nonce),
+    data: res.data?.nonce ? Number(res.data?.nonce) : "-",
   };
 }

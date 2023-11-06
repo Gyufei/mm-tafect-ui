@@ -75,6 +75,8 @@ const AccountCard = ({
 
   const isValid = checkUserIsValid(ac);
 
+  const name = ac?.aliasname || ac?.name;
+
   return (
     <div className="mb-5 flex w-full items-center overflow-x-hidden px-4">
       <div
@@ -86,11 +88,11 @@ const AccountCard = ({
         <div className="flex items-center">
           <Avatar className="mr-4 h-10 w-10 rounded-lg">
             <AvatarImage src={ac?.image || ""} />
-            <AvatarFallback>{ac?.name?.[0] || ""}</AvatarFallback>
+            <AvatarFallback>{name?.[0] || ""}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-start justify-between">
             <div className="text-base font-bold leading-4 text-title-color">
-              {ac?.name}
+              {name}
             </div>
             <div className="text-base leading-4 text-content-color">
               {ac?.email}

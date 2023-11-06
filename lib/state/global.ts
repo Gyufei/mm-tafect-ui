@@ -54,7 +54,9 @@ export const CreateGlobalStoreState: StateCreator<
     localTimezoneStr: () => {
       const offsetMinus = -new Date().getTimezoneOffset() / 60;
       const offset =
-        offsetMinus > 0 ? `${Math.abs(offsetMinus)}` : `-${offsetMinus}`;
+        offsetMinus > 0
+          ? `${Math.abs(offsetMinus)}`
+          : `-${Math.abs(offsetMinus)}`;
       return TimezonesMap[offset];
     },
 

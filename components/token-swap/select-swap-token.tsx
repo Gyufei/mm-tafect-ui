@@ -1,7 +1,7 @@
 import { ArrowBigRight } from "lucide-react";
 import TokenSelectAndInput, { ITokenNumDesc } from "./token-select-and-input";
 import { useTokenSwap } from "@/lib/hooks/use-token-swap";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { TokenContext } from "@/lib/providers/token-provider";
 
 export default function SelectSwapToken({
@@ -14,8 +14,8 @@ export default function SelectSwapToken({
   swapRouter: string;
   token0: ITokenNumDesc;
   token1: ITokenNumDesc;
-  setToken0: (_t: ITokenNumDesc) => void;
-  setToken1: (_t: ITokenNumDesc) => void;
+  setToken0: (_t: ITokenNumDesc | any) => void;
+  setToken1: (_t: ITokenNumDesc | any) => void;
 }) {
   const { token: userToken, gasToken, stableToken } = useContext(TokenContext);
 
@@ -32,6 +32,24 @@ export default function SelectSwapToken({
     }
     return ts;
   }, [userToken, gasToken, stableToken]);
+
+  useEffect(() => {
+    if (gasToken && !token0.token) {
+      setToken0((prev: ITokenNumDesc) => ({
+        ...prev,
+        token: gasToken,
+      }));
+    }
+  }, [gasToken, token0.token, setToken0]);
+
+  useEffect(() => {
+    if (stableToken && !token1.token) {
+      setToken1((prev: ITokenNumDesc) => ({
+        ...prev,
+        token: stableToken,
+      }));
+    }
+  }, [stableToken, token1.token, setToken1]);
 
   const {
     handleToken0Change,

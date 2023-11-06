@@ -86,11 +86,11 @@ export default function LoginForm({
             <div className="mb-5 flex justify-start">
               <Avatar className="mr-4 h-16 w-16 rounded-lg">
                 <AvatarImage src={user?.image || ""} />
-                <AvatarFallback>{user?.name?.[0] || ""}</AvatarFallback>
+                <AvatarFallback>{name?.[0] || ""}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col items-start justify-around">
                 <div className="text-lg font-bold text-title-color">
-                  Sign in to {user?.name}
+                  Sign in to {name}
                 </div>
                 <div className="LabelText">{user?.email}</div>
               </div>
@@ -106,6 +106,8 @@ export default function LoginForm({
       </>
     );
   };
+
+  const name = user?.aliasname || user?.name;
 
   return (
     <div className="flex w-full grow flex-col items-stretch px-4 pt-20 md:max-w-md md:pt-[24vh]">

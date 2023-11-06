@@ -46,9 +46,13 @@ export default function FilterAccountList({
 
   const setFromAddress = useIndexStore((state) => state.setFromAddress);
 
-  const [token, setToken] = useState<IToken | null>(null);
+  const [token, setToken] = useState<IToken | null>(gasToken);
   const [tokenMin, setTokenMin] = useStrNum("");
   const [tokenMax, setTokenMax] = useStrNum("");
+
+  if (gasToken && !token) {
+    setToken(gasToken);
+  }
 
   function handleTokenSelect(token: IToken | null) {
     setToken(token);

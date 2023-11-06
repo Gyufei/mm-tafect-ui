@@ -1,5 +1,6 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { ExternalLink } from "lucide-react";
+import Image from "next/image";
 
 import { ITask } from "@/lib/types/task";
 import TruncateText from "@/components/shared/trunc-text";
@@ -9,6 +10,7 @@ import { toNonExponential } from "@/lib/utils";
 import useIndexStore from "@/lib/state";
 import fetcher from "@/lib/fetcher";
 import useSWRMutation from "swr/mutation";
+import { DexImgMap } from "@/lib/constants";
 
 export default function SwapHistoryItem({
   task,
@@ -54,22 +56,13 @@ export default function SwapHistoryItem({
   };
 
   return (
-    <div className="flex flex-col gap-y-2 rounded-md text-sm border border-border-color bg-custom-bg-white p-3 first:mt-4">
+    <div className="flex flex-col gap-y-2 rounded-md border border-border-color bg-custom-bg-white p-3 text-sm first:mt-4">
       <div className="flex justify-between text-content-color">
         <div>{task.date}</div>
-        <div className="flex items-center">
-          [{isSwap ? `Swap ${task.opName}` : task.opName}]
-          {isApprove ? `(${taskTxData.tokenName})` : null}
-          {task.txHash && (
-            <ExternalLink
-              className="mb-1 ml-1 h-4 w-4 cursor-pointer text-primary"
-              onClick={handleGoToExplorer}
-            />
-          )}
-        </div>
+        <OpDisplay task={task} onClick={handleGoToExplorer} />
       </div>
 
-      <div className="flex justify-between text-title-color text-base">
+      <div className="flex justify-between text-base text-title-color">
         <div className="flex items-center font-medium">
           <TruncateText text={task.data.account} />
         </div>
@@ -115,6 +108,48 @@ export default function SwapHistoryItem({
         />
         {!isApprove && <div>Nonce: {taskTxData?.nonce}</div>}
       </div>
+    </div>
+  );
+}
+
+function OpDisplay({ task, onClick }: { task: ITask; onClick: () => void }) {
+  const name = task.opName;
+  const isSwap = task.op === 1;
+  const isApprove = task.op === 3;
+  const taskTxData = task.data;
+  console.log(name);
+
+  const imgSrc = useMemo(() => {
+    if (name.toLowerCase().includes("uniswap")) {
+      return DexImgMap["uniswap"];
+    }
+    if (name.toLowerCase().includes("pancakeswap")) {
+      return DexImgMap["pancakeSwap"];
+    }
+  }, [name]);
+
+  return (
+    <div className="flex items-center">
+      [{isSwap && <span>Swap</span>}
+      {isApprove && <span>Approve</span>}
+      {imgSrc ? (
+        <Image
+          src={imgSrc}
+          width={20}
+          height={20}
+          alt="logo"
+          className="mx-1"
+        />
+      ) : (
+        name
+      )}
+      ]{isApprove ? `(${taskTxData.tokenName})` : null}
+      {task.txHash && (
+        <ExternalLink
+          className="mb-1 ml-1 h-4 w-4 cursor-pointer text-primary"
+          onClick={onClick}
+        />
+      )}
     </div>
   );
 }

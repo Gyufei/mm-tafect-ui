@@ -14,12 +14,8 @@ import { SystemEndPointPathMap } from "@/lib/end-point";
 import fetcher from "@/lib/fetcher";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import { IOp } from "@/lib/types/op";
-
-const ImgMap = {
-  uniswap: "/icons/uniswap.svg",
-  pancakeSwap: "/icons/pancakeswap.png",
-  transfer: "/icons/transfer.svg",
-};
+import { DexImgMap } from "@/lib/constants";
+import { ArrowLeftRight } from "lucide-react";
 
 export default function OpSelect({
   op,
@@ -53,40 +49,13 @@ export default function OpSelect({
     handleOpSelect(op);
   };
 
-  const getImageSrc = (op: IOp) => {
-    if (!op) return "";
-
-    if (op.op_id === 2) {
-      return ImgMap.transfer;
-    }
-
-    if (op.op_id === 1) {
-      if (op.op_name.includes("Pancake")) {
-        return ImgMap.pancakeSwap;
-      }
-
-      if (op.op_name.includes("Uniswap")) {
-        return ImgMap.uniswap;
-      }
-    }
-
-    return "";
-  };
-
   return (
     <Select value={op?.op_name} onValueChange={(e) => handleSelect(e)}>
       <SelectTrigger>
         <SelectValue placeholder="Select OP">
           {op ? (
             <div className="flex items-center">
-              {getImageSrc(op) && (
-                <Image
-                  src={getImageSrc(op)}
-                  width={20}
-                  height={20}
-                  alt="logo"
-                />
-              )}
+              <OpLogo op={op} />
               <span className="ml-1">{op.op_name}</span>
             </div>
           ) : null}
@@ -96,14 +65,7 @@ export default function OpSelect({
         {(displayOpList || []).map((op: IOp) => (
           <SelectItem showIndicator={false} key={op.op_name} value={op.op_name}>
             <div className="flex items-center">
-              {getImageSrc(op) && (
-                <Image
-                  src={getImageSrc(op)}
-                  width={20}
-                  height={20}
-                  alt="logo"
-                />
-              )}
+              <OpLogo op={op} />
               <span className="ml-1">{op.op_name}</span>
             </div>
           </SelectItem>
@@ -111,4 +73,28 @@ export default function OpSelect({
       </SelectContent>
     </Select>
   );
+}
+
+function OpLogo({ op }: { op: IOp }) {
+  const getImageSrc = (op: IOp) => {
+    if (!op || op.op_id !== 1) return "";
+
+    if (op.op_id === 1) {
+      if (op.op_name.includes("Pancake")) {
+        return DexImgMap.pancakeSwap;
+      }
+
+      if (op.op_name.includes("Uniswap")) {
+        return DexImgMap.uniswap;
+      }
+    }
+
+    return "";
+  };
+
+  return op?.op_id === 2 ? (
+    <ArrowLeftRight className="h-4 w-4" />
+  ) : getImageSrc(op) ? (
+    <Image src={getImageSrc(op)} width={20} height={20} alt="logo" />
+  ) : null;
 }

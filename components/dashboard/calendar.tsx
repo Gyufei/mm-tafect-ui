@@ -110,7 +110,6 @@ function DayItem({
   const isSelected = isEqual(day, selectedDay);
   const isBeforeDay = isBefore(day, today);
   const isThisMonth = isSameMonth(day, firstDayCurrentMonth);
-  console.log(isSelected, isBeforeDay, isThisMonth);
 
   return (
     <div

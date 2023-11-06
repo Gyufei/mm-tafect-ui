@@ -33,6 +33,8 @@ import fetcher from "@/lib/fetcher";
 import { TokenContext } from "@/lib/providers/token-provider";
 import useIndexStore from "@/lib/state";
 
+let initHasSearch = false;
+
 const SwapHistory = forwardRef((props: any, ref: any) => {
   const userPathMap = useIndexStore((state) => state.userPathMap());
   const { network } = useContext(NetworkContext);
@@ -154,6 +156,7 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
       return null;
     } else {
       filterTrigger();
+      return true;
     }
   }, [
     networkId,
@@ -164,7 +167,10 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
   ]);
 
   useEffect(() => {
-    handleSearch();
+    if (!initHasSearch) {
+      const res = handleSearch();
+      initHasSearch = !!res;
+    }
 
     const inId = setInterval(() => {
       handleSearch();

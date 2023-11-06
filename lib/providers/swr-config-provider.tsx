@@ -2,6 +2,7 @@
 
 import { toast } from "@/components/ui/use-toast";
 import { SWRConfig } from "swr";
+import { HintTexts } from "../hint-texts";
 
 export default function SWRConfigProvider({
   children,
@@ -15,7 +16,9 @@ export default function SWRConfigProvider({
           toast({
             variant: "destructive",
             title: `Api: ${key}`,
-            description: `${error.status || ""}: ${error.info || ""}`,
+            description: `${error.status || "Error"}: ${
+              error.info || HintTexts.GlobalError
+            }`,
           });
         },
       }}

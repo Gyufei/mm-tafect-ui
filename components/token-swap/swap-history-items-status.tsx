@@ -72,7 +72,7 @@ export default function SwapHistoryItemStatus({
       onMouseOver={() => setIsHover(true)}
       onMouseOut={() => setIsHover(false)}
       onClick={onCancelQueue}
-      className="w-[100px] cursor-pointer rounded-full text-sm hover:text-white"
+      className="w-[100px] cursor-pointer rounded-full text-xs hover:text-white"
     >
       <div className="flex items-center justify-center">
         {isHover ? "dequeue" : statusText}

@@ -17,9 +17,10 @@ import { subMinutes } from "date-fns";
 import { useGasPrice } from "@/lib/hooks/use-gas-price";
 import { useNonce } from "@/lib/hooks/use-nonce";
 import useIndexStore from "@/lib/state";
+import useEffectStore from "@/lib/state/use-store";
 
 export interface IAdvanceOptions {
-  schedule: Date | null;
+  schedule: string | null;
   timeout: number | null;
   slippage: string | null;
   nonce: number | null;
@@ -40,6 +41,8 @@ export default function OpAdvanceOptions({
   const { data: gasPrice } = useGasPrice();
   const { data: nonce } = useNonce(account);
 
+  const timezone = useEffectStore(useIndexStore, (state) => state.timezone);
+
   function handleAdvanceOptionsChange(key: string, value: any) {
     if (key === "slippage" || key === "gas") {
       value = value ? replaceStrNum(value) : null;
@@ -50,7 +53,9 @@ export default function OpAdvanceOptions({
     }
 
     if (key === "schedule") {
-      value = (new Date(value).getTime() / 1000).toFixed();
+      const offset = -(new Date().getTimezoneOffset() / 60);
+      const offsetToTimezone = offset - Number(timezone) || 0;
+      value = (value / 1000 + offsetToTimezone * 60 * 60).toFixed();
     }
 
     onChange({
@@ -59,7 +64,12 @@ export default function OpAdvanceOptions({
     });
   }
 
-  const now = new Date().getTime();
+  const setNow = () => {
+    onChange({
+      ...options,
+      schedule: (new Date().getTime() / 1000).toFixed(),
+    });
+  };
 
   const curTimezoneStr = useIndexStore((state) => state.curTimezoneStr());
   const localTimezoneStr = useIndexStore((state) => state.localTimezoneStr());
@@ -70,8 +80,7 @@ export default function OpAdvanceOptions({
       new Date(Number(options.schedule) * 1000).toISOString(),
       localTimezoneStr,
     );
-    console.log(new Date(Number(options.schedule) * 1000).toISOString());
-    console.log(curTimezoneStr, localTimezoneStr);
+
     const curTimezoneDate = utcToZonedTime(utcDate, curTimezoneStr);
 
     return curTimezoneDate;
@@ -184,7 +193,7 @@ export default function OpAdvanceOptions({
               format="yyyy-MM-dd HH:mm"
             />
             <button
-              onClick={() => handleAdvanceOptionsChange("schedule", now)}
+              onClick={() => setNow()}
               className="flex h-10 w-[92px] cursor-pointer items-center justify-center rounded-md border hover:bg-custom-bg-white"
             >
               Now

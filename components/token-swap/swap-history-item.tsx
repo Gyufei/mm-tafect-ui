@@ -18,7 +18,7 @@ export default function SwapHistoryItem({
   onCancel: () => void;
 }) {
   const { network } = useContext(NetworkContext);
-  const userPathMap  = useIndexStore((state) => state.userPathMap());
+  const userPathMap = useIndexStore((state) => state.userPathMap());
 
   const isSwap = task.op === 1;
   const isTransfer = task.op === 2;
@@ -54,7 +54,7 @@ export default function SwapHistoryItem({
   };
 
   return (
-    <div className="flex flex-col gap-y-2 rounded-md border border-border-color bg-custom-bg-white p-3 first:mt-4">
+    <div className="flex flex-col gap-y-2 rounded-md text-sm border border-border-color bg-custom-bg-white p-3 first:mt-4">
       <div className="flex justify-between text-content-color">
         <div>{task.date}</div>
         <div className="flex items-center">
@@ -69,8 +69,8 @@ export default function SwapHistoryItem({
         </div>
       </div>
 
-      <div className="flex justify-between text-title-color">
-        <div className="flex items-center text-lg font-medium">
+      <div className="flex justify-between text-title-color text-base">
+        <div className="flex items-center font-medium">
           <TruncateText text={task.data.account} />
         </div>
         <div className="TruncateSingleLine max-w-[200px]">

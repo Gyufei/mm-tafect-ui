@@ -77,7 +77,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="grid grid-cols-7 justify-items-center gap-y-3">
+      <div className="grid grid-cols-7 justify-items-center gap-y-3 overflow-y-auto pb-4">
         {daysOfMonth.map((day) => {
           return (
             <DayItem

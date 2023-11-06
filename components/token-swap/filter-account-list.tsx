@@ -7,6 +7,12 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import TokenSelect from "@/components/token-swap/token-select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import { useStrNum } from "@/lib/hooks/use-str-num";
 import fetcher from "@/lib/fetcher";
@@ -208,13 +214,15 @@ export default function FilterAccountList({
                   </TruncateText>
                 </div>
                 <div className="LabelText flex">
-                  <div className="mr-6">
-                    {gasToken?.symbol} {acc.gas_token_amount}
+                  <div className="mr-6 flex items-center gap-x-1">
+                    <span>{gasToken?.symbol}</span>
+                    <AmountTooltipDisplay amount={acc.gas_token_amount} />
                   </div>
 
                   {!isFilterGasToken && (
-                    <div>
-                      {token?.symbol} {acc.quote_token_amount}
+                    <div className="flex items-center gap-x-1">
+                      <span>{token?.symbol}</span>
+                      <AmountTooltipDisplay amount={acc.quote_token_amount} />
                     </div>
                   )}
                 </div>
@@ -224,5 +232,26 @@ export default function FilterAccountList({
         </ScrollArea>
       </div>
     </div>
+  );
+}
+
+function AmountTooltipDisplay({ amount }: { amount: string }) {
+  const isLong = amount.length > 7;
+  const amountFmt = isLong ? amount.slice(0, 7) + "..." : amount;
+  return isLong ? (
+    <TooltipProvider delayDuration={100}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="TruncateSingleLine">{amountFmt}</div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <div className="flex items-center">
+            <p className="text-sm text-content-color">{amount}</p>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  ) : (
+    <div>{amount}</div>
   );
 }

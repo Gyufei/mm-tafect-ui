@@ -236,8 +236,8 @@ export default function FilterAccountList({
 }
 
 function AmountTooltipDisplay({ amount }: { amount: string }) {
-  const isLong = amount.length > 7;
-  const amountFmt = isLong ? amount.slice(0, 7) + "..." : amount;
+  const isLong = amount.length > 8;
+  const amountFmt = isLong ? amount.slice(0, 8) + "..." : amount;
   return isLong ? (
     <TooltipProvider delayDuration={100}>
       <Tooltip>

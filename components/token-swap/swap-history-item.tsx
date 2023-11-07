@@ -117,7 +117,6 @@ function OpDisplay({ task, onClick }: { task: ITask; onClick: () => void }) {
   const isSwap = task.op === 1;
   const isApprove = task.op === 3;
   const taskTxData = task.data;
-  console.log(name);
 
   const imgSrc = useMemo(() => {
     if (name.toLowerCase().includes("uniswap")) {

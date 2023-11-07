@@ -17,12 +17,15 @@ import {
 } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayNames } from "@/lib/constants";
+import useIndexStore from "@/lib/state";
 
 export default function Home() {
-  // handle dates
+  const selectedDay = useIndexStore((state) => state.selectedDay);
+  const setSelectedDay = useIndexStore((state) => state.setSelectedDay);
+
   const today = startOfToday();
   const [currentMonth, setCurrentMonth] = useState(format(today, "MMM-yyyy"));
-  const [selectedDay, setSelectedDay] = useState(today);
+
   const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());
 
   const daysOfMonth = useMemo(
@@ -34,18 +37,18 @@ export default function Home() {
     [firstDayCurrentMonth],
   );
 
-  // next and prev month functions
   function prevMonth() {
     const firstDayNextMonth = add(firstDayCurrentMonth, { months: -1 });
     setCurrentMonth(format(firstDayNextMonth, "MMM-yyyy"));
   }
+
   function nextMonth() {
     const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
     setCurrentMonth(format(firstDayNextMonth, "MMM-yyyy"));
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-2">
+    <div className="flex flex-1 flex-col">
       <div className="border-b border-[#d6d6d6] bg-[#f6f7f8] py-3">
         <div className="mb-2 flex items-center justify-center">
           <button type="button" className="mr-2" onClick={prevMonth}>
@@ -77,7 +80,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="grid grid-cols-7 justify-items-center gap-y-3 overflow-y-auto pb-4">
+      <div className="grid grid-cols-7 bg-[#fafafa] justify-items-center gap-y-3 overflow-y-auto pt-3 pb-4">
         {daysOfMonth.map((day) => {
           return (
             <DayItem

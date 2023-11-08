@@ -9,7 +9,7 @@ export default function Rules() {
 
   return (
     <div className="mb-[22px]">
-      <div className="mb-1 text-sm text-[#707070]">Rules</div>
+      <div className="LabelText mb-1">Rules</div>
       <div className="flex gap-x-3">
         <GasPrice value={gasPrice} onValueChange={onEditGas} />
         <MinTxSpan value={minTxSpan} onValueChange={onEditMinTxSpan} />
@@ -27,7 +27,7 @@ function GasPrice({
 }) {
   return (
     <div className="flex flex-1 flex-col rounded-md border border-[#bfbfbf] p-3">
-      <div className="text-sm text-[#707070]">Gas Price</div>
+      <div className="LabelText">Gas Price</div>
       <div className="flex items-center">
         <span className="mr-2 text-lg text-[#333]">Max {value}</span>
         <Image
@@ -54,7 +54,7 @@ function MinTxSpan({
 
   return (
     <div className="flex flex-1 flex-col rounded-md border border-[#bfbfbf] p-3">
-      <div className="text-sm text-[#707070]">Min Tx Span</div>
+      <div className="LabelText">Min Tx Span</div>
       <div className="flex items-center">
         <span className="mr-2 text-lg text-[#333]">
           {value} {postfix}

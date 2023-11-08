@@ -1,36 +1,36 @@
-import { useState } from "react";
-import Image from "next/image";
-
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { Label } from "../ui/label";
 import Candle from "./candle";
 import TradingVol from "./trading-vol";
 import TradingTx from "./trading-tx";
+import { DashboardUpDownLabelOptions } from "@/lib/constants";
+import useIndexStore from "@/lib/state";
+import CandleOpRow from "./candle-op-row";
+import RandomBtnDialog from "./random-btn-dialog";
 
 export default function Plan() {
-  const labelOptions = ["Up", "Down"];
-  const [upDownValue, setUpDownValue] = useState(labelOptions[0]);
+  const upOrDown = useIndexStore((state) => state.upOrDown);
+  const setUpOrDown = useIndexStore((state) => state.setUpOrDown);
 
-  const handleRandom = () => {};
   const handleRange = () => {};
 
   return (
     <div className="mb-[17px]">
-      <div className="mb-1 text-sm text-[#707070]">Plan</div>
+      <div className="LabelText mb-1">Plan</div>
       <div className="flex gap-x-3">
         <div className="w-[182px] rounded-md border border-[#bfbfbf] bg-[#f6f7f8] p-3">
           <LabelRadio
-            options={labelOptions}
-            value={upDownValue}
-            onChange={setUpDownValue}
+            options={DashboardUpDownLabelOptions}
+            value={upOrDown}
+            onChange={setUpOrDown}
           />
           <div className="mt-4 flex">
-            <Candle up={upDownValue === labelOptions[0]} />
+            <Candle up={upOrDown === DashboardUpDownLabelOptions[0]} />
             <div className="ml-7 flex flex-col justify-between">
-              <CandleOpRow text="Random" onEdit={handleRandom} />
+              <RandomBtnDialog up={true} />
               <CandleOpRow text="3~5%" onEdit={handleRange} />
-              <CandleOpRow text="Random" onEdit={handleRandom} />
+              <RandomBtnDialog up={false} />
             </div>
           </div>
         </div>
@@ -68,28 +68,5 @@ function LabelRadio({
         </div>
       ))}
     </RadioGroup>
-  );
-}
-
-function DashArrow() {
-  return (
-    <Image src="/icons/dash-arrow.png" width={36} height={6} alt="arrow" />
-  );
-}
-
-function CandleOpRow({ text, onEdit }: { text: string; onEdit: () => void }) {
-  return (
-    <div className="flex items-center">
-      <DashArrow />
-      <span className="mx-2 text-sm text-[#333]">{text}</span>
-      <Image
-        className="cursor-pointer"
-        onClick={onEdit}
-        src="/icons/edit.svg"
-        width={20}
-        height={20}
-        alt="edit"
-      />
-    </div>
   );
 }

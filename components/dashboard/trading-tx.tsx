@@ -7,7 +7,7 @@ export default function TradingTx() {
 
   return (
     <div className="flex flex-col rounded-md border bg-[#f6f7f8] border-[#bfbfbf] p-3">
-      <div className="text-sm text-[#707070]">Trading Tx</div>
+      <div className="LabelText">Trading Tx</div>
       <div className="flex items-center">
         <span className="mr-2 text-lg text-[#333]">{txValue}</span>
         <Image

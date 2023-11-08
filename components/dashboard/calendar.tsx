@@ -71,7 +71,7 @@ export default function Home() {
             return (
               <div
                 key={i}
-                className="flex w-full items-center justify-center text-sm text-[#707070]"
+                className="flex w-full items-center justify-center LabelText"
               >
                 {day}
               </div>
@@ -80,7 +80,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="grid grid-cols-7 bg-[#fafafa] justify-items-center gap-y-3 overflow-y-auto pt-3 pb-4">
+      <div className="grid grid-cols-7 justify-items-center gap-y-3 overflow-y-auto bg-[#fafafa] pb-4 pt-3">
         {daysOfMonth.map((day) => {
           return (
             <DayItem

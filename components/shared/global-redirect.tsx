@@ -6,7 +6,7 @@ import useIndexStore from "@/lib/state";
 import { checkUserIsValid } from "@/lib/auth/user";
 
 const loginPath = "/login";
-const Matcher = ["/dashboard", "/key-store", "/token-swap", "/setting"];
+const Matcher = ["/dashboard", "/keystore", "/tokenswap", "/setting"];
 
 export default function GlobalRedirect({
   children,

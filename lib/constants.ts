@@ -5,11 +5,11 @@ export const LINKS = [
   },
   {
     name: "KeyStore",
-    href: "/key-store",
+    href: "/keystore",
   },
   {
     name: "TokenSwap",
-    href: "/token-swap",
+    href: "/tokenswap",
   },
   {
     name: "Setting",
@@ -72,3 +72,5 @@ export const DexImgMap = {
   uniswap: "/icons/uniswap.svg",
   pancakeSwap: "/icons/pancakeswap.png",
 };
+
+export const DashboardUpDownLabelOptions = ["Up", "Down"];

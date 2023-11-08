@@ -4,18 +4,18 @@ import useSWR from "swr";
 import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { PenLine, Trash2 } from "lucide-react";
 
-import KeyStoreLinks from "@/components/key-store/key-store-links";
+import KeyStoreLinks from "@/components/keystore/key-store-links";
 
 import { SystemEndPointPathMap } from "@/lib/end-point";
 import fetcher from "@/lib/fetcher";
 
-import { KeyStorePageSelect } from "@/components/key-store/key-store-page-select";
+import { KeyStorePageSelect } from "@/components/keystore/key-store-page-select";
 import DetailItem from "@/components/shared/detail-item";
 import KeyStoreAccountsTable, {
   IAccountGas,
-} from "@/components/key-store/key-store-accounts-table";
+} from "@/components/keystore/key-store-accounts-table";
 import { NetworkContext } from "@/lib/providers/network-provider";
-import DeleteKeyStoreDialog from "@/components/key-store/delete-key-store-dialog";
+import DeleteKeyStoreDialog from "@/components/keystore/delete-key-store-dialog";
 import { IKeyStore, IKeyStoreRange } from "@/lib/types/keystore";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";

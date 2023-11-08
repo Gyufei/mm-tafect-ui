@@ -32,7 +32,7 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
-    showClose?: boolean;
+    showClose?: boolean | string;
     title?: string;
   }
 >(({ className, children, showClose, title, ...props }, ref) => (
@@ -54,8 +54,10 @@ const DialogContent = React.forwardRef<
             {title}
           </DialogTitle>
           {showClose && (
-            <DialogPrimitive.Close className="absolute right-4 top-[3px] rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-              <span className="text-sm text-primary">Close</span>
+            <DialogPrimitive.Close className="absolute right-4 top-[3px] rounded-sm opacity-100 transition-opacity hover:opacity-70 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+              <span className="text-sm text-primary">
+                {showClose === true ? "Close" : showClose}
+              </span>
             </DialogPrimitive.Close>
           )}
         </DialogHeader>

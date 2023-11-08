@@ -3,7 +3,7 @@ import { ITask } from "@/lib/types/task";
 import { useParseTasks } from "@/lib/hooks/use-parse-task";
 
 import Empty from "../shared/empty";
-import SwapHistoryItem from "../token-swap/swap-history-item";
+import SwapHistoryItem from "../tokenswap/swap-history-item";
 
 const resTask = [
   {

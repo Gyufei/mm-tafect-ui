@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import fetcher from "@/lib/fetcher";
-import { IAccountGas } from "@/components/key-store/key-store-accounts-table";
+import { IAccountGas } from "@/components/keystore/key-store-accounts-table";
 import { usePageKeystores } from "./use-page-keystores";
 import { IKeyStore, IKeyStoreAccount, IKeyStoreRange } from "../types/keystore";
 import useIndexStore from "../state";

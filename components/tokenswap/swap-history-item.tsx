@@ -28,7 +28,7 @@ export default function SwapHistoryItem({
   const taskTxData = task.data;
 
   const handleGoToExplorer = () => {
-    window.open(`${network?.block_explorer_url}/tx/${task.txHash}`);
+    window.open(`${network?.block_explorer_url}tx/${task.txHash}`);
   };
 
   const cancelFetcher = async () => {

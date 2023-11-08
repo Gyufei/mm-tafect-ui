@@ -9,7 +9,7 @@ export default function TradingVol() {
 
   return (
     <div className="flex flex-col rounded-md border border-[#bfbfbf]  bg-[#f6f7f8] p-3">
-      <div className="text-sm text-[#707070]">Total Trading Vol.</div>
+      <div className="LabelText">Total Trading Vol.</div>
       <div className="flex items-center">
         <span className="mr-2 text-lg text-[#333]">${displayValue}</span>
         <Image

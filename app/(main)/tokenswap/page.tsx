@@ -4,12 +4,12 @@ import { useSwipeable } from "react-swipeable";
 
 import DetailItem from "@/components/shared/detail-item";
 
-import FilterAccountList from "@/components/token-swap/filter-account-list";
-import KeyStoreSelect from "@/components/token-swap/key-store-select";
-import Op from "@/components/token-swap/op";
-import SwapHistory from "@/components/token-swap/swap-history";
+import FilterAccountList from "@/components/tokenswap/filter-account-list";
+import KeyStoreSelect from "@/components/tokenswap/key-store-select";
+import Op from "@/components/tokenswap/op";
+import SwapHistory from "@/components/tokenswap/swap-history";
 import { NetworkContext } from "@/lib/providers/network-provider";
-import MobileFoldBtn from "@/components/token-swap/mobile-fold-btn";
+import MobileFoldBtn from "@/components/tokenswap/mobile-fold-btn";
 import { IKeyStoreAccount } from "@/lib/types/keystore";
 
 export default function TokenSwap() {
@@ -55,7 +55,7 @@ export default function TokenSwap() {
           <DetailItem title="Network">{network?.network_name}</DetailItem>
           <DetailItem title="KeyStore">
             <KeyStoreSelect
-              page="Token-swap"
+              page="Tokenswap"
               keyStores={selectedKeyStores}
               handleKeyStoreSelect={(e) => setSelectedKeyStore(e)}
             />

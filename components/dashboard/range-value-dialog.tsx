@@ -98,7 +98,7 @@ function BaseDialog(props: {
 
   return (
     <Dialog open={open} onOpenChange={(val) => setOpen(val)}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <CandleOpRow text={nowShowText} />
       </DialogTrigger>
       <DialogContent title="Title" className="w-[320px]" showClose="Cancel">

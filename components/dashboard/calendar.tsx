@@ -16,7 +16,7 @@ import {
   startOfWeek,
 } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayNames } from "@/lib/constants";
+import { DayNames } from "@/lib/constants/dashboard-const";
 import useIndexStore from "@/lib/state";
 
 export default function Home() {
@@ -71,7 +71,7 @@ export default function Home() {
             return (
               <div
                 key={i}
-                className="flex w-full items-center justify-center LabelText"
+                className="LabelText flex w-full items-center justify-center"
               >
                 {day}
               </div>

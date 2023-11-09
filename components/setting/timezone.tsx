@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TzList } from "@/lib/constants";
+import { TzList } from "@/lib/constants/global";
 import useEffectStore from "@/lib/state/use-store";
 import fetcher from "@/lib/fetcher";
 import useSWRMutation from "swr/mutation";

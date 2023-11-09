@@ -12,7 +12,7 @@ import OpAdvanceOptions, {
 import { TestTxResult } from "./test-tx-result";
 import ActionTip, { IActionType } from "../shared/action-tip";
 import { NetworkContext } from "@/lib/providers/network-provider";
-import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
+import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants/global";
 import { replaceStrNum } from "@/lib/hooks/use-str-num";
 import { Input } from "../ui/input";
 import { useOp } from "@/lib/hooks/use-op";

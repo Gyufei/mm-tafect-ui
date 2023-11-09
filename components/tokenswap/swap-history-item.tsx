@@ -10,7 +10,7 @@ import { toNonExponential } from "@/lib/utils";
 import useIndexStore from "@/lib/state";
 import fetcher from "@/lib/fetcher";
 import useSWRMutation from "swr/mutation";
-import { DexImgMap } from "@/lib/constants";
+import { DexImgMap } from "@/lib/constants/global";
 
 export default function SwapHistoryItem({
   task,

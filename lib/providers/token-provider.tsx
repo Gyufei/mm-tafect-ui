@@ -7,7 +7,7 @@ import fetcher from "@/lib/fetcher";
 import { IToken } from "@/lib/types/token";
 import { NetworkContext } from "./network-provider";
 import { uniqBy } from "lodash";
-import { GAS_TOKEN_ADDRESS } from "../constants";
+import { GAS_TOKEN_ADDRESS } from "../constants/global";
 import useIndexStore from "../state";
 
 interface ITokenContext {

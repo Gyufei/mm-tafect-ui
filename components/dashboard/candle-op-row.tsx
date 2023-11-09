@@ -6,25 +6,15 @@ function DashArrow() {
   );
 }
 
-export default function CandleOpRow({
-  text,
-  onEdit,
-}: {
-  text: string;
-  onEdit: () => void;
-}) {
+export default function CandleOpRow({ text }: { text: string }) {
   return (
     <div className="flex items-center">
       <DashArrow />
-      <span
-        className="mx-2 cursor-pointer text-sm text-[#333]"
-        onClick={onEdit}
-      >
+      <span className="mx-2 min-w-[55px] cursor-pointer text-sm text-[#333]">
         {text}
       </span>
       <Image
         className="cursor-pointer"
-        onClick={onEdit}
         src="/icons/edit.svg"
         width={20}
         height={20}

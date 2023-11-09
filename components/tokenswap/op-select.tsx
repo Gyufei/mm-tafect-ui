@@ -14,7 +14,7 @@ import { SystemEndPointPathMap } from "@/lib/end-point";
 import fetcher from "@/lib/fetcher";
 import { NetworkContext } from "@/lib/providers/network-provider";
 import { IOp } from "@/lib/types/op";
-import { DexImgMap } from "@/lib/constants";
+import { DexImgMap } from "@/lib/constants/global";
 import { ArrowLeftRight } from "lucide-react";
 
 export default function OpSelect({

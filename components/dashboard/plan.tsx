@@ -1,19 +1,19 @@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
+import {
+  IUpDownValue,
+  UpDownLabelOptions,
+} from "@/lib/constants/dashboard-const";
+import useIndexStore from "@/lib/state";
 import { Label } from "../ui/label";
 import Candle from "./candle";
-import TradingVol from "./trading-vol";
-import TradingTx from "./trading-tx";
-import { DashboardUpDownLabelOptions } from "@/lib/constants";
-import useIndexStore from "@/lib/state";
-import CandleOpRow from "./candle-op-row";
 import RandomBtnDialog from "./random-btn-dialog";
+import RangeValueDialog from "./range-value-dialog";
+import TradingTx from "./trading-tx";
+import TradingVol from "./trading-vol";
 
 export default function Plan() {
   const upOrDown = useIndexStore((state) => state.upOrDown);
   const setUpOrDown = useIndexStore((state) => state.setUpOrDown);
-
-  const handleRange = () => {};
 
   return (
     <div className="mb-[17px]">
@@ -21,15 +21,15 @@ export default function Plan() {
       <div className="flex gap-x-3">
         <div className="w-[182px] rounded-md border border-[#bfbfbf] bg-[#f6f7f8] p-3">
           <LabelRadio
-            options={DashboardUpDownLabelOptions}
+            options={UpDownLabelOptions}
             value={upOrDown}
             onChange={setUpOrDown}
           />
           <div className="mt-4 flex">
-            <Candle up={upOrDown === DashboardUpDownLabelOptions[0]} />
+            <Candle up={upOrDown === UpDownLabelOptions[0]} />
             <div className="ml-7 flex flex-col justify-between">
               <RandomBtnDialog up={true} />
-              <CandleOpRow text="3~5%" onEdit={handleRange} />
+              <RangeValueDialog />
               <RandomBtnDialog up={false} />
             </div>
           </div>
@@ -49,9 +49,9 @@ function LabelRadio({
   value,
   onChange,
 }: {
-  options: string[];
-  value: string;
-  onChange: (value: string) => void;
+  options: typeof UpDownLabelOptions;
+  value: IUpDownValue;
+  onChange: (value: IUpDownValue) => void;
 }) {
   return (
     <RadioGroup

@@ -2,7 +2,7 @@ import { StateCreator } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { IUser } from "../auth/user";
 import { cloneDeep } from "lodash";
-import { TimezonesMap } from "../constants";
+import { TimezonesMap } from "../constants/global";
 import { UserEndPointPathMap } from "../end-point";
 
 type PathMap = typeof UserEndPointPathMap;

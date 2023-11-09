@@ -13,7 +13,7 @@ import {
 } from "../ui/collapsible";
 import TruncateText from "../shared/trunc-text";
 import { has } from "lodash";
-import { UNIT32_MAX } from "@/lib/constants";
+import { UNIT32_MAX } from "@/lib/constants/global";
 
 export default function KeyStoreLinks({
   keyStores,

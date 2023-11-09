@@ -13,7 +13,7 @@ import { replaceStrNumNoDecimal } from "@/lib/hooks/use-str-num";
 import fetcher from "@/lib/fetcher";
 import { SystemEndPointPathMap } from "@/lib/end-point";
 import { toast } from "../ui/use-toast";
-import { UNIT32_MAX } from "@/lib/constants";
+import { UNIT32_MAX } from "@/lib/constants/global";
 import { parseToAddress } from "@/lib/utils";
 import { HintTexts } from "@/lib/hint-texts";
 

@@ -66,11 +66,7 @@ export const TzList = (() => {
   return arr;
 })();
 
-export const DayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-
 export const DexImgMap = {
   uniswap: "/icons/uniswap.svg",
   pancakeSwap: "/icons/pancakeswap.png",
 };
-
-export const DashboardUpDownLabelOptions = ["Up", "Down"];

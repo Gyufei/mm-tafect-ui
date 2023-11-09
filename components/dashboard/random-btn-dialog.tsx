@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 import CandleOpRow from "./candle-op-row";
 import useIndexStore from "@/lib/state";
-import { Input } from "../ui/input";
 import { replaceStrNum } from "@/lib/hooks/use-str-num";
-import { Button } from "../ui/button";
 
 export default function RandomBtnDialog({ up }: { up: boolean }) {
   return up ? <TopRandomDialog /> : <BottomRandomDialog />;
@@ -71,7 +71,6 @@ function BaseDialog(props: {
     props.setMaxValue(maxValue);
     setOpen(false);
   };
-  console.log(handleConfirm, setMinValue, setMaxValue);
 
   const handleMinValueChange = (val: string) => {
     let newV = replaceStrNum(val);
@@ -93,10 +92,29 @@ function BaseDialog(props: {
     setMaxValue(newV);
   };
 
+  const handleMinBlur = () => {
+    if (!maxValue || !minValue) return;
+    if (Number(minValue) > Number(maxValue)) {
+      setMinValue(maxValue);
+    }
+  };
+
+  const handleMaxBlur = () => {
+    if (!maxValue || !minValue) return;
+    if (Number(maxValue) < Number(minValue)) {
+      setMaxValue(minValue);
+    }
+  };
+
+  const nowShowText = useMemo(() => {
+    if (props.isRandom) return "Random";
+    return `${props.minValue}%~${props.maxValue}%`;
+  }, [props]);
+
   return (
     <Dialog open={open} onOpenChange={(val) => setOpen(val)}>
-      <DialogTrigger>
-        <CandleOpRow text="Random" onEdit={() => {}} />
+      <DialogTrigger asChild>
+        <CandleOpRow text={nowShowText} />
       </DialogTrigger>
       <DialogContent title="Title" className="w-[320px]" showClose="Cancel">
         <div className="flex flex-col gap-y-[10px] px-4">
@@ -125,6 +143,7 @@ function BaseDialog(props: {
                   <Input
                     value={minValue}
                     onChange={(e) => handleMinValueChange(e.target.value)}
+                    onBlur={handleMinBlur}
                     className="flex-1 rounded-md border-border-color"
                     placeholder="0"
                   />
@@ -132,6 +151,7 @@ function BaseDialog(props: {
                   <Input
                     value={maxValue}
                     onChange={(e) => handleMaxValueChange(e.target.value)}
+                    onBlur={handleMaxBlur}
                     className="flex-1 rounded-md border-border-color"
                     placeholder="0"
                   />

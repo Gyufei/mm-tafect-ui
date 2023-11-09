@@ -18,7 +18,7 @@ import { useStrNum } from "@/lib/hooks/use-str-num";
 import fetcher from "@/lib/fetcher";
 import { IToken } from "@/lib/types/token";
 import { NetworkContext } from "@/lib/providers/network-provider";
-import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants";
+import { GAS_TOKEN_ADDRESS, UNIT256_MAX } from "@/lib/constants/global";
 import { TokenContext } from "@/lib/providers/token-provider";
 import useIndexStore from "@/lib/state";
 import { IKeyStoreAccount } from "@/lib/types/keystore";

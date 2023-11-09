@@ -2,19 +2,28 @@ import { StateCreator } from "zustand";
 import { GlobalStoreSlice } from "./global";
 import { SwapStoreSlice } from "./swap";
 import { startOfToday } from "date-fns";
+import {
+  IRangeValueType,
+  IUpDownValue,
+  RangeValueTypes,
+} from "../constants/dashboard-const";
+import { UpDownLabelOptions } from "../constants/dashboard-const";
 
 export interface DashboardStoreSlice {
   selectedDay: Date;
-  upOrDown: string;
+  upOrDown: IUpDownValue;
   topRandom: boolean;
   topValueMin: string;
   topValueMax: string;
   bottomRandom: boolean;
   bottomValueMin: string;
   bottomValueMax: string;
-  middleValueMin: string;
-  middleValueMax: string;
-  setUpOrDown: (val: string) => void;
+  rangeValueMin: string;
+  rangeValueMax: string;
+  rangeValueType: IRangeValueType;
+  totalTradingVolume: string;
+  tradingTx: string;
+  setUpOrDown: (val: IUpDownValue) => void;
   setSelectedDay: (day: Date) => void;
   setTopRandom: (val: boolean) => void;
   setTopValueMin: (val: string) => void;
@@ -22,8 +31,19 @@ export interface DashboardStoreSlice {
   setBottomRandom: (val: boolean) => void;
   setBottomValueMin: (val: string) => void;
   setBottomValueMax: (val: string) => void;
-  setMiddleValueMin: (val: string) => void;
-  setMiddleValueMax: (val: string) => void;
+  setRangeValueMin: (val: string) => void;
+  setRangeValueMax: (val: string) => void;
+  setRangeValueType: (val: (typeof RangeValueTypes)[number]) => void;
+  setTotalTradingVolume: (val: string) => void;
+  setTradingTx: (val: string) => void;
+  useOnlineGas: boolean;
+  setUseOnlineGas: (val: boolean) => void;
+  gasValue: string;
+  setGasValue: (val: string) => void;
+  minTxSpanValue: string;
+  setMinTxSpanValue: (val: string) => void;
+  minTxSpanUnit: string;
+  setMinTxSpanUnit: (val: string) => void;
 }
 
 export const CreateDashboardState: StateCreator<
@@ -34,8 +54,8 @@ export const CreateDashboardState: StateCreator<
 > = (set: any) => ({
   selectedDay: startOfToday(),
   setSelectedDay: (day: Date) => set(() => ({ selectedDay: day })),
-  upOrDown: "up",
-  setUpOrDown: (val: string) => set(() => ({ upOrDown: val })),
+  upOrDown: UpDownLabelOptions[0],
+  setUpOrDown: (val: IUpDownValue) => set(() => ({ upOrDown: val })),
   topRandom: true,
   setTopRandom: (val: boolean) => set(() => ({ topRandom: val })),
   topValueMin: "",
@@ -48,8 +68,27 @@ export const CreateDashboardState: StateCreator<
   setBottomValueMin: (val: string) => set(() => ({ bottomValueMin: val })),
   bottomValueMax: "",
   setBottomValueMax: (val: string) => set(() => ({ bottomValueMax: val })),
-  middleValueMin: "",
-  setMiddleValueMin: (val: string) => set(() => ({ middleValueMin: val })),
-  middleValueMax: "",
-  setMiddleValueMax: (val: string) => set(() => ({ middleValueMax: val })),
+  rangeValueMin: "",
+  setRangeValueMin: (val: string) => set(() => ({ rangeValueMin: val })),
+  rangeValueMax: "",
+  setRangeValueMax: (val: string) => set(() => ({ rangeValueMax: val })),
+  rangeValueType: RangeValueTypes[0],
+  setRangeValueType: (val: IRangeValueType) =>
+    set(() => ({ rangeValueType: val })),
+  totalTradingVolume: "",
+  setTotalTradingVolume: (val: string) =>
+    set(() => ({ totalTradingVolume: val })),
+  tradingTx: "",
+  setTradingTx: (val: string) => set(() => ({ tradingTx: val })),
+
+  useOnlineGas: false,
+  setUseOnlineGas: (val: boolean) => set(() => ({ useOnlineGas: val })),
+  gasValue: "",
+  setGasValue: (val: string) => set(() => ({ gasValue: val })),
+
+  minTxSpanValue: "",
+  setMinTxSpanValue: (val: string) => set(() => ({ minTxSpan: val })),
+
+  minTxSpanUnit: "",
+  setMinTxSpanUnit: (val: string) => set(() => ({ minTxSpanUnit: val })),
 });

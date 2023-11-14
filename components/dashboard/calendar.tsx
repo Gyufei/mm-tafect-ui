@@ -16,8 +16,13 @@ import {
   startOfWeek,
 } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import { DayNames } from "@/lib/constants/dashboard-const";
 import useIndexStore from "@/lib/state";
+
+import SuccessMarker from "/public/icons/success-marker.svg";
+import UncertaintyMarker from "/public/icons/uncertainty-marker.svg";
+import ExclamationMarker from "/public/icons/exclamation-marker.svg";
 
 export default function Home() {
   const selectedDay = useIndexStore((state) => state.selectedDay);
@@ -119,8 +124,9 @@ function DayItem({
       onClick={onClick}
       data-month={isThisMonth ? "curr" : "other"}
       data-selected={isSelected}
-      className="flex h-[130px] w-[100px] cursor-pointer flex-col rounded-md border border-[#bfbfbf] px-[6px] py-2 data-[selected=true]:border-b-4 data-[selected=true]:border-[#0E56E666] data-[selected=true]:border-b-[#0E56E6] data-[selected=true]:bg-[#0E56E605] data-[month=other]:opacity-40"
+      className="relative flex h-[130px] w-[100px] cursor-pointer flex-col rounded-md border border-[#bfbfbf] px-[6px] py-2 data-[selected=true]:border-b-4 data-[selected=true]:border-[#0E56E666] data-[selected=true]:border-b-[#0E56E6] data-[selected=true]:bg-[#0E56E605] data-[month=other]:opacity-40"
     >
+      <StatusMarker status="done" />
       <div className="px-[6px]">
         <div className="flex items-center">
           <div
@@ -176,5 +182,22 @@ function ProfitNum({ num }: { num: number }) {
       {prefix}
       {absNum}%
     </span>
+  );
+}
+
+function StatusMarker({ status }: { status: "done" | "uncertainty" | "fail" }) {
+  const marker = {
+    done: SuccessMarker,
+    uncertainty: UncertaintyMarker,
+    fail: ExclamationMarker,
+  };
+  return (
+    <Image
+      className="absolute -right-[4px] -top-[4px]"
+      src={marker[status]}
+      width={20}
+      height={20}
+      alt="marker"
+    />
   );
 }

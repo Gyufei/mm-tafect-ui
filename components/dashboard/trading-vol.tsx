@@ -79,6 +79,7 @@ function BaseDialog(props: { value: string; setValue: (val: string) => void }) {
           </div>
 
           <Button
+            disabled={!value}
             onClick={handleConfirm}
             className="mt-[10px] w-full rounded-full bg-primary text-white disabled:border disabled:border-[#bfbfbf] disabled:bg-[#F6F7F8] disabled:text-[#999]"
           >

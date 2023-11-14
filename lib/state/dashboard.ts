@@ -87,7 +87,7 @@ export const CreateDashboardState: StateCreator<
   setGasValue: (val: string) => set(() => ({ gasValue: val })),
 
   minTxSpanValue: "",
-  setMinTxSpanValue: (val: string) => set(() => ({ minTxSpan: val })),
+  setMinTxSpanValue: (val: string) => set(() => ({ minTxSpanValue: val })),
 
   minTxSpanUnit: "",
   setMinTxSpanUnit: (val: string) => set(() => ({ minTxSpanUnit: val })),

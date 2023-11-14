@@ -9,8 +9,8 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
 export default function TradingTx() {
-  const tradingTx = useIndexStore((state) => state.totalTradingVolume);
-  const setTradingTx = useIndexStore((state) => state.setTotalTradingVolume);
+  const tradingTx = useIndexStore((state) => state.tradingTx);
+  const setTradingTx = useIndexStore((state) => state.setTradingTx);
 
   return (
     <div className="flex flex-col rounded-md border border-[#bfbfbf] bg-[#f6f7f8] p-3">
@@ -44,7 +44,7 @@ function BaseDialog(props: { value: string; setValue: (val: string) => void }) {
     <Dialog open={open} onOpenChange={(val) => setOpen(val)}>
       <DialogTrigger>
         <div className="flex items-center">
-          <span className="mr-2 text-lg text-[#333]">{props.value}</span>
+          <span className="mr-2 h-7 text-lg text-[#333]">{props.value}</span>
           <Image
             className="cursor-pointer"
             src="/icons/edit.svg"

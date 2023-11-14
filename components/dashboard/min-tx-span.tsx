@@ -21,6 +21,7 @@ export function MinTxSpan() {
   const minTxSpanUnit = useIndexStore((state) => state.minTxSpanUnit);
   const setMinTxSpanValue = useIndexStore((state) => state.setMinTxSpanValue);
   const setMinTxSpanUnit = useIndexStore((state) => state.setMinTxSpanUnit);
+  console.log(minTxSpanValue, minTxSpanUnit);
 
   return (
     <div className="flex flex-1 flex-col rounded-md border border-[#bfbfbf] p-3">
@@ -51,7 +52,7 @@ function BaseDialog(props: {
     setOpen(false);
   };
 
-  const handleGasValueChange = (val: string) => {
+  const handleSpanChange = (val: string) => {
     let newV = replaceStrNum(val);
 
     if (Number(newV) < 0) {
@@ -91,7 +92,7 @@ function BaseDialog(props: {
           <div className="flex w-[280px] items-center justify-between gap-3">
             <Input
               value={minTxSpanValue}
-              onChange={(e) => handleGasValueChange(e.target.value)}
+              onChange={(e) => handleSpanChange(e.target.value)}
               className="w-[188px] flex-1 rounded-md border-border-color"
               placeholder="0"
             />

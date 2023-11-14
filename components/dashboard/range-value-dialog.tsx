@@ -133,6 +133,7 @@ function BaseDialog(props: {
           </div>
 
           <Button
+            disabled={!minValue || !maxValue}
             onClick={handleConfirm}
             className="mt-[10px] w-full rounded-full bg-primary text-white disabled:border disabled:border-[#bfbfbf] disabled:bg-[#F6F7F8] disabled:text-[#999]"
           >

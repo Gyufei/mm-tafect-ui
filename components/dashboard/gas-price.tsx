@@ -63,7 +63,9 @@ function BaseDialog(props: {
     <Dialog open={open} onOpenChange={(val) => setOpen(val)}>
       <DialogTrigger asChild>
         <div className="flex items-center">
-          <span className="mr-2 text-lg text-[#333]">{nowShowText}</span>
+          <span className="mr-2 whitespace-nowrap text-lg text-[#333]">
+            {nowShowText}
+          </span>
           <Image
             className="cursor-pointer"
             src="/icons/edit.svg"
@@ -113,6 +115,7 @@ function BaseDialog(props: {
           )}
 
           <Button
+            disabled={!useOnlineGas && !gasValue}
             onClick={handleConfirm}
             className="mt-[10px] w-full rounded-full bg-primary text-white disabled:border disabled:border-[#bfbfbf] disabled:bg-[#F6F7F8] disabled:text-[#999]"
           >

@@ -19,7 +19,6 @@ import SessionTip from "./session-tip";
 import LinkToAccountList from "./link-to-account-list";
 import md5 from "js-md5";
 import { signInAction } from "@/lib/auth/auth-api";
-import { useRouter } from "next/navigation";
 import LoadingIcon from "../shared/loading-icon";
 import { IUser } from "@/lib/auth/user";
 import { useEffect, useState } from "react";
@@ -38,8 +37,6 @@ export default function LoginForm({
   showAccountCb: () => void;
   showWithUser?: boolean;
 }) {
-  const router = useRouter();
-
   const showUserForLogin = showWithUser && user?.name;
 
   const [showLoginFailTip, setShowLoginFailTip] = useState(false);
@@ -72,7 +69,7 @@ export default function LoginForm({
     if (!res) {
       setShowLoginFailTip(true);
     } else {
-      router.push("/dashboard");
+      window.location.href = `${window.location.origin}/dashboard`;
     }
 
     setIsLogging(false);

@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 
 import LoginForm from "@/components/login/login-form";
 import AccountList from "@/components/login/account-list";
@@ -10,7 +9,6 @@ import { IUser, checkUserIsValid } from "@/lib/auth/user";
 import useEffectStore from "@/lib/state/use-store";
 
 export default function Login() {
-  const router = useRouter();
   const activeUser = useEffectStore(useIndexStore, (state) =>
     state.activeUser(),
   );
@@ -43,7 +41,7 @@ export default function Login() {
 
     if (isValid) {
       setUserActive(account?.name || "");
-      router.push("/dashboard");
+      window.location.href = `${window.location.origin}/dashboard`;
     } else {
       setCurrentSelectedAccount(account);
       setShowWithUser(true);

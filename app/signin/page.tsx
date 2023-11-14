@@ -9,7 +9,7 @@ import { IUser, checkUserIsValid } from "@/lib/auth/user";
 import useEffectStore from "@/lib/state/use-store";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function Login() {
+export default function Signin() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -21,7 +21,7 @@ export default function Login() {
   const [currentSelectedAccount, setCurrentSelectedAccount] =
     useState<IUser | null>(activeUser);
 
-  const alreadyLogin = useMemo(() => {
+  const currActiveUserAlreadyLogin = useMemo(() => {
     if (!activeUser) return false;
     if (!activeUser?.token) return false;
 
@@ -30,31 +30,38 @@ export default function Login() {
     return isExpired;
   }, [activeUser]);
 
-  if (alreadyLogin && !showAccountList) {
+  if (
+    currActiveUserAlreadyLogin &&
+    currentSelectedAccount &&
+    currentSelectedAccount?.name === activeUser?.name &&
+    !showAccountList
+  ) {
     setShowAccountList(true);
   }
 
-  if (!alreadyLogin && activeUser && !currentSelectedAccount) {
+  if (!currActiveUserAlreadyLogin && activeUser && !currentSelectedAccount) {
     setCurrentSelectedAccount(activeUser);
   }
 
-  if (!showAccountList) {
-    if (!currentSelectedAccount) {
-      if (searchParams.get("a") !== "new") {
-        router.replace("/signin?a=new");
+  useEffect(() => {
+    if (!showAccountList) {
+      if (!currentSelectedAccount) {
+        if (searchParams.get("a") !== "new") {
+          router.replace("/signin?a=new");
+        }
       }
-    }
 
-    if (currentSelectedAccount) {
-      if (searchParams.get("a") !== currentSelectedAccount.email) {
-        router.replace(`/signin?a=${currentSelectedAccount.email}`);
+      if (currentSelectedAccount) {
+        if (searchParams.get("a") !== currentSelectedAccount.email) {
+          router.replace(`/signin?a=${currentSelectedAccount.email}`);
+        }
+      }
+    } else {
+      if (searchParams.get("a")) {
+        router.replace("/signin");
       }
     }
-  } else {
-    if (searchParams.get("a")) {
-      router.replace("/signin");
-    }
-  }
+  }, [showAccountList, currentSelectedAccount, router, searchParams]);
 
   const handleSelectAccount = useCallback(
     (account: IUser) => {

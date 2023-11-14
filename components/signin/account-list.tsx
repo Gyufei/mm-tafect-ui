@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useSwipeable } from "react-swipeable";
 import useIndexStore from "@/lib/state";
+import useEffectStore from "@/lib/state/use-store";
 
 export default function AccountList({
   onAdd,
@@ -15,6 +16,7 @@ export default function AccountList({
   onAdd: () => void;
   onSelect: (ac: IUser) => void;
 }) {
+  const activeUser = useEffectStore(useIndexStore, (state) => state.activeUser);
   const allUsers = useIndexStore((state) => state.users);
   const removeUser = useIndexStore((state) => state.removeUser);
 
@@ -33,9 +35,11 @@ export default function AccountList({
       </div>
 
       {allUsers.map((ac) => {
+        const isActive = ac?.name === activeUser?.name;
         return (
           <AccountCard
             key={ac?.name}
+            isActive={isActive}
             user={ac}
             onSelect={onSelect}
             onDelete={handleDelete}
@@ -57,10 +61,12 @@ const AccountCard = ({
   user: ac,
   onSelect,
   onDelete,
+  isActive
 }: {
   user: IUser;
   onSelect: (_u: IUser) => void;
   onDelete: (_u: IUser) => void;
+  isActive: boolean;
 }) => {
   const swiperHandlers = useSwipeable({
     onSwipedLeft: (_e) => {
@@ -91,15 +97,19 @@ const AccountCard = ({
             <AvatarFallback>{name?.[0] || ""}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col items-start justify-between">
-            <div className="text-base font-bold leading-4 text-title-color">
+            <div className="flex items-center text-base font-bold leading-[22px] text-title-color">
               {name}
+              <div
+                data-valid={isValid}
+                className="ml-1 h-2 w-2 rounded-full data-[valid=false]:bg-[#FFA646] data-[valid=true]:bg-[#07D498]"
+              ></div>
             </div>
             <div className="text-base leading-4 text-content-color">
               {ac?.email}
             </div>
           </div>
         </div>
-        {isValid && (
+        {isActive && (
           <Image
             alt="check"
             src="/icons/cur-check.svg"

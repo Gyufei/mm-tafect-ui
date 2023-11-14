@@ -53,14 +53,14 @@ export default function SwapHistoryItemStatus({
     return t;
   }, [status]);
 
-  const isPreQueue = useMemo(
-    () => status === StatusEnum["pre-queue"],
+  const isCanCancel = useMemo(
+    () => status === StatusEnum["pre-queue"] || status === StatusEnum.queue,
     [status],
   );
 
   const [isHover, setIsHover] = useState(false);
 
-  return isPreQueue ? (
+  return isCanCancel ? (
     <div
       style={{
         color: !isHover ? colorVars.color : "#fff",

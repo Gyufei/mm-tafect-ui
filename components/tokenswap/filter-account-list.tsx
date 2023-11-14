@@ -145,6 +145,7 @@ export default function FilterAccountList({
       return;
     }
 
+    filterResultReset();
     filterTrigger();
   }
 
@@ -181,9 +182,9 @@ export default function FilterAccountList({
       </div>
       <div className="relative mt-8 flex flex-col border-t border-shadow-color pt-5">
         <Button
-          disabled={filtering}
+          disabled={(!tokenMin && !tokenMax) || filtering}
           onClick={handleFilter}
-          className="disabled:opacity-1 absolute top-[-20px] mx-3 flex w-[95%] items-center justify-center rounded border bg-white py-2 hover:bg-custom-bg-white"
+          className="disabled:opacity-1 absolute top-[-20px] mx-3 flex w-[95%] items-center justify-center rounded border bg-white py-2 hover:bg-custom-bg-white disabled:cursor-not-allowed disabled:contrast-[0.9]"
         >
           <LoadingIcon isLoading={filtering} />
           <span className="text-title-color">Filter Account</span>
@@ -197,13 +198,13 @@ export default function FilterAccountList({
           {uniqAccounts.map((acc, index) => (
             <div
               key={acc.account}
-              className="flex h-[73px] items-center justify-between border-b p-4"
+              className="flex h-[73px] items-center justify-between border-b bg-custom-bg-white p-4"
             >
-              <div className="self-start pl-2 pr-5 text-lg leading-none text-content-color">
+              <div className="pl-2 pr-5 text-lg leading-none text-content-color">
                 {index + 1}
               </div>
               <div className="flex flex-1 flex-col">
-                <div className="text-lg font-medium text-title-color">
+                <div className="flex items-center text-lg font-medium text-title-color">
                   <TruncateText text={acc.account}>
                     <span
                       className="ml-1 cursor-pointer text-content-color"
@@ -212,6 +213,9 @@ export default function FilterAccountList({
                       <ArrowUpRight className="h-4 w-4" />
                     </span>
                   </TruncateText>
+                  <div className="ml-4 flex h-4 w-4 items-center justify-center rounded-sm bg-[#707070] text-xs text-white">
+                    {acc.nonce}
+                  </div>
                 </div>
                 <div className="LabelText flex">
                   <div className="mr-6 flex items-center gap-x-1">

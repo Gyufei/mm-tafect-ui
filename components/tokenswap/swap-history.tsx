@@ -75,10 +75,12 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
     data: tasks,
     trigger: filterTrigger,
     isMutating: filtering,
+    reset: filterResultReset,
   }: {
     data: Array<any> | undefined;
     trigger: any;
     isMutating: boolean;
+    reset: any;
   } = useSWRMutation(`${userPathMap.swapHistory}?${getQueryStr()}`, fetchTasks);
 
   const handleSearch = useCallback(() => {
@@ -86,10 +88,11 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
     if (!filterTaskDate.min && !filterTaskDate.max) {
       return null;
     } else {
+      filterResultReset();
       filterTrigger();
       return true;
     }
-  }, [isCanParse, filterTaskDate, filterTrigger]);
+  }, [isCanParse, filterTaskDate, filterTrigger, filterResultReset]);
 
   useEffect(() => {
     if (!initHasSearch) {

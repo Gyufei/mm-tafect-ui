@@ -1,16 +1,7 @@
-"use client";
-
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { LINKS } from "@/lib/constants/global";
+import TopBarTitle from "./top-bar-title";
 
 export default function TopBar() {
-  const pathname = usePathname();
-
-  const title = LINKS.find(
-    (link) => link.href === pathname || pathname.includes(link.href),
-  )?.name;
-
   return (
     <div
       className="relative flex h-[70px] min-h-[70px] w-full items-center justify-start bg-white"
@@ -25,7 +16,9 @@ export default function TopBar() {
         className="absolute left-3"
         alt="logo"
       />
-      <div className="flex flex-1 items-center justify-center">{title}</div>
+      <div className="flex flex-1 items-center justify-center">
+        <TopBarTitle />
+      </div>
     </div>
   );
 }

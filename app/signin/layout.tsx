@@ -1,4 +1,4 @@
-import LogoPlace from "@/components/login/logo-place";
+import LogoPlace from "@/components/signin/logo-place";
 
 export default function LoginLayout({
   children,

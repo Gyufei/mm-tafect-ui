@@ -1,21 +1,23 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import LoginForm from "@/components/login/login-form";
-import AccountList from "@/components/login/account-list";
+import LoginForm from "@/components/signin/login-form";
+import AccountList from "@/components/signin/account-list";
 import useIndexStore from "@/lib/state";
 import { IUser, checkUserIsValid } from "@/lib/auth/user";
 import useEffectStore from "@/lib/state/use-store";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const activeUser = useEffectStore(useIndexStore, (state) =>
     state.activeUser(),
   );
   const setUserActive = useIndexStore((state) => state.setUserActive);
   const [showAccountList, setShowAccountList] = useState(false);
-  const [showWithUserFlag, setShowWithUser] = useState(true);
-
   const [currentSelectedAccount, setCurrentSelectedAccount] =
     useState<IUser | null>(activeUser);
 
@@ -36,22 +38,42 @@ export default function Login() {
     setCurrentSelectedAccount(activeUser);
   }
 
-  const handleSelectAccount = useCallback((account: IUser) => {
-    const isValid = checkUserIsValid(account);
-
-    if (isValid) {
-      setUserActive(account?.name || "");
-      window.location.href = `${window.location.origin}/dashboard`;
-    } else {
-      setCurrentSelectedAccount(account);
-      setShowWithUser(true);
-      setShowAccountList(false);
+  if (!showAccountList) {
+    if (!currentSelectedAccount) {
+      if (searchParams.get("a") !== "new") {
+        router.replace("/signin?a=new");
+      }
     }
-  }, []);
+
+    if (currentSelectedAccount) {
+      if (searchParams.get("a") !== currentSelectedAccount.email) {
+        router.replace(`/signin?a=${currentSelectedAccount.email}`);
+      }
+    }
+  } else {
+    if (searchParams.get("a")) {
+      router.replace("/signin");
+    }
+  }
+
+  const handleSelectAccount = useCallback(
+    (account: IUser) => {
+      const isValid = checkUserIsValid(account);
+
+      if (isValid) {
+        setUserActive(account?.name || "");
+        window.location.href = `${window.location.origin}/dashboard`;
+      } else {
+        setCurrentSelectedAccount(account);
+        setShowAccountList(false);
+      }
+    },
+    [setUserActive],
+  );
 
   const handleAddAccount = useCallback(() => {
     setShowAccountList(false);
-    setShowWithUser(false);
+    setCurrentSelectedAccount(null);
   }, []);
 
   const handleShowAccountList = useCallback(() => {
@@ -65,7 +87,6 @@ export default function Login() {
       ) : (
         <LoginForm
           user={currentSelectedAccount}
-          showWithUser={showWithUserFlag}
           showAccountCb={handleShowAccountList}
         />
       )}

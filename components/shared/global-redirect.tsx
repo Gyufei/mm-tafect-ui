@@ -5,7 +5,7 @@ import { redirect, usePathname } from "next/navigation";
 import useIndexStore from "@/lib/state";
 import { checkUserIsValid } from "@/lib/auth/user";
 
-const loginPath = "/login";
+const loginPath = "/signin";
 const Matcher = ["/dashboard", "/keystore", "/tokenswap", "/setting"];
 
 export default function GlobalRedirect({

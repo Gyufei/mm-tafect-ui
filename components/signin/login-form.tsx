@@ -31,13 +31,11 @@ const formSchema = z.object({
 export default function LoginForm({
   user,
   showAccountCb,
-  showWithUser,
 }: {
   user: IUser | null;
   showAccountCb: () => void;
-  showWithUser?: boolean;
 }) {
-  const showUserForLogin = showWithUser && user?.name;
+  const showUserForLogin = !!user?.name;
 
   const [showLoginFailTip, setShowLoginFailTip] = useState(false);
   const [isLogging, setIsLogging] = useState(false);
@@ -110,7 +108,9 @@ export default function LoginForm({
     <div className="flex w-full grow flex-col items-stretch px-4 pt-20 md:max-w-md md:pt-[24vh]">
       <div className="relative flex w-full flex-col">
         <LinkToAccountList onShow={showAccountCb} />
-        {showWithUser && <SessionTip user={user} className="hidden md:block" />}
+        {showUserForLogin && (
+          <SessionTip user={user} className="hidden md:block" />
+        )}
         <FormHead />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="md:w-[420px]">

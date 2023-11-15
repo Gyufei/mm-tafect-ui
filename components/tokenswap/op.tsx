@@ -266,7 +266,8 @@ export default function Op({
 
   function handleShowTxResult(res: Record<string, any>) {
     if (res.gaslimit) {
-      res.gas = (Number(res.gaslimit) * Number(advanceOptions.gas)) / 10 ** 9;
+      const gp = advanceOptions.gas ? advanceOptions.gas : gasPrice;
+      res.gas = (Number(res.gaslimit) * Number(gp)) / 10 ** 9;
     }
     setTestResult(res);
     setTestTxDialogOpen(true);

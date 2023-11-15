@@ -46,7 +46,7 @@ export function TestTxResult(props: {
             </div>
             <div>
               <div className="text-sm text-content-color">estimate_gas</div>
-              <div>{Number(message?.gas)}</div>
+              <div>{Number(message?.gas)} Gwei</div>
             </div>
           </div>
         )}

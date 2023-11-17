@@ -1,12 +1,11 @@
 import {
   forwardRef,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useMemo,
   useState,
 } from "react";
-import useSWRMutation from "swr/mutation";
+import useSWR from "swr";
 import { setHours, setMinutes, setSeconds, addDays, subDays } from "date-fns";
 import { DatePicker } from "@mui/x-date-pickers";
 
@@ -20,8 +19,6 @@ import { ITask } from "@/lib/types/task";
 import fetcher from "@/lib/fetcher";
 import useIndexStore from "@/lib/state";
 import { useParseTasks } from "@/lib/hooks/use-parse-task";
-
-let initHasSearch = false;
 
 const SwapHistory = forwardRef((props: any, ref: any) => {
   const userPathMap = useIndexStore((state) => state.userPathMap());
@@ -50,6 +47,8 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
     }));
   };
 
+  const { parsedTaskFunc, isCanParse } = useParseTasks();
+
   const getQueryStr = () => {
     let max = new Date(filterTaskDate.max || "").getTime();
     let min = new Date(filterTaskDate.min || "").getTime();
@@ -59,10 +58,14 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
     return `execute_time_maximum=${max}&execute_time_minimum=${min}`;
   };
 
-  const { parsedTaskFunc, isCanParse } = useParseTasks();
+  const fetchTasks = async (): Promise<Array<ITask> | undefined> => {
+    if (!isCanParse || (!filterTaskDate.min && !filterTaskDate.max)) {
+      return undefined;
+    }
 
-  const fetchTasks = async (url: string): Promise<Array<ITask> | undefined> => {
-    const taskRes: Array<Record<string, any>> = await fetcher(url);
+    const taskRes: Array<Record<string, any>> = await fetcher(
+      `${userPathMap.swapHistory}?${getQueryStr()}`,
+    );
 
     if (!taskRes) return undefined;
 
@@ -73,39 +76,23 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
 
   const {
     data: tasks,
-    trigger: filterTrigger,
-    isMutating: filtering,
-    reset: filterResultReset,
-  }: {
-    data: Array<any> | undefined;
-    trigger: any;
-    isMutating: boolean;
-    reset: any;
-  } = useSWRMutation(`${userPathMap.swapHistory}?${getQueryStr()}`, fetchTasks);
+    mutate: filterTrigger,
+    isLoading: filtering,
+  } = useSWR("fetch-tasks", fetchTasks, {
+    refreshInterval: 15000,
+  });
 
   const handleSearch = useCallback(() => {
     if (!isCanParse) return null;
     if (!filterTaskDate.min && !filterTaskDate.max) {
       return null;
     } else {
-      filterResultReset();
-      filterTrigger();
+      filterTrigger([], {
+        optimisticData: [],
+      });
       return true;
     }
-  }, [isCanParse, filterTaskDate, filterTrigger, filterResultReset]);
-
-  useEffect(() => {
-    if (!initHasSearch) {
-      const res = handleSearch();
-      initHasSearch = !!res;
-    }
-
-    const inId = setInterval(() => {
-      handleSearch();
-    }, 12000);
-
-    return () => clearInterval(inId);
-  }, [handleSearch]);
+  }, [isCanParse, filterTaskDate, filterTrigger]);
 
   const [searchText, setSearchText] = useState("");
 

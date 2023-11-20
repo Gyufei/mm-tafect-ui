@@ -79,7 +79,7 @@ export default function Op({
   });
 
   const { data: gasPrice } = useGasPrice();
-  const { data: nonce } = useNonce(fromAddress);
+  // const { data: nonce } = useNonce(fromAddress);
 
   const shouldApproveToken0 = useMemo(() => {
     if (token0.token?.address === GAS_TOKEN_ADDRESS) return false;
@@ -112,7 +112,7 @@ export default function Op({
     const keystore = kStore?.name || "";
     const account = fromAddress;
 
-    return {
+    const params = {
       user_name: activeUser?.email,
       chain_id,
       account,
@@ -121,8 +121,12 @@ export default function Op({
       gas: advanceOptions.gas
         ? (Number(advanceOptions.gas) * 10 ** 9).toFixed()
         : (Number(gasPrice) * 10 ** 9).toFixed(),
-      nonce: advanceOptions.nonce || nonce === "-" ? null : nonce,
     };
+
+    if (!advanceOptions.nonce) {
+      delete params.nonce;
+    }
+    return params;
   };
 
   const getTransferParams = () => {

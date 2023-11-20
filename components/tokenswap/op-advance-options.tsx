@@ -23,7 +23,7 @@ export interface IAdvanceOptions {
   schedule: string | null;
   timeout: number | null;
   slippage: string | null;
-  nonce: number | null;
+  nonce?: number | null;
   gas: number | null;
   fixed_gas: boolean;
   no_check_gas: boolean;

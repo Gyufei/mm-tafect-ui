@@ -23,7 +23,6 @@ import { Loader2 } from "lucide-react";
 import useIndexStore from "@/lib/state";
 import { IKeyStoreAccount } from "@/lib/types/keystore";
 import { useGasPrice } from "@/lib/hooks/use-gas-price";
-import { useNonce } from "@/lib/hooks/use-nonce";
 import useEffectStore from "@/lib/state/use-store";
 import { HintTexts } from "@/lib/hint-texts";
 
@@ -79,7 +78,6 @@ export default function Op({
   });
 
   const { data: gasPrice } = useGasPrice();
-  // const { data: nonce } = useNonce(fromAddress);
 
   const shouldApproveToken0 = useMemo(() => {
     if (token0.token?.address === GAS_TOKEN_ADDRESS) return false;

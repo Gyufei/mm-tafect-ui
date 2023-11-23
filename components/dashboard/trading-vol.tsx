@@ -7,56 +7,148 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 import { replaceStrNum } from "@/lib/hooks/use-str-num";
 import useIndexStore from "@/lib/state";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import RandomInput from "./random-input";
 
 export default function TradingVol() {
-  const totalTradingVol = useIndexStore((state) => state.totalTradingVolume);
-  const setTotalTradingVol = useIndexStore(
-    (state) => state.setTotalTradingVolume,
+  const totalTradingRandom = useIndexStore((state) => state.totalTradingRandom);
+  const totalTradingVolumeAcc = useIndexStore(
+    (state) => state.totalTradingVolumeAcc,
+  );
+  const totalTradingVolumeMax = useIndexStore(
+    (state) => state.totalTradingVolumeMax,
+  );
+  const totalTradingVolumeMin = useIndexStore(
+    (state) => state.totalTradingVolumeMin,
+  );
+  const setTotalTradingRandom = useIndexStore(
+    (state) => state.setTotalTradingRandom,
+  );
+  const setTotalTradingVolumeAcc = useIndexStore(
+    (state) => state.setTotalTradingVolumeAcc,
+  );
+  const setTotalTradingVolumeMax = useIndexStore(
+    (state) => state.setTotalTradingVolumeMax,
+  );
+  const setTotalTradingVolumeMin = useIndexStore(
+    (state) => state.setTotalTradingVolumeMin,
   );
 
   return (
     <div className="flex flex-col rounded-md border border-[#bfbfbf]  bg-[#f6f7f8] p-3">
       <div className="LabelText">Total Trading Vol.</div>
-      <BaseDialog value={totalTradingVol} setValue={setTotalTradingVol} />
+      <VolDialog
+        isRandom={totalTradingRandom}
+        accValue={totalTradingVolumeAcc}
+        minValue={totalTradingVolumeMin}
+        maxValue={totalTradingVolumeMax}
+        setIsRandom={setTotalTradingRandom}
+        setMinValue={setTotalTradingVolumeMin}
+        setAccValue={setTotalTradingVolumeAcc}
+        setMaxValue={setTotalTradingVolumeMax}
+      />
     </div>
   );
 }
 
-function BaseDialog(props: { value: string; setValue: (val: string) => void }) {
+function VolDialog(props: {
+  isRandom: boolean;
+  accValue: string;
+  minValue: string;
+  maxValue: string;
+  setIsRandom: (val: boolean) => void;
+  setMinValue: (val: string) => void;
+  setAccValue: (val: string) => void;
+  setMaxValue: (val: string) => void;
+}) {
   const [open, setOpen] = useState(false);
-
-  const [value, setValue] = useState(props.value);
+  const [isRandom, setIsRandom] = useState(props.isRandom);
+  const [minValue, setMinValue] = useState(props.minValue);
+  const [maxValue, setMaxValue] = useState(props.maxValue);
+  const [accValue, setAccValue] = useState(props.accValue);
 
   const handleConfirm = () => {
-    props.setValue(value);
+    props.setIsRandom(isRandom);
+    if (isRandom) {
+      props.setMinValue(minValue);
+      props.setMaxValue(maxValue);
+      props.setAccValue("");
+    } else {
+      props.setMinValue("");
+      props.setMaxValue("");
+      props.setAccValue(accValue);
+    }
     setOpen(false);
   };
 
-  const handleValueChange = (val: string) => {
+  const handleAccValueChange = (val: string) => {
     let newV = replaceStrNum(val);
 
-    if (Number(newV) < 0) {
-      newV = "0";
+    if (Number(newV) > 100) {
+      newV = "100";
     }
 
-    setValue(newV);
+    setAccValue(newV);
+  };
+
+  const handleMinValueChange = (val: string) => {
+    const newV = replaceStrNum(val);
+
+    setMinValue(newV);
+  };
+
+  const handleMaxValueChange = (val: string) => {
+    const newV = replaceStrNum(val);
+
+    setMaxValue(newV);
+  };
+
+  const handleMinBlur = () => {
+    if (!maxValue || !minValue) return;
+    if (Number(minValue) > Number(maxValue)) {
+      setMinValue(maxValue);
+    }
+  };
+
+  const handleMaxBlur = () => {
+    if (!maxValue || !minValue) return;
+    if (Number(maxValue) < Number(minValue)) {
+      setMaxValue(minValue);
+    }
   };
 
   const nowShowText = useMemo(() => {
-    if (!props.value) return "";
-    const display = numbro(props.value).format({ thousandSeparated: true });
-    return `$${display}`;
+    if (!props.isRandom) {
+      if (!props.accValue) return "";
+
+      const display = numbro(props.accValue).format({
+        thousandSeparated: true,
+      });
+      return display;
+    } else {
+      const min = props.minValue
+        ? numbro(props.minValue || "").format({
+            thousandSeparated: true,
+          })
+        : "";
+      const max = props.maxValue
+        ? numbro(props.maxValue || "").format({
+            thousandSeparated: true,
+          })
+        : "";
+
+      if (!min && !max) return "";
+      return `${min}~${max}`;
+    }
   }, [props]);
+
+  const btnDisabled =
+    (isRandom && (!minValue || !maxValue)) || (!isRandom && !accValue);
 
   return (
     <Dialog open={open} onOpenChange={(val) => setOpen(val)}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <div className="flex items-center">
-          <span className="mr-2 h-7 text-left text-lg text-[#333]">
-            {nowShowText}
-          </span>
+          <span className="mr-2 h-7 text-lg text-[#333]">{nowShowText}</span>
           <Image
             className="cursor-pointer"
             src="/icons/edit.svg"
@@ -67,25 +159,20 @@ function BaseDialog(props: { value: string; setValue: (val: string) => void }) {
         </div>
       </DialogTrigger>
       <DialogContent title="Title" className="w-[320px]" showClose="Cancel">
-        <div className="flex flex-col gap-y-[10px] px-4">
-          <div className="mt-[10px]">
-            <div className="LabelText mb-1">Value</div>
-            <Input
-              value={value}
-              onChange={(e) => handleValueChange(e.target.value)}
-              className="flex-1 rounded-md border-border-color"
-              placeholder="0"
-            />
-          </div>
-
-          <Button
-            disabled={!value}
-            onClick={handleConfirm}
-            className="mt-[10px] w-full rounded-full bg-primary text-white disabled:border disabled:border-[#bfbfbf] disabled:bg-[#F6F7F8] disabled:text-[#999]"
-          >
-            Confirm
-          </Button>
-        </div>
+        <RandomInput
+          isRandom={isRandom}
+          accValue={accValue}
+          minValue={minValue}
+          maxValue={maxValue}
+          setIsRandom={setIsRandom}
+          setMinValue={handleMinValueChange}
+          handleMinBlur={handleMinBlur}
+          setAccValue={handleAccValueChange}
+          setMaxValue={handleMaxValueChange}
+          handleMaxBlur={handleMaxBlur}
+          btnDisabled={btnDisabled}
+          onConfirm={handleConfirm}
+        />
       </DialogContent>
     </Dialog>
   );

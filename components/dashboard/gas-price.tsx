@@ -10,8 +10,8 @@ import { replaceStrNum } from "@/lib/hooks/use-str-num";
 import useIndexStore from "@/lib/state";
 
 export function GasPrice() {
-  const useOnlineGas = useIndexStore((state) => state.useOnlineGas);
-  const setUseOnlineGas = useIndexStore((state) => state.setUseOnlineGas);
+  const isAvgGas = useIndexStore((state) => state.isAvgGas);
+  const setIsAvgGas = useIndexStore((state) => state.setIsAvgGas);
   const gasValue = useIndexStore((state) => state.gasValue);
   const setGasValue = useIndexStore((state) => state.setGasValue);
 
@@ -19,8 +19,8 @@ export function GasPrice() {
     <div className="flex flex-1 flex-col rounded-md border border-[#bfbfbf] p-3">
       <div className="LabelText">Gas Price</div>
       <BaseDialog
-        useOnlineGas={useOnlineGas}
-        setUseOnlineGas={setUseOnlineGas}
+        isAvgGas={isAvgGas}
+        setIsAvgGas={setIsAvgGas}
         gasValue={gasValue}
         setGasValue={setGasValue}
       />
@@ -29,17 +29,17 @@ export function GasPrice() {
 }
 
 function BaseDialog(props: {
-  useOnlineGas: boolean;
-  setUseOnlineGas: (val: boolean) => void;
+  isAvgGas: boolean;
+  setIsAvgGas: (val: boolean) => void;
   gasValue: string;
   setGasValue: (val: string) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [useOnlineGas, setUseOnlineGas] = useState(props.useOnlineGas);
+  const [isAvgGas, setIsAvgGas] = useState(props.isAvgGas);
   const [gasValue, setGasValue] = useState(props.gasValue);
 
   const handleConfirm = () => {
-    props.setUseOnlineGas(useOnlineGas);
+    props.setIsAvgGas(isAvgGas);
     props.setGasValue(gasValue);
     setOpen(false);
   };
@@ -55,7 +55,7 @@ function BaseDialog(props: {
   };
 
   const nowShowText = useMemo(() => {
-    if (props.useOnlineGas) return "Online Average";
+    if (props.isAvgGas) return "Online Average";
     return `Max:${props.gasValue} Gwei`;
   }, [props]);
 
@@ -83,8 +83,8 @@ function BaseDialog(props: {
         <div className="flex flex-col gap-y-[10px] px-4">
           <div className="flex items-center">
             <Checkbox
-              checked={useOnlineGas}
-              onCheckedChange={() => setUseOnlineGas(!useOnlineGas)}
+              checked={isAvgGas}
+              onCheckedChange={() => setIsAvgGas(!isAvgGas)}
               id="online"
             />
             <label className="LabelText ml-2 cursor-pointer" htmlFor="online">
@@ -92,7 +92,7 @@ function BaseDialog(props: {
             </label>
           </div>
 
-          {!useOnlineGas && (
+          {!isAvgGas && (
             <>
               <div className="flex items-center">
                 <div className="h-[1px] flex-1 bg-[#99999966]" />
@@ -115,7 +115,7 @@ function BaseDialog(props: {
           )}
 
           <Button
-            disabled={!useOnlineGas && !gasValue}
+            disabled={!isAvgGas && !gasValue}
             onClick={handleConfirm}
             className="mt-[10px] w-full rounded-full bg-primary text-white disabled:border disabled:border-[#bfbfbf] disabled:bg-[#F6F7F8] disabled:text-[#999]"
           >

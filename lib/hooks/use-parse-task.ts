@@ -63,6 +63,7 @@ export function useParseTasks() {
           return {
             id: t.id,
             account: t.account,
+            gasUsed: t.gas_used,
             status: t.status,
             txHash: t.tx_hash,
             op: t.op,

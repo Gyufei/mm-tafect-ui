@@ -48,4 +48,9 @@ export const UserEndPointPathMap = {
   accountTokenAllowance: "/web3/token_allowance",
   nonceNum: "/web3/nonce",
   gasPrice: "/web3/gas_price",
+
+  scheduleXYZ: "/schedule/xyz",
+  scheduleList: "/schedule/list",
+  scheduleSave: "/schedule/save",
+  scheduleApply: "/schedule/apply",
 };

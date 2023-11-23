@@ -25,7 +25,7 @@ export async function signInAction(credentials: {
       name: credentials.username.split("@")[0],
       email: credentials.username,
       token: access_token,
-      expires: new Date().getTime() + 1000 * 60 * 60 * 24,
+      expires: new Date().getTime() + 1000 * 60 * 60 * 23.5,
       active: true,
     };
 

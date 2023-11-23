@@ -7,7 +7,6 @@ import useIndexStore from "@/lib/state";
 import { Label } from "../ui/label";
 import Candle from "./candle";
 import RandomBtnDialog from "./random-btn-dialog";
-import RangeValueDialog from "./range-value-dialog";
 import TradingTx from "./trading-tx";
 import TradingVol from "./trading-vol";
 
@@ -28,9 +27,9 @@ export default function Plan() {
           <div className="mt-4 flex">
             <Candle up={upOrDown === UpDownLabelOptions[0]} />
             <div className="ml-7 flex flex-col justify-between">
-              <RandomBtnDialog up={true} />
-              <RangeValueDialog />
-              <RandomBtnDialog up={false} />
+              <RandomBtnDialog up="top" />
+              <RandomBtnDialog up="mid" />
+              <RandomBtnDialog up="bottom" />
             </div>
           </div>
         </div>

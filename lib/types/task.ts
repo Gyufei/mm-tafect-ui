@@ -17,6 +17,7 @@ export interface ITask {
   status: StatusEnum;
   txHash: string;
   data: ITaskData;
+  gasUsed: number;
 }
 
 export interface ITaskData {

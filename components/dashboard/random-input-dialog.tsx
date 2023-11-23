@@ -1,41 +1,11 @@
-import Image from "next/image";
 import { useMemo, useState } from "react";
-
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
+import CandleOpRow from "./candle-op-row";
 import { replaceStrNum } from "@/lib/hooks/use-str-num";
-import useIndexStore from "@/lib/state";
 import RandomInput from "./random-input";
-import numbro from "numbro";
 
-export default function TradingTx() {
-  const tradingTxRandom = useIndexStore((state) => state.tradingTxRandom);
-  const tradingTxAcc = useIndexStore((state) => state.tradingTxAcc);
-  const tradingTxMin = useIndexStore((state) => state.tradingTxMin);
-  const tradingTxMax = useIndexStore((state) => state.tradingTxMax);
-  const setTradingTxAcc = useIndexStore((state) => state.setTradingTxAcc);
-  const setTradingTxRandom = useIndexStore((state) => state.setTradingTxRandom);
-  const setTradingTxMin = useIndexStore((state) => state.setTradingTxMin);
-  const setTradingTxMax = useIndexStore((state) => state.setTradingTxMax);
-
-  return (
-    <div className="flex flex-col rounded-md border border-[#bfbfbf] bg-[#f6f7f8] p-3">
-      <div className="LabelText">Trading Tx</div>
-      <TxDialog
-        isRandom={tradingTxRandom}
-        accValue={tradingTxAcc}
-        minValue={tradingTxMin}
-        maxValue={tradingTxMax}
-        setIsRandom={setTradingTxRandom}
-        setMinValue={setTradingTxMin}
-        setAccValue={setTradingTxAcc}
-        setMaxValue={setTradingTxMax}
-      />
-    </div>
-  );
-}
-
-function TxDialog(props: {
+export default function RandomInputDialog(props: {
   isRandom: boolean;
   accValue: string;
   minValue: string;
@@ -56,27 +26,45 @@ function TxDialog(props: {
     if (isRandom) {
       props.setMinValue(minValue);
       props.setMaxValue(maxValue);
-      props.setAccValue("");
+      props.setAccValue("0");
     } else {
-      props.setMinValue("");
-      props.setMaxValue("");
+      props.setMinValue("0");
+      props.setMaxValue("0");
       props.setAccValue(accValue);
     }
     setOpen(false);
   };
 
   const handleAccValueChange = (val: string) => {
-    const newV = replaceStrNum(val);
+    let newV = replaceStrNum(val);
+
+    if (Number(newV) > 10000) {
+      newV = "10000";
+    }
+
     setAccValue(newV);
   };
 
   const handleMinValueChange = (val: string) => {
-    const newV = replaceStrNum(val);
+    let newV = replaceStrNum(val);
+
+    if (Number(newV) < 0) {
+      newV = "0";
+    }
+    if (Number(newV) > 10000) {
+      newV = "10000";
+    }
+
     setMinValue(newV);
   };
 
   const handleMaxValueChange = (val: string) => {
-    const newV = replaceStrNum(val);
+    let newV = replaceStrNum(val);
+
+    if (Number(newV) > 10000) {
+      newV = "10000";
+    }
+
     setMaxValue(newV);
   };
 
@@ -97,25 +85,14 @@ function TxDialog(props: {
   const nowShowText = useMemo(() => {
     if (!props.isRandom) {
       if (!props.accValue) return "";
-
-      const display = numbro(props.accValue).format({
-        thousandSeparated: true,
-      });
-      return display;
+      const accPercent = Number(props.accValue) / 100;
+      return `${accPercent}%`;
     } else {
-      const min = props.minValue
-        ? numbro(props.minValue || "").format({
-            thousandSeparated: true,
-          })
-        : "";
-      const max = props.maxValue
-        ? numbro(props.maxValue || "").format({
-            thousandSeparated: true,
-          })
-        : "";
+      if (!props.minValue || !props.maxValue) return "";
+      const minPercent = Number(props.minValue) / 100;
+      const maxPercent = Number(props.maxValue) / 100;
 
-      if (!min && !max) return "";
-      return `${min}~${max}`;
+      return `${minPercent}%~${maxPercent}%`;
     }
   }, [props]);
 
@@ -125,16 +102,7 @@ function TxDialog(props: {
   return (
     <Dialog open={open} onOpenChange={(val) => setOpen(val)}>
       <DialogTrigger>
-        <div className="flex items-center">
-          <span className="mr-2 h-7 text-lg text-[#333]">{nowShowText}</span>
-          <Image
-            className="cursor-pointer"
-            src="/icons/edit.svg"
-            width={20}
-            height={20}
-            alt="edit"
-          />
-        </div>
+        <CandleOpRow text={nowShowText} />
       </DialogTrigger>
       <DialogContent title="Title" className="w-[320px]" showClose="Cancel">
         <RandomInput

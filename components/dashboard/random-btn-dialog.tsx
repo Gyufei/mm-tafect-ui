@@ -1,15 +1,15 @@
-import { useMemo, useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-
-import CandleOpRow from "./candle-op-row";
 import useIndexStore from "@/lib/state";
-import { replaceStrNum } from "@/lib/hooks/use-str-num";
+import RandomInputDialog from "./random-input-dialog";
 
-export default function RandomBtnDialog({ up }: { up: boolean }) {
-  return up ? <TopRandomDialog /> : <BottomRandomDialog />;
+export default function RandomBtnDialog({
+  up,
+}: {
+  up: "top" | "bottom" | "mid";
+}) {
+  if (up === "mid") return <MidValueDialog />;
+  else if (up === "top") return <TopRandomDialog />;
+  else if (up === "bottom") return <BottomRandomDialog />;
+  else return null;
 }
 
 function TopRandomDialog() {
@@ -19,15 +19,45 @@ function TopRandomDialog() {
   const setTopValueMin = useIndexStore((state) => state.setTopValueMin);
   const topValueMax = useIndexStore((state) => state.topValueMax);
   const setTopValueMax = useIndexStore((state) => state.setTopValueMax);
+  const topValueAcc = useIndexStore((state) => state.topValueAcc);
+  const setTopValueAcc = useIndexStore((state) => state.setTopValueAcc);
 
   return (
-    <BaseDialog
+    <RandomInputDialog
       isRandom={topRandom}
       minValue={topValueMin}
       maxValue={topValueMax}
       setIsRandom={setTopRandom}
       setMinValue={setTopValueMin}
       setMaxValue={setTopValueMax}
+      accValue={topValueAcc}
+      setAccValue={setTopValueAcc}
+    />
+  );
+}
+
+export function MidValueDialog() {
+  const rangeValueRandom = useIndexStore((state) => state.rangeValueRandom);
+  const setRangeValueRandom = useIndexStore(
+    (state) => state.setRangeValueRandom,
+  );
+  const rangeValueMax = useIndexStore((state) => state.rangeValueMax);
+  const setRangeValueMax = useIndexStore((state) => state.setRangeValueMax);
+  const rangeValueMin = useIndexStore((state) => state.rangeValueMin);
+  const setRangeValueMin = useIndexStore((state) => state.setRangeValueMin);
+  const rangeValueAcc = useIndexStore((state) => state.rangeValueAcc);
+  const setRangeValueAcc = useIndexStore((state) => state.setRangeValueAcc);
+
+  return (
+    <RandomInputDialog
+      isRandom={rangeValueRandom}
+      accValue={rangeValueAcc}
+      setIsRandom={setRangeValueRandom}
+      setAccValue={setRangeValueAcc}
+      minValue={rangeValueMin}
+      maxValue={rangeValueMax}
+      setMinValue={setRangeValueMin}
+      setMaxValue={setRangeValueMax}
     />
   );
 }
@@ -39,136 +69,19 @@ function BottomRandomDialog() {
   const setBottomValueMin = useIndexStore((state) => state.setBottomValueMin);
   const bottomValueMax = useIndexStore((state) => state.bottomValueMax);
   const setBottomValueMax = useIndexStore((state) => state.setBottomValueMax);
+  const bottomValueAcc = useIndexStore((state) => state.bottomValueAcc);
+  const setBottomValueAcc = useIndexStore((state) => state.setBottomValueAcc);
 
   return (
-    <BaseDialog
+    <RandomInputDialog
       isRandom={bottomRandom}
       minValue={bottomValueMin}
       maxValue={bottomValueMax}
       setIsRandom={setBottomRandom}
       setMinValue={setBottomValueMin}
       setMaxValue={setBottomValueMax}
+      accValue={bottomValueAcc}
+      setAccValue={setBottomValueAcc}
     />
-  );
-}
-
-function BaseDialog(props: {
-  isRandom: boolean;
-  minValue: string;
-  maxValue: string;
-  setIsRandom: (val: boolean) => void;
-  setMinValue: (val: string) => void;
-  setMaxValue: (val: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [isRandom, setIsRandom] = useState(props.isRandom);
-  const [minValue, setMinValue] = useState(props.minValue);
-  const [maxValue, setMaxValue] = useState(props.maxValue);
-
-  const handleConfirm = () => {
-    props.setIsRandom(isRandom);
-    props.setMinValue(minValue);
-    props.setMaxValue(maxValue);
-    setOpen(false);
-  };
-
-  const handleMinValueChange = (val: string) => {
-    let newV = replaceStrNum(val);
-
-    if (Number(newV) < 0) {
-      newV = "0";
-    }
-
-    setMinValue(newV);
-  };
-
-  const handleMaxValueChange = (val: string) => {
-    let newV = replaceStrNum(val);
-
-    if (Number(newV) > 100) {
-      newV = "100";
-    }
-
-    setMaxValue(newV);
-  };
-
-  const handleMinBlur = () => {
-    if (!maxValue || !minValue) return;
-    if (Number(minValue) > Number(maxValue)) {
-      setMinValue(maxValue);
-    }
-  };
-
-  const handleMaxBlur = () => {
-    if (!maxValue || !minValue) return;
-    if (Number(maxValue) < Number(minValue)) {
-      setMaxValue(minValue);
-    }
-  };
-
-  const nowShowText = useMemo(() => {
-    if (props.isRandom) return "Random";
-    return `${props.minValue}%~${props.maxValue}%`;
-  }, [props]);
-
-  return (
-    <Dialog open={open} onOpenChange={(val) => setOpen(val)}>
-      <DialogTrigger>
-        <CandleOpRow text={nowShowText} />
-      </DialogTrigger>
-      <DialogContent title="Title" className="w-[320px]" showClose="Cancel">
-        <div className="flex flex-col gap-y-[10px] px-4">
-          <div className="flex items-center">
-            <Checkbox
-              checked={isRandom}
-              onCheckedChange={() => setIsRandom(!isRandom)}
-              id="random"
-            />
-            <label className="LabelText ml-2 cursor-pointer" htmlFor="random">
-              Random
-            </label>
-          </div>
-
-          {!isRandom && (
-            <>
-              <div className="flex items-center">
-                <div className="h-[1px] flex-1 bg-[#99999966]" />
-                <div className="LabelText mx-1">OR</div>
-                <div className="h-[1px] flex-1 bg-[#99999966]" />
-              </div>
-
-              <div>
-                <div className="LabelText mb-1">Value</div>
-                <div className="flex items-center justify-between">
-                  <Input
-                    value={minValue}
-                    onChange={(e) => handleMinValueChange(e.target.value)}
-                    onBlur={handleMinBlur}
-                    className="flex-1 rounded-md border-border-color"
-                    placeholder="0"
-                  />
-                  <span className="LabelText mx-1">-</span>
-                  <Input
-                    value={maxValue}
-                    onChange={(e) => handleMaxValueChange(e.target.value)}
-                    onBlur={handleMaxBlur}
-                    className="flex-1 rounded-md border-border-color"
-                    placeholder="0"
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          <Button
-            disabled={!isRandom && (!minValue || !maxValue)}
-            onClick={handleConfirm}
-            className="mt-[10px] w-full rounded-full bg-primary text-white disabled:border disabled:border-[#bfbfbf] disabled:bg-[#F6F7F8] disabled:text-[#999]"
-          >
-            Confirm
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }

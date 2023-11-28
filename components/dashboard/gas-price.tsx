@@ -56,6 +56,8 @@ function BaseDialog(props: {
 
   const nowShowText = useMemo(() => {
     if (props.isAvgGas) return "Online Average";
+    if (!props.gasValue) return "";
+
     return `Max:${props.gasValue} Gwei`;
   }, [props]);
 
@@ -63,7 +65,7 @@ function BaseDialog(props: {
     <Dialog open={open} onOpenChange={(val) => setOpen(val)}>
       <DialogTrigger asChild>
         <div className="flex items-center">
-          <span className="mr-2 whitespace-nowrap text-lg text-[#333]">
+          <span className="mr-1 whitespace-nowrap text-lg text-[#333]">
             {nowShowText}
           </span>
           <Image

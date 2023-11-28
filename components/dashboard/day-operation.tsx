@@ -42,7 +42,7 @@ export default function DayOperation({
 
   return (
     <div className="w-[400px] border-l border-[#d6d6d6] bg-[#fafafa]">
-      <div className="p-3 shadow-md">
+      <div className="p-3">
         <Plan />
         <Rules />
         <div className="flex justify-between">
@@ -73,6 +73,9 @@ export default function DayOperation({
       </div>
 
       <div className="relative border-t">
+        <div className="px-3 py-1 text-sm text-[#707070]  shadow-md">
+          Transactions
+        </div>
         <div className="flex h-[calc(100vh-455px)] flex-col justify-stretch gap-y-3 overflow-y-auto px-3 pb-2">
           {tasks?.length ? (
             tasks.map((task) => (

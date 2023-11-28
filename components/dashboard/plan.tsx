@@ -26,7 +26,7 @@ export default function Plan() {
           />
           <div className="mt-4 flex">
             <Candle up={upOrDown === UpDownLabelOptions[0]} />
-            <div className="ml-7 flex flex-col justify-between">
+            <div className="ml-5 flex flex-col justify-between">
               <RandomBtnDialog up="top" />
               <RandomBtnDialog up="mid" />
               <RandomBtnDialog up="bottom" />

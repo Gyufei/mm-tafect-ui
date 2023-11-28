@@ -12,13 +12,31 @@ export function useDashboardDayApply() {
 
   const applyAction = async () => {
     const date = format(selectedDay, "yyyy-MM-dd");
-    const applyUrl = userPathMap.scheduleApply;
+
+    const params = {
+      schedule_date: date,
+      status: true,
+    };
+    if (!params) return;
+
+    return applyFetcher(params);
+  };
+
+  const cancelApplyAction = async () => {
+    const date = format(selectedDay, "yyyy-MM-dd");
 
     const params = {
       schedule_date: date,
       status: false,
     };
-    if (!applyUrl || !params) return;
+
+    return applyFetcher(params);
+  };
+
+  const applyFetcher = async (params: any) => {
+    const applyUrl = userPathMap.scheduleApply;
+
+    if (!applyUrl) return;
     setApplyLoading(true);
 
     const res = await fetcher(applyUrl, {
@@ -39,5 +57,6 @@ export function useDashboardDayApply() {
   return {
     applyLoading,
     applyAction,
+    cancelApplyAction,
   };
 }

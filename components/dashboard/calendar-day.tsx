@@ -7,6 +7,7 @@ import ExclamationMarker from "/public/icons/exclamation-marker.svg";
 import { IDayData } from "@/lib/hooks/use-dashboard-data";
 import { useMemo } from "react";
 import { ITask } from "@/lib/types/task";
+import { formatPercentNum } from "@/lib/utils";
 
 export default function CalendarDay({
   day,
@@ -33,7 +34,7 @@ export default function CalendarDay({
     if (!dayData) return true;
 
     const { last_price, first_price } = dayData;
-    if (last_price === "0" && first_price === "0") {
+    if (last_price === "0" || first_price === "0") {
       const { up } = dayData.plan_info.kline_data;
       return up;
     } else {
@@ -45,15 +46,16 @@ export default function CalendarDay({
     if (!dayData) return "";
     const { last_price, first_price } = dayData;
 
-    if (last_price === "0" && first_price === "0") {
+    if (last_price === "0" || first_price === "0") {
       const { mid } = dayData.plan_info.kline_data;
       if (mid.is_random) {
-        const maxP = Number(mid.max_value) / 100;
-        const minP = Number(mid.min_value) / 100;
+        const maxP = formatPercentNum(Number(mid.max_value) / 100);
+        if (maxP) return `${maxP}%`;
 
-        return `${minP}%~${maxP}%`;
+        const minP = formatPercentNum(Number(mid.min_value) / 100);
+        return `${minP}%`;
       } else {
-        const acc = Number(mid.acc_value) / 100;
+        const acc = formatPercentNum(Number(mid.acc_value) / 100);
         return `${acc}%`;
       }
     } else {
@@ -61,7 +63,7 @@ export default function CalendarDay({
       const first = Number(first_price);
       const diff = last - first;
       const percent = (diff / first) * 100;
-      return `${percent.toFixed(2)}%`;
+      return `${formatPercentNum(percent)}%`;
     }
   }, [dayData]);
 
@@ -71,9 +73,9 @@ export default function CalendarDay({
 
   const tasksCompletedPercent = useMemo(() => {
     if (!tasks?.length) return 0;
-    const completed = tasks.filter((t) => t.status === 4).length;
 
-    const percent = (completed / tasks.length) * 100;
+    const completed = tasks.filter((t) => t.status === 4).length;
+    const percent = formatPercentNum((completed / tasks.length) * 100);
 
     return percent;
   }, [tasks]);

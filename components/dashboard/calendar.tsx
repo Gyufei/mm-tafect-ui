@@ -63,7 +63,16 @@ export default function Calendar() {
 
   function handleSelected(day: Date) {
     setSelectedDay(day);
-    resetAction();
+
+    const dayData = daysData?.find(
+      (d) => d.schedule_date === format(day, "yyyy-MM-dd"),
+    );
+
+    if (dayData && dayData.plan_info) {
+      resetAction(dayData.plan_info);
+    } else {
+      resetAction();
+    }
   }
 
   const dayTasks = useMemo(() => {
@@ -129,7 +138,15 @@ export default function Calendar() {
         </div>
       </div>
 
-      <DayOperation tasks={dayTasks || []} onCancel={() => refreshTasks()} />
+      <DayOperation
+        dayData={
+          daysData?.find(
+            (d) => d.schedule_date === format(selectedDay, "yyyy-MM-dd"),
+          ) || null
+        }
+        tasks={dayTasks || []}
+        onCancel={() => refreshTasks()}
+      />
     </>
   );
 }

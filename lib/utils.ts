@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { AddressRegex } from "./constants/global";
+import numbro from "numbro";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -31,4 +32,11 @@ export function parseToAddress(v: string) {
   if (v.length > 42) return v.substring(0, 42);
 
   return v.replace(/[^0-9a-fA-FxX]/g, "");
+}
+
+export function formatPercentNum(num: number | string) {
+  return numbro(num).format({
+    trimMantissa: true,
+    mantissa: 2,
+  });
 }

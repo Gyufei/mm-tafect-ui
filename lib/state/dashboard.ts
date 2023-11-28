@@ -1,12 +1,13 @@
 import { StateCreator } from "zustand";
 import { GlobalStoreSlice } from "./global";
 import { SwapStoreSlice } from "./swap";
-import { startOfToday } from "date-fns";
+import { isBefore, startOfToday } from "date-fns";
 import { IUpDownValue } from "../constants/dashboard-const";
 import { UpDownLabelOptions } from "../constants/dashboard-const";
 
 export interface DashboardStoreSlice {
   selectedDay: Date;
+  isBeforeDay: () => boolean;
   upOrDown: IUpDownValue;
   topRandom: boolean;
   topValueMin: string;
@@ -77,9 +78,14 @@ export const CreateDashboardState: StateCreator<
   [],
   [],
   DashboardStoreSlice
-> = (set: any) => ({
+> = (set: any, get: any) => ({
   selectedDay: startOfToday(),
   setSelectedDay: (day: Date) => set(() => ({ selectedDay: day })),
+  isBeforeDay: () => {
+    const today = startOfToday();
+    const selectedDay = get().selectedDay;
+    return isBefore(selectedDay, today);
+  },
 
   upOrDown: UpDownLabelOptions[0],
   setUpOrDown: (val: IUpDownValue) => set(() => ({ upOrDown: val })),

@@ -11,17 +11,34 @@ import { useDashboardDaySave } from "@/lib/hooks/use-dashboard-day-save";
 import LoadingIcon from "../shared/loading-icon";
 import { useDashboardReset } from "@/lib/hooks/use-dashboard-reset";
 import { ITask } from "@/lib/types/task";
+import useIndexStore from "@/lib/state";
+import { IDayData } from "@/lib/hooks/use-dashboard-data";
 
 export default function DayOperation({
+  dayData,
   tasks,
   onCancel,
 }: {
+  dayData: IDayData | null;
   tasks: Array<ITask>;
   onCancel: () => void;
 }) {
+  const isBeforeDay = useIndexStore((state) => state.isBeforeDay());
+
   const { saveLoading, saveAction } = useDashboardDaySave();
-  const { applyLoading, applyAction } = useDashboardDayApply();
+  const { applyLoading, applyAction, cancelApplyAction } =
+    useDashboardDayApply();
   const { resetAction } = useDashboardReset();
+
+  const isApply = dayData?.is_apply;
+
+  const handleApply = () => {
+    if (isApply) {
+      cancelApplyAction();
+    } else {
+      applyAction();
+    }
+  };
 
   return (
     <div className="w-[400px] border-l border-[#d6d6d6] bg-[#fafafa]">
@@ -30,26 +47,27 @@ export default function DayOperation({
         <Rules />
         <div className="flex justify-between">
           <Button
-            onClick={resetAction}
+            disabled={isBeforeDay}
+            onClick={() => resetAction()}
             className="w-[100px] border border-primary bg-white text-primary hover:brightness-95"
           >
             Reset
           </Button>
           <Button
             onClick={saveAction}
-            disabled={saveLoading}
+            disabled={saveLoading || isBeforeDay}
             className="w-[100px] border border-primary bg-white text-primary hover:brightness-95"
           >
             <LoadingIcon isLoading={saveLoading} />
             Save
           </Button>
           <Button
-            onClick={applyAction}
-            disabled={applyLoading}
+            onClick={handleApply}
+            disabled={applyLoading || isBeforeDay}
             className="w-[152px] border border-primary bg-primary text-white hover:brightness-95"
           >
             <LoadingIcon className="text-white" isLoading={applyLoading} />
-            Apply
+            {isApply ? "Cancel apply" : "Apply"}
           </Button>
         </div>
       </div>

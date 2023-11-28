@@ -21,7 +21,6 @@ export function MinTxSpan() {
   const minTxSpanUnit = useIndexStore((state) => state.minTxSpanUnit);
   const setMinTxSpanValue = useIndexStore((state) => state.setMinTxSpanValue);
   const setMinTxSpanUnit = useIndexStore((state) => state.setMinTxSpanUnit);
-  console.log(minTxSpanValue, minTxSpanUnit);
 
   return (
     <div className="flex flex-1 flex-col rounded-md border border-[#bfbfbf] p-3">
@@ -76,8 +75,8 @@ function BaseDialog(props: {
   return (
     <Dialog open={open} onOpenChange={(val) => setOpen(val)}>
       <DialogTrigger asChild>
-        <div className="flex items-center">
-          <span className="mr-2 h-7 text-lg text-[#333]">{nowShowText}</span>
+        <div className="flex items-center outline-none">
+          <span className="mr-1 h-7 text-lg text-[#333]">{nowShowText}</span>
           <Image
             className="cursor-pointer"
             src="/icons/edit.svg"

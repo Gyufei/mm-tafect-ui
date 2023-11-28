@@ -61,6 +61,7 @@ export function useDashboardData(startDate: Date, endDate: Date) {
   const userPathMap = useIndexStore((state) => state.userPathMap());
 
   const res = useSWR(() => {
+    if (!userPathMap || !userPathMap.scheduleList) return null;
     if (!startDate || !endDate) return null;
 
     const startStr = format(startDate, "yyyy-MM-dd");

@@ -30,6 +30,8 @@ export default function KeyStoreAccountsTable({
   const [filterTextDebounce] = useDebounce(filterText, 500);
 
   const filteredAccount = useMemo(() => {
+    if (!accounts?.length) return [];
+
     if (!filterTextDebounce) {
       return accounts;
     }

@@ -87,8 +87,8 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
     if (!filterTaskDate.min && !filterTaskDate.max) {
       return null;
     } else {
-      filterTrigger([], {
-        optimisticData: [],
+      filterTrigger(undefined, {
+        optimisticData: undefined,
       });
       return true;
     }
@@ -151,6 +151,7 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
           onChange={(e) => handleMaxDateChange(e)}
         />
       </div>
+
       <div className="relative border-t">
         <div className="h-8 border-b shadow-md"></div>
         <Button

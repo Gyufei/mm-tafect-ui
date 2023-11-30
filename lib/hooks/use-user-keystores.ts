@@ -10,10 +10,11 @@ export function useUserKeystores() {
     fetcher,
   );
 
-  const { data: useKeyStoreNames, mutate: refetchKeyStores } = useSWR(
-    SystemEndPointPathMap.userKeyStores,
-    fetcher,
-  );
+  const {
+    data: useKeyStoreNames,
+    isLoading,
+    mutate: refetchKeyStores,
+  } = useSWR(SystemEndPointPathMap.userKeyStores, fetcher);
 
   const userKeyStores = useMemo<Array<IKeyStore>>(() => {
     if (!allKeyStores) return [];
@@ -39,6 +40,7 @@ export function useUserKeystores() {
 
   return {
     data: userKeyStores,
+    isLoading,
     mutate: refresh,
   };
 }

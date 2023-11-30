@@ -75,6 +75,12 @@ export default function QueryAccountBalance({
     }
   }, [gasBalanceRes, setGas]);
 
+  const handleKeyDown = (event: any) => {
+    if (event.key === "Enter") {
+      handleQuery();
+    }
+  };
+
   const handleQuery = () => {
     if (
       gasToken &&
@@ -117,11 +123,12 @@ export default function QueryAccountBalance({
             onChange={(e: any) => handleAccountChange(e.target.value)}
             className="mr-3 border-border-color bg-white"
             placeholder="0x11111111111"
+            onKeyDown={handleKeyDown}
           />
           <button
             disabled={!fromAddress || !isAddress(fromAddress)}
             onClick={() => handleQuery()}
-            className="rounded-md border border-border-color bg-white px-6 font-bold text-title-color hover:bg-custom-bg-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md border border-border-color bg-white px-3 text-sm font-bold text-title-color hover:bg-custom-bg-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             Query
           </button>
@@ -131,7 +138,7 @@ export default function QueryAccountBalance({
       <div className="mt-1 grid grid-cols-3 gap-x-3 px-3">
         <SmallTokenCard name={gasToken?.symbol} num={gas || 0} />
         <SmallTokenCard name={userToken?.symbol} num={accountBalances[0]} />
-        <div className="flex flex-col rounded-md border bg-custom-bg-white px-4 py-2">
+        <div className="flex flex-col rounded-md border bg-custom-bg-white px-4 pb-[7px] pt-[9px]">
           <Select
             value={stableToken?.address || undefined}
             onValueChange={(e: string) => handleStableTokenSelect(e)}
@@ -192,7 +199,7 @@ function SmallTokenCard({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-md border bg-custom-bg-white px-4 py-2",
+        "flex flex-col rounded-md border bg-custom-bg-white px-4 pb-[7px] pt-[9px]",
         className,
       )}
     >

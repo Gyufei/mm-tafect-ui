@@ -153,6 +153,12 @@ export default function FilterAccountList({
     setFromAddress(addr);
   }
 
+  const handleKeyDown = (event: any) => {
+    if (event.key === "Enter") {
+      handleFilter();
+    }
+  };
+
   return (
     <div className="flex flex-col justify-stretch">
       <div className="flex flex-col px-4">
@@ -170,6 +176,7 @@ export default function FilterAccountList({
             onChange={(e) => setTokenMin(e.target.value)}
             className="border-border-color bg-white"
             placeholder="Min"
+            onKeyDown={handleKeyDown}
           />
           <div className="mx-2">-</div>
           <Input
@@ -177,6 +184,7 @@ export default function FilterAccountList({
             onChange={(e) => setTokenMax(e.target.value)}
             className="border-border-color bg-white"
             placeholder="Max"
+            onKeyDown={handleKeyDown}
           />
         </div>
       </div>

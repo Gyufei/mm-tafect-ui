@@ -59,7 +59,7 @@ export default function ChangeTimezone() {
 
   return (
     <DetailItem title="Timezone">
-      <div className="relative flex h-10 w-full flex-col justify-center">
+      <div className="relative flex w-full flex-col justify-center">
         <div
           className="flex items-center gap-x-3"
           onClick={() => setShowChangeDialog(true)}

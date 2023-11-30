@@ -61,7 +61,7 @@ const AccountCard = ({
   user: ac,
   onSelect,
   onDelete,
-  isActive
+  isActive,
 }: {
   user: IUser;
   onSelect: (_u: IUser) => void;

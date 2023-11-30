@@ -78,7 +78,7 @@ export default function TokenSwap() {
 
       <div
         data-state={showSlidePage === "Filter Task"}
-        className="absolute top-[-69px] z-10 h-screen w-full rounded-t-3xl border-[#dadada] bg-[#fafafa] data-[state=false]:hidden md:static md:h-full md:w-auto md:rounded-none md:border-r md:data-[state=false]:block"
+        className="absolute top-[-69px] z-10 h-screen w-full rounded-t-3xl border-[#dadada] bg-[#fafafa] data-[state=false]:hidden md:static md:h-full md:w-auto md:rounded-none md:data-[state=false]:block"
       >
         <SwiperHandlerBox />
         <SwapHistory ref={historySearchRef} />

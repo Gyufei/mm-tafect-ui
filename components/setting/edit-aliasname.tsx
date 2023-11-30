@@ -85,7 +85,7 @@ export default function EditAliasname() {
 
   return (
     <DetailItem title="User Alias">
-      <div className="relative flex h-10 w-full flex-col justify-center">
+      <div className="relative flex w-full flex-col justify-center">
         {activeUser ? (
           <div className="flex items-center gap-x-3">
             {edit ? (
@@ -112,7 +112,7 @@ export default function EditAliasname() {
             />
           </div>
         ) : (
-          <Skeleton className="h-10 w-full bg-white" />
+          <Skeleton className="h-7 w-full bg-white" />
         )}
 
         <div className="absolute -top-7 right-10 mt-1 text-sm text-destructive">

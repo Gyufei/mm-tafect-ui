@@ -397,13 +397,7 @@ export default function Op({
         />
       </div>
 
-      <div
-        className="mt-3 flex h-[60px] items-center gap-x-3 border-t bg-white px-3 py-2"
-        style={{
-          boxShadow:
-            "inset -1px 0px 0px 0px #D6D6D6,inset 0px 1px 0px 0px #D6D6D6",
-        }}
-      >
+      <div className="mt-3 flex h-[60px] items-center gap-x-3 border-t bg-white px-3 py-2">
         {children}
         <Button
           disabled={testLoading}

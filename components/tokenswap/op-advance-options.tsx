@@ -97,7 +97,7 @@ export default function OpAdvanceOptions({
     <AdvanceCollapsible>
       <div className="flex flex-col gap-y-3 px-3">
         <div className="flex justify-between gap-x-3">
-          <div className="flex max-w-[150px] flex-col">
+          <div className="flex flex-1 flex-col">
             <div className="LabelText mb-1">Timeout(s)</div>
             <Input
               value={options.timeout || ""}
@@ -127,54 +127,61 @@ export default function OpAdvanceOptions({
         </div>
 
         <div className="flex items-end justify-between gap-x-3">
-          <div>
-            <div className="LabelText mb-1">Nonce</div>
-            <Input
-              value={options.nonce != null ? options.nonce : ""}
-              onChange={(e) =>
-                handleAdvanceOptionsChange("nonce", e.target.value)
-              }
-              className="rounded-md border-border-color"
-              placeholder={String(nonce) || "0"}
-            />
+          <div className="flex flex-1 justify-between gap-x-3">
+            <div className="flex-1">
+              <div className="LabelText mb-1">Nonce</div>
+              <Input
+                value={options.nonce != null ? options.nonce : ""}
+                onChange={(e) =>
+                  handleAdvanceOptionsChange("nonce", e.target.value)
+                }
+                className="rounded-md border-border-color"
+                placeholder={String(nonce) || "0"}
+              />
+            </div>
+            <div className="flex-1">
+              <div className="LabelText mb-1">Gas(gwei)</div>
+              <Input
+                value={options.gas || ""}
+                onChange={(e) =>
+                  handleAdvanceOptionsChange("gas", e.target.value)
+                }
+                className="rounded-md border-border-color"
+                placeholder={String(gasPrice)}
+              />
+            </div>
           </div>
-          <div>
-            <div className="LabelText mb-1">Gas(gwei)</div>
-            <Input
-              value={options.gas || ""}
-              onChange={(e) =>
-                handleAdvanceOptionsChange("gas", e.target.value)
+          <div className="flex justify-between gap-x-3">
+            <button
+              title="fixed gas"
+              onClick={() =>
+                handleAdvanceOptionsChange("fixed_gas", !options.fixed_gas)
               }
-              className="rounded-md border-border-color"
-              placeholder={String(gasPrice)}
-            />
+              className="flex h-10 cursor-pointer items-center justify-center rounded-md border px-[11px] hover:bg-custom-bg-white"
+            >
+              {options.fixed_gas ? (
+                <LockIcon className="text-primary" />
+              ) : (
+                <UnlockIcon className="text-[#999]" />
+              )}
+            </button>
+            <button
+              title="no check gas"
+              onClick={() =>
+                handleAdvanceOptionsChange(
+                  "no_check_gas",
+                  !options.no_check_gas,
+                )
+              }
+              className="flex h-10 cursor-pointer items-center justify-center rounded-md border px-[11px] hover:bg-custom-bg-white"
+            >
+              <NoCheckIcon
+                style={{
+                  color: options.no_check_gas ? "#0572ec" : "#999",
+                }}
+              />
+            </button>
           </div>
-          <button
-            title="fixed gas"
-            onClick={() =>
-              handleAdvanceOptionsChange("fixed_gas", !options.fixed_gas)
-            }
-            className="flex h-10 cursor-pointer items-center justify-center rounded-md border px-[11px] hover:bg-custom-bg-white"
-          >
-            {options.fixed_gas ? (
-              <LockIcon className="text-primary" />
-            ) : (
-              <UnlockIcon className="text-[#999]" />
-            )}
-          </button>
-          <button
-            title="no check gas"
-            onClick={() =>
-              handleAdvanceOptionsChange("no_check_gas", !options.no_check_gas)
-            }
-            className="flex h-10 cursor-pointer items-center justify-center rounded-md border px-[11px] hover:bg-custom-bg-white"
-          >
-            <NoCheckIcon
-              style={{
-                color: options.no_check_gas ? "#0572ec" : "#999",
-              }}
-            />
-          </button>
         </div>
 
         <div className="flex flex-col">
@@ -194,7 +201,7 @@ export default function OpAdvanceOptions({
             />
             <button
               onClick={() => setNow()}
-              className="flex h-10 w-[92px] cursor-pointer items-center justify-center rounded-md border hover:bg-custom-bg-white"
+              className="flex h-10 cursor-pointer items-center justify-center rounded-md border px-4 text-sm hover:bg-custom-bg-white"
             >
               Now
             </button>

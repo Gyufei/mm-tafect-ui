@@ -2,7 +2,7 @@
 
 import useSWR from "swr";
 import { useCallback, useContext, useMemo, useRef, useState } from "react";
-import { PenLine, Trash2 } from "lucide-react";
+import { Loader, PenLine, Trash2 } from "lucide-react";
 
 import KeyStoreLinks from "@/components/keystore/key-store-links";
 
@@ -30,7 +30,11 @@ export default function KeyStoreMain() {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
-  const { data: userKeyStores, mutate: refetchKeyStores } = useUserKeystores();
+  const {
+    data: userKeyStores,
+    isLoading: keyStoreLoading,
+    mutate: refetchKeyStores,
+  } = useUserKeystores();
 
   const [selectedKeyStoreName, setSelectedKeyStoreName] = useState<
     string | null
@@ -64,9 +68,11 @@ export default function KeyStoreMain() {
     return ks;
   }, [selectedKeyStoreName, selectedKeyStore, selectedRangeName]);
 
-  const { data: keyStoreAccountsDataRes, mutate: refreshAccount } = useSWR<
-    Array<{ accounts: Array<IAccountGas>; count: number }>
-  >(() => {
+  const {
+    data: keyStoreAccountsDataRes,
+    isLoading: accountsLoading,
+    mutate: refreshAccount,
+  } = useSWR<Array<{ accounts: Array<IAccountGas>; count: number }>>(() => {
     if (userKeyStores.length && selectedKeyStoreName && network?.chain_id) {
       return `${userPathMap.keyStoreAccounts}?keystore=${selectedKeyStoreName}&chain_id=${network?.chain_id}`;
     } else {
@@ -147,8 +153,6 @@ export default function KeyStoreMain() {
     selectedRange,
     getRangeAccounts,
   ]);
-
-  const accountCount: number = accounts.length;
 
   const tx = accounts.reduce(
     (acc: number, aG: Record<string, any>) => acc + aG.tx,
@@ -262,6 +266,7 @@ export default function KeyStoreMain() {
   return (
     <div className="flex h-[calc(100vh-70px)] w-screen flex-col bg-[#fafafa] md:w-auto md:flex-row md:items-stretch">
       <KeyStoreLinks
+        isLoading={keyStoreLoading}
         keyStores={userKeyStores}
         selected={selectedKeyStoreName || null}
         setSelected={setSelectedKeyStoreName}
@@ -273,77 +278,83 @@ export default function KeyStoreMain() {
 
       <div className="flex min-h-[400px] flex-1 flex-col items-stretch overflow-y-auto bg-[#fafafa] md:flex-row md:overflow-y-hidden">
         <div className="flex w-full flex-col justify-between border-b border-shadow-color px-3 pb-4 pt-3 md:w-[400px] md:border-b-0 md:border-r">
-          <div className="flex flex-col justify-stretch">
-            <DetailItem title="Address">{accountCount}</DetailItem>
-            <DetailItem title="Gas Available">{gasAvailable}</DetailItem>
-            <DetailItem title="Tx">{tx}</DetailItem>
-            <DetailItem title="Default Network">
-              {network?.network_name}
-            </DetailItem>
-            {!selectedRange && (
-              <DetailItem title="Works for">
-                {selectedKeyStoreName ? (
-                  <KeyStorePageSelect
-                    keyStoreName={selectedKeyStoreName || null}
-                  />
-                ) : (
-                  <div className="h-6 w-10"></div>
-                )}
+          {keyStoreLoading || accountsLoading ? (
+            <div className="flex h-full w-full items-center justify-center">
+              <Loader className="animate-spin" />
+            </div>
+          ) : (
+            <div className="flex flex-col justify-stretch">
+              <DetailItem title="Address">{accounts.length}</DetailItem>
+              <DetailItem title="Gas Available">{gasAvailable}</DetailItem>
+              <DetailItem title="Tx">{tx}</DetailItem>
+              <DetailItem title="Default Network">
+                {network?.network_name}
               </DetailItem>
-            )}
-            {selectedRange && (
-              <div className="flex items-center justify-between">
-                <DetailItem title="From" className="flex-1">
-                  <div className="flex items-center gap-x-3">
-                    {edit === "from" ? (
-                      <Input
-                        ref={fromRef}
-                        type="text"
-                        value={fromValue || ""}
-                        placeholder="0"
-                        onBlur={onFromBlur}
-                        onChange={(e) => onFromChange(e.target.value)}
-                        className="h-6 focus-visible:ring-0 data-[state=error]:border-destructive"
-                      />
-                    ) : (
-                      <span className="leading-6">
-                        {selectedRange.from_index}
-                      </span>
-                    )}
-                    <PenLine
-                      onClick={() => onEdit("from")}
-                      className="h-4 w-4 cursor-pointer text-[8c8c8c]"
+              {!selectedRange && (
+                <DetailItem title="Works for">
+                  {selectedKeyStoreName ? (
+                    <KeyStorePageSelect
+                      keyStoreName={selectedKeyStoreName || null}
                     />
-                  </div>
+                  ) : (
+                    <div className="h-6 w-10"></div>
+                  )}
                 </DetailItem>
-                <div className="mx-[3px]">-</div>
-                <DetailItem title="To" className="flex-1">
-                  <div className="flex items-center gap-x-3">
-                    {edit === "to" ? (
-                      <Input
-                        // data-state={errorMsg ? "error" : ""}
-                        ref={toRef}
-                        type="text"
-                        value={toValue || ""}
-                        placeholder="0"
-                        onBlur={onToBlur}
-                        onChange={(e) => onToChange(e.target.value)}
-                        className="h-6 focus-visible:ring-0 data-[state=error]:border-destructive"
+              )}
+              {selectedRange && (
+                <div className="flex items-center justify-between">
+                  <DetailItem title="From" className="flex-1">
+                    <div className="flex items-center gap-x-3">
+                      {edit === "from" ? (
+                        <Input
+                          ref={fromRef}
+                          type="text"
+                          value={fromValue || ""}
+                          placeholder="0"
+                          onBlur={onFromBlur}
+                          onChange={(e) => onFromChange(e.target.value)}
+                          className="h-6 focus-visible:ring-0 data-[state=error]:border-destructive"
+                        />
+                      ) : (
+                        <span className="leading-6">
+                          {selectedRange.from_index}
+                        </span>
+                      )}
+                      <PenLine
+                        onClick={() => onEdit("from")}
+                        className="h-4 w-4 cursor-pointer text-[8c8c8c]"
                       />
-                    ) : (
-                      <span className="leading-6">
-                        {selectedRange.to_index}
-                      </span>
-                    )}
-                    <PenLine
-                      onClick={() => onEdit("to")}
-                      className="h-4 w-4 cursor-pointer text-[8c8c8c]"
-                    />
-                  </div>
-                </DetailItem>
-              </div>
-            )}
-          </div>
+                    </div>
+                  </DetailItem>
+                  <div className="mx-[3px]">-</div>
+                  <DetailItem title="To" className="flex-1">
+                    <div className="flex items-center gap-x-3">
+                      {edit === "to" ? (
+                        <Input
+                          // data-state={errorMsg ? "error" : ""}
+                          ref={toRef}
+                          type="text"
+                          value={toValue || ""}
+                          placeholder="0"
+                          onBlur={onToBlur}
+                          onChange={(e) => onToChange(e.target.value)}
+                          className="h-6 focus-visible:ring-0 data-[state=error]:border-destructive"
+                        />
+                      ) : (
+                        <span className="leading-6">
+                          {selectedRange.to_index}
+                        </span>
+                      )}
+                      <PenLine
+                        onClick={() => onEdit("to")}
+                        className="h-4 w-4 cursor-pointer text-[8c8c8c]"
+                      />
+                    </div>
+                  </DetailItem>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="hidden w-full justify-end pr-2 md:flex">
             {!selectedRange && (
@@ -361,7 +372,10 @@ export default function KeyStoreMain() {
           </div>
         </div>
 
-        <KeyStoreAccountsTable accounts={accounts} />
+        <KeyStoreAccountsTable
+          isLoading={keyStoreLoading || accountsLoading}
+          accounts={accounts}
+        />
       </div>
     </div>
   );

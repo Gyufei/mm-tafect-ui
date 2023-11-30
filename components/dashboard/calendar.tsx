@@ -81,7 +81,7 @@ export default function Calendar() {
 
   return (
     <>
-      <div className="flex flex-1 flex-col">
+      <div className="flex h-full min-w-[800px] flex-1 flex-col">
         <div className="border-b border-[#d6d6d6] bg-[#f6f7f8] py-3">
           <div className="mb-2 flex items-center justify-center">
             <button type="button" className="mr-2" onClick={prevMonth}>
@@ -113,7 +113,7 @@ export default function Calendar() {
           </div>
         </div>
 
-        <div className="grid grid-cols-7 justify-items-center gap-y-3 overflow-y-auto bg-[#fafafa] pb-4 pt-3">
+        <div className="grid flex-1 grid-cols-7 justify-items-center gap-y-3 overflow-y-auto bg-[#fafafa] pb-4 pt-3">
           {daysOfMonth.map((day) => {
             const dayData = daysData?.find(
               (d) => d.schedule_date === format(day, "yyyy-MM-dd"),

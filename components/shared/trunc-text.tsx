@@ -23,7 +23,21 @@ const displayText = (
   }
 };
 
-export default function TruncateText({
+export default function TruncateText(props: {
+  text: string;
+  showCopy?: boolean;
+  start?: number;
+  end?: number;
+  children?: React.ReactNode;
+}) {
+  return (
+    <TooltipProvider delayDuration={100}>
+      <TruncateTextNoProvider {...props}></TruncateTextNoProvider>
+    </TooltipProvider>
+  );
+}
+
+export function TruncateTextNoProvider({
   text,
   showCopy,
   start = 8,
@@ -37,21 +51,19 @@ export default function TruncateText({
   children?: React.ReactNode;
 }) {
   return (
-    <TooltipProvider delayDuration={100}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="inline-flex items-center">
-            {displayText(text, start, end)}
-            {showCopy && <CopyIcon text={text} />}
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>
-          <div className="flex items-center">
-            <p className="text-sm text-content-color">{text}</p>
-            {children}
-          </div>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="inline-flex items-center">
+          {displayText(text, start, end)}
+          {showCopy && <CopyIcon text={text} />}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>
+        <div className="flex items-center">
+          <p className="text-sm text-content-color">{text}</p>
+          {children}
+        </div>
+      </TooltipContent>
+    </Tooltip>
   );
 }

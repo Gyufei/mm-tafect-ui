@@ -8,6 +8,7 @@ import { IDayData } from "@/lib/hooks/use-dashboard-data";
 import { useMemo } from "react";
 import { ITask } from "@/lib/types/task";
 import { formatPercentNum } from "@/lib/utils";
+import numbro from "numbro";
 
 export default function CalendarDay({
   day,
@@ -94,9 +95,15 @@ export default function CalendarDay({
 
   const gasUsed = useMemo(() => {
     if (!tasks?.length) return null;
-    return tasks.reduce((acc, cur) => {
+    const gweiGas = tasks.reduce((acc, cur) => {
       return acc + Number(cur.gasUsed || 0);
     }, 0);
+
+    const useEth = numbro(gweiGas / 10 ** 9).format({
+      mantissa: 6,
+    });
+
+    return useEth;
   }, [tasks]);
 
   return (
@@ -128,7 +135,10 @@ export default function CalendarDay({
                 <div className="mt-1 text-xs leading-[17px] text-[#707070]">
                   Gas Used
                 </div>
-                <div className="text-sm text-[#333]">{gasUsed} ETH</div>
+                <div className="text-sm text-[#333]">
+                  <span className="TruncateSingleLine">{gasUsed}</span>
+                  ETH
+                </div>
               </>
             )}
             <div className="mt-[6px] text-xs text-[#707070]">Tx</div>

@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/table";
 
 import Empty from "@/components/shared/empty";
-import TruncateText from "@/components/shared/trunc-text";
+import { TruncateTextNoProvider } from "@/components/shared/trunc-text";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
 
 export interface IAccountGas {
   account: string;
@@ -72,30 +73,32 @@ export default function KeyStoreAccountsTable({
           </TableRow>
         </TableHeader>
         <TableBody className="text-base">
-          {filteredAccount.length ? (
-            filteredAccount?.map((aG) => (
-              <TableRow
-                key={aG.account}
-                className="h-[48px] border-b border-shadow-color"
-              >
-                <TableCell className="p-2 text-center">{aG.index}</TableCell>
-                <TableCell className="p-2">
-                  <TruncateText text={aG.account} showCopy={true} />
-                </TableCell>
-                <TableCell className="p-2">
-                  <span className="TruncateSingleLine inline-block max-w-[100px] leading-4 md:max-w-none">
-                    {aG.gas}
-                  </span>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={3}>
-                <Empty />
-              </td>
-            </tr>
-          )}
+          <TooltipProvider delayDuration={100}>
+            {filteredAccount.length ? (
+              filteredAccount?.map((aG) => (
+                <TableRow
+                  key={aG.account}
+                  className="h-[48px] border-b border-shadow-color"
+                >
+                  <TableCell className="p-2 text-center">{aG.index}</TableCell>
+                  <TableCell className="p-2">
+                    <TruncateTextNoProvider text={aG.account} showCopy={true} />
+                  </TableCell>
+                  <TableCell className="p-2">
+                    <span className="TruncateSingleLine inline-block max-w-[100px] leading-4 md:max-w-none">
+                      {aG.gas}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={3}>
+                  <Empty />
+                </td>
+              </tr>
+            )}
+          </TooltipProvider>
         </TableBody>
       </Table>
     </div>

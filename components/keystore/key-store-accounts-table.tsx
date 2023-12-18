@@ -82,7 +82,7 @@ const AccTable = memo(function AccTable({ acc }: { acc: Array<IAccountGas> }) {
   useEffect(() => {
     if (!acc?.length) return;
 
-    setShowAcc(acc.slice(0, 20));
+    setShowAcc(acc.slice(0, 40));
 
     setTimeout(() => {
       setShowAcc(acc);

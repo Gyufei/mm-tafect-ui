@@ -1,6 +1,7 @@
 import {
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useState,
@@ -27,7 +28,7 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
     min: Date | null;
     max: Date | null;
   }>({
-    min: subDays(new Date(), 2),
+    min: subDays(new Date(), 30),
     max: addDays(new Date(), 5),
   });
 
@@ -81,6 +82,14 @@ const SwapHistory = forwardRef((props: any, ref: any) => {
   } = useSWR("fetch-tasks", fetchTasks, {
     refreshInterval: 15000,
   });
+
+  useEffect(() => {
+    if (isCanParse) {
+      filterTrigger(undefined, {
+        optimisticData: undefined,
+      });
+    }
+  }, [isCanParse, filterTrigger]);
 
   const handleSearch = useCallback(() => {
     if (!isCanParse) return null;

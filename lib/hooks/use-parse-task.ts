@@ -66,6 +66,7 @@ export function useParseTasks() {
             gasUsed: t.gas_used,
             status: t.status,
             txHash: t.tx_hash,
+            memo: t.memo,
             op: t.op,
             opName: opType,
             date,

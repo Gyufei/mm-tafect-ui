@@ -11,6 +11,7 @@ import useIndexStore from "@/lib/state";
 import fetcher from "@/lib/fetcher";
 import useSWRMutation from "swr/mutation";
 import { DexImgMap } from "@/lib/constants/global";
+import SwapHistoryItemMemo from "./swap-history-items-memo";
 
 export default function SwapHistoryItem({
   task,
@@ -102,10 +103,13 @@ export default function SwapHistoryItem({
       ) : null}
 
       <div className="flex justify-between">
-        <SwapHistoryItemStatus
-          status={task.status}
-          onCancelQueue={handleCancelQueue}
-        />
+        <div className="flex items-center justify-between">
+          <SwapHistoryItemStatus
+            status={task.status}
+            onCancelQueue={handleCancelQueue}
+          />
+          <SwapHistoryItemMemo status={task.status} memo={task.memo} />
+        </div>
         {!isApprove && <div>Nonce: {taskTxData?.nonce}</div>}
       </div>
     </div>

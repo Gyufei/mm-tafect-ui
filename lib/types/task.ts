@@ -18,6 +18,7 @@ export interface ITask {
   txHash: string;
   data: ITaskData;
   gasUsed: number;
+  memo: string;
 }
 
 export interface ITaskData {

@@ -1,11 +1,18 @@
 import Image from "next/image";
-import { format, isBefore, isEqual, isSameMonth, startOfToday } from "date-fns";
+import {
+  format,
+  isBefore,
+  isEqual,
+  isSameMonth,
+  isToday,
+  startOfToday,
+} from "date-fns";
 
 import SuccessMarker from "/public/icons/success-marker.svg";
 import UncertaintyMarker from "/public/icons/uncertainty-marker.svg";
 import ExclamationMarker from "/public/icons/exclamation-marker.svg";
 import { IDayData } from "@/lib/hooks/use-dashboard-data";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ITask } from "@/lib/types/task";
 import { formatPercentNum } from "@/lib/utils";
 import numbro from "numbro";
@@ -30,6 +37,7 @@ export default function CalendarDay({
   const isSelected = isEqual(day, selectedDay);
   const isBeforeDay = isBefore(day, today);
   const isThisMonth = isSameMonth(day, firstDayCurrentMonth);
+  const isSameToday = isToday(day);
 
   const isPositive = useMemo(() => {
     if (!dayData) return true;
@@ -119,7 +127,8 @@ export default function CalendarDay({
         <div className="flex items-center">
           <div
             data-month={isThisMonth ? "curr" : "other"}
-            className="mr-1 text-lg leading-[26px] text-[#0E56E6] data-[month=other]:text-[#333]"
+            data-today={isSameToday}
+            className="mr-1 flex items-center justify-center text-lg leading-[26px] text-[#0E56E6] data-[today=true]:h-[30px] data-[today=true]:w-[30px] data-[today=true]:rounded-full data-[today=true]:border data-[today=true]:border-[#0e56e6] data-[today=true]:p-[2px] data-[month=other]:text-[#333]"
           >
             {format(day, "d")}
           </div>
@@ -158,9 +167,30 @@ export default function CalendarDay({
             height={14}
             className="mx-1"
           />
-          <div className="text-xs text-[#0E56E6]">New Plan</div>
+          <NewPlanText />
         </div>
       )}
+    </div>
+  );
+}
+
+function NewPlanText() {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+  return (
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="text-xs text-[#0E56E6]"
+    >
+      {isHovered ? "Not Set" : "New Plan"}
     </div>
   );
 }

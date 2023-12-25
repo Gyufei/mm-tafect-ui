@@ -119,7 +119,7 @@ export default function CalendarDay({
       onClick={onClick}
       data-month={isThisMonth ? "curr" : "other"}
       data-selected={isSelected}
-      className="relative flex h-[130px] w-[100px] cursor-pointer flex-col rounded-md border border-[#bfbfbf] px-[6px] py-2 data-[selected=true]:border-b-4 data-[selected=true]:border-[#0E56E666] data-[selected=true]:border-b-[#0E56E6] data-[selected=true]:bg-[#0E56E605] data-[month=other]:opacity-40"
+      className="relative flex h-[130px] w-full cursor-pointer flex-col rounded-md border border-[#bfbfbf] px-[6px] py-2 data-[selected=true]:border-b-4 data-[selected=true]:border-[#0E56E666] data-[selected=true]:border-b-[#0E56E6] data-[selected=true]:bg-[#0E56E605] data-[month=other]:opacity-40"
     >
       {dayData && taskStatus && <StatusMarker status={taskStatus} />}
 

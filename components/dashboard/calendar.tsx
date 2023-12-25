@@ -99,7 +99,7 @@ export default function Calendar() {
             </button>
           </div>
 
-          <div className="grid grid-cols-7">
+          <div className="grid grid-cols-[repeat(7,minmax(100px,_1fr))] gap-4 pl-4 pr-8">
             {DayNames.map((day, i) => {
               return (
                 <div
@@ -113,7 +113,7 @@ export default function Calendar() {
           </div>
         </div>
 
-        <div className="grid flex-1 grid-cols-7 justify-items-center gap-y-3 overflow-y-auto bg-[#fafafa] pb-4 pt-3">
+        <div className="grid flex-1 grid-cols-[repeat(7,minmax(100px,_1fr))] gap-4 justify-items-center gap-y-3 overflow-y-auto bg-[#fafafa] pb-4 pt-3 px-4">
           {daysOfMonth.map((day) => {
             const dayData = daysData?.find(
               (d) => d.schedule_date === format(day, "yyyy-MM-dd"),

@@ -90,12 +90,16 @@ export default function ChangeTimezone() {
                 <SelectTrigger>
                   <SelectValue placeholder="Select OP" />
                 </SelectTrigger>
-                <SelectContent className="h-[180px] overflow-y-scroll">
-                  {(TzList || []).map((t: { value: number; text: string }) => (
-                    <SelectItem key={t.value} value={String(t.value)}>
-                      {t.text}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="w-[286px]">
+                  <div className="h-[180px] overflow-y-scroll">
+                    {(TzList || []).map(
+                      (t: { value: number; text: string }) => (
+                        <SelectItem key={t.value} value={String(t.value)}>
+                          {t.text}
+                        </SelectItem>
+                      ),
+                    )}
+                  </div>
                 </SelectContent>
               </Select>
             </div>

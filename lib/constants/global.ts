@@ -57,7 +57,13 @@ export const TimezonesMap: Record<string, any> = {
 export const TzList = (() => {
   const arr = [];
   for (let i = 13; i >= -12; i--) {
-    const temp = i >= 0 ? `+${i}` : `-${-1 * i}`;
+    let temp = "";
+    if (i > 0) {
+      temp = `+${i}`;
+    }
+    if (i < 0) {
+      temp = `-${-1 * i}`;
+    }
     arr.push({
       text: `UTC${temp}`,
       value: i,

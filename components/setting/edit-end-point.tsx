@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useContext, useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 
 import { NetworkContext } from "@/lib/providers/network-provider";
 import DetailItem from "../shared/detail-item";
@@ -27,9 +27,11 @@ export default function EditEndPoint() {
   const { network } = useContext(NetworkContext);
   const { refreshUser } = useContext(UserInfoContext);
 
-  const networkDisplay = network?.network_name
-    ? `(${network?.network_name})`
-    : "";
+  const networkDisplay = useMemo(() => {
+    if (!network || !network?.network_name) return "";
+    if (network?.network_name === "BNB Smart Chain") return "(BNB Chain)";
+    return `(${network?.network_name})`;
+  }, [network]);
 
   const [edit, setEdit] = useState(false);
   const [inputValue, setInputValue] = useState(userEndPoint);

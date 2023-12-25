@@ -158,18 +158,7 @@ export default function CalendarDay({
         )}
       </div>
 
-      {!isBeforeDay && (
-        <div className="absolute bottom-1 left-1 flex h-5 w-[90px] items-center rounded-sm bg-[#0E56E60F]">
-          <Image
-            src="/icons/plan.svg"
-            alt="plan"
-            width={14}
-            height={14}
-            className="mx-1"
-          />
-          <NewPlanText />
-        </div>
-      )}
+      {!isBeforeDay && <NewPlanText />}
     </div>
   );
 }
@@ -188,9 +177,18 @@ function NewPlanText() {
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="text-xs text-[#0E56E6]"
+      className="absolute bottom-1 left-1 flex h-5 w-[95%] items-center rounded-sm bg-[#0E56E60F]"
     >
-      {isHovered ? "Not Set" : "New Plan"}
+      <Image
+        src="/icons/plan.svg"
+        alt="plan"
+        width={14}
+        height={14}
+        className="mx-1"
+      />
+      <div className="text-xs text-[#0E56E6]">
+        {isHovered ? "Not Set" : "New Plan"}
+      </div>
     </div>
   );
 }

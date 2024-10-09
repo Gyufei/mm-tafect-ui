@@ -77,15 +77,15 @@ export function useDashboardData(startDate: Date, endDate: Date) {
 
     const resOrigin = res.data;
 
-    const resMap = resOrigin.map((item: Record<string, any>) => {
-      item.plan_info = isString(item.plan_info)
-        ? JSON.parse(item.plan_info)
-        : item.plan_info;
+    const resMap = resOrigin.map((it: Record<string, any>) => {
+      it.plan_info = isString(it.plan_info)
+        ? JSON.parse(it.plan_info)
+        : it.plan_info;
 
-      item.pre_schedule_list = isString(item.pre_schedule_list)
-        ? JSON.parse(item.pre_schedule_list)
-        : item.pre_schedule_list;
-      return item;
+      it.pre_schedule_list = isString(it.pre_schedule_list)
+        ? JSON.parse(it.pre_schedule_list)
+        : it.pre_schedule_list;
+      return it;
     });
 
     return resMap;

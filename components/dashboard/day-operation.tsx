@@ -23,7 +23,7 @@ export default function DayOperation({
   tasks: Array<ITask>;
   onCancel: () => void;
 }) {
-  const isBeforeDay = useIndexStore((state) => state?.isBeforeDay?.());
+  const isBeforeDay = useIndexStore((st) => st?.isBeforeDay?.());
 
   const { saveLoading, saveAction } = useDashboardDaySave();
   const { applyLoading, applyAction, cancelApplyAction } =

@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 export default function Signin() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  console.log(searchParams);
 
   const activeUser = useEffectStore(useIndexStore, (state) =>
     state.activeUser(),

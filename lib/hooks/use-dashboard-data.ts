@@ -77,6 +77,8 @@ export function useDashboardData(startDate: Date, endDate: Date) {
 
     const resOrigin = res.data;
 
+    if (!resOrigin || !resOrigin.length) return [];
+
     const resMap = resOrigin.map(parseItem);
 
     return resMap;
